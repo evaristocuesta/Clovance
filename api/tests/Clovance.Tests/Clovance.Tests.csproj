@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\aspire\Clovance.AppHost\Clovance.AppHost.csproj" />
+    <ProjectReference Include="..\..\src\Clovance.ApiService\Clovance.ApiService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
