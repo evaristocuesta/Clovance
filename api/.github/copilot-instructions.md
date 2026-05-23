@@ -20,9 +20,13 @@ Each operation (Create, Update, Delete, GetById) must have:
 - Endpoints: `CreateUserEndpoint`
 
 ## Entity Framework
+- Place all EF Core-related code under `Infrastructure/Database`
 - Configurations in separate files
 - Do not use automatic migrations in Production
 - Always use AsNoTracking() in queries
+
+## Transaction Description Search
+- For transaction description search, use case-insensitive free-text contains semantics (not prefix-only).
 
 ## Aspire
 - Configure health checks
