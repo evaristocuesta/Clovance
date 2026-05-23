@@ -24,6 +24,7 @@ Each operation (Create, Update, Delete, GetById) must have:
 - Configurations in separate files
 - Do not use automatic migrations in Production
 - Always use AsNoTracking() in queries
+- Identity service registration (AddIdentityCore and AddEntityFrameworkStores) should live in the AddDatabase extension, not duplicated in Program.cs.
 
 ## Transaction Description Search
 - For transaction description search, use case-insensitive free-text contains semantics (not prefix-only).

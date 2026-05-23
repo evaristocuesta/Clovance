@@ -7,6 +7,10 @@ public static class DatabaseServiceCollectionExtensions
 {
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<IdentityAdminOptions>(configuration.GetSection(IdentityAdminOptions.SectionName));
+        services.Configure<InvitationOptions>(configuration.GetSection(InvitationOptions.SectionName));
+        services.AddSingleton<IInvitationTokenService, InvitationTokenService>();
+
         var connectionString = configuration.GetConnectionString("Database");
 
         services.AddDbContext<ClovanceDbContext>(options =>
@@ -15,7 +19,7 @@ public static class DatabaseServiceCollectionExtensions
         });
 
         services
-          .AddIdentityCore<IdentityUser>(options =>
+          .AddIdentityCore<ApplicationUser>(options =>
           {
             options.User.RequireUniqueEmail = true;
             options.Password.RequireDigit = true;
@@ -24,7 +28,10 @@ public static class DatabaseServiceCollectionExtensions
             options.Password.RequireUppercase = true;
             options.Password.RequireLowercase = true;
           })
-          .AddEntityFrameworkStores<ClovanceDbContext>();
+          .AddRoles<IdentityRole>()
+          .AddSignInManager()
+          .AddEntityFrameworkStores<ClovanceDbContext>()
+          .AddDefaultTokenProviders();
 
         return services;
     }

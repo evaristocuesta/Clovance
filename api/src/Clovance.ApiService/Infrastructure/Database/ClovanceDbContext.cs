@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Infrastructure.Database;
 
-public sealed class ClovanceDbContext(DbContextOptions<ClovanceDbContext> options) : IdentityDbContext(options)
+public sealed class ClovanceDbContext(DbContextOptions<ClovanceDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Account> Accounts => Set<Account>();
 
     public DbSet<Transaction> Transactions => Set<Transaction>();
+
+    public DbSet<UserInvitation> UserInvitations => Set<UserInvitation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
