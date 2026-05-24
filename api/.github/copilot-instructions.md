@@ -3,14 +3,14 @@
 ## Architecture
 - Vertical Slice Architecture
 - Each feature is self-contained
-- Minimal APIs with Carter or FastEndpoints
-- MediatR for CQRS
+- Minimal APIs (no MediatR)
+- Direct handler injection in endpoints
 
 ## Slice Structure
 Each operation (Create, Update, Delete, GetById) must have:
-- Endpoint.cs (route and validation)
-- Command/Query.cs (request)
-- Handler.cs (business logic)
+- Endpoint.cs (route and handler injection)
+- Command/Query.cs (request/response records)
+- Handler.cs (business logic - plain classes with Handle method)
 - Validator.cs (Fluent Validation)
 
 ## Naming Conventions
@@ -18,6 +18,12 @@ Each operation (Create, Update, Delete, GetById) must have:
 - Queries: `GetUserByIdQuery`, `GetUsersQuery`
 - Handlers: `CreateUserCommandHandler`
 - Endpoints: `CreateUserEndpoint`
+
+## Handler Pattern
+- Handlers are plain classes (no interfaces required)
+- Must have a `Handle` method that accepts Command/Query and CancellationToken
+- Register handlers as Scoped services in Program.cs
+- Inject handlers directly into endpoints
 
 ## Entity Framework
 - Place all EF Core-related code under `Infrastructure/Database`
