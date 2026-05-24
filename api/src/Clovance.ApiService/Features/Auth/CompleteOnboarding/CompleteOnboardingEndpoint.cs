@@ -7,9 +7,7 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        var authGroup = app.MapGroup("/auth");
-
-        authGroup.MapPost("/complete-onboarding", async (
+        app.MapPost("/complete-onboarding", async (
             CompleteOnboardingCommand command, 
             IHandler<CompleteOnboardingCommand, Unit> handler, 
             CancellationToken cancellationToken) =>
@@ -32,8 +30,12 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
             }
         })
         .WithValidation<CompleteOnboardingCommand>()
+        .Produces<Unit>(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
         .RequireAuthorization()
         .WithName("CompleteOnboarding")
-        .WithTags("Auth");
+        .WithSummary("Complete Onboarding")
+        .WithDescription("Completes the onboarding process for first admin user. First admin user must change the email and password.");
     }
 }

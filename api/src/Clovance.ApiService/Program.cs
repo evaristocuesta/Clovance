@@ -85,6 +85,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
     app.MapScalarApiReference(options => options
+        .WithTitle("Clovance API Reference")
+        .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
         .AddPreferredSecuritySchemes("Bearer")
         .AddHttpAuthentication("Bearer", auth =>
         {

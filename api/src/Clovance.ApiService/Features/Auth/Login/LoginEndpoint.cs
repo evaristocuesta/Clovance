@@ -7,9 +7,7 @@ public sealed class LoginEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        var authGroup = app.MapGroup("/auth");
-
-        authGroup.MapPost("/login", async (
+        app.MapPost("/login", async (
             LoginCommand command, 
             IHandler<LoginCommand, LoginResult> handler, 
             CancellationToken cancellationToken) =>
@@ -28,11 +26,20 @@ public sealed class LoginEndpoint : IApiEndPoint
             {
                 return Results.Unauthorized();
             }
+            catch (InvalidOperationException ex)
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["Error"] = [ex.Message]
+                });
+            }
         })
         .WithValidation<LoginCommand>()
+        .Produces<LoginResult>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
         .WithName("Login")
-        .WithTags("Auth")
-        .WithSummary("Login to get Bearer token")
-        .WithDescription("Returns a Bearer token in the response that can be used for authenticated requests. Copy the 'access_token' value from the response.");
+        .WithSummary("Login")
+        .WithDescription("Returns a Bearer token in the response that can be used for authenticated requests.");
     }
 }

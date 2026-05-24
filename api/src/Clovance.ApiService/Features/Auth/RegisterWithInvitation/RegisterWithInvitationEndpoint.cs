@@ -7,9 +7,7 @@ public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        var authGroup = app.MapGroup("/auth");
-
-        authGroup.MapPost("/register-with-invitation", async (
+        app.MapPost("/register-with-invitation", async (
             RegisterWithInvitationCommand command, 
             IHandler<RegisterWithInvitationCommand, RegisterWithInvitationResult> handler, 
             CancellationToken cancellationToken) =>
@@ -32,7 +30,11 @@ public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
             }
         })
         .WithValidation<RegisterWithInvitationCommand>()
+        .Produces<RegisterWithInvitationResult>(StatusCodes.Status201Created)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
         .WithName("RegisterWithInvitation")
-        .WithTags("Auth");
+        .WithSummary("Register With Invitation")
+        .WithDescription("Registers a new user using an invitation.");
     }
 }

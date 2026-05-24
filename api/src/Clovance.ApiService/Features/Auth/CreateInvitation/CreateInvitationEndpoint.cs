@@ -7,9 +7,7 @@ public sealed class CreateInvitationEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        var authGroup = app.MapGroup("/auth");
-
-        authGroup.MapPost("/invitations", async (
+        app.MapPost("/invitations", async (
             CreateInvitationCommand command, 
             IHandler<CreateInvitationCommand, CreateInvitationResult> handler, 
             CancellationToken cancellationToken) =>
@@ -32,8 +30,12 @@ public sealed class CreateInvitationEndpoint : IApiEndPoint
             }
         })
         .WithValidation<CreateInvitationCommand>()
+        .Produces<CreateInvitationResult>(StatusCodes.Status201Created)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
         .RequireAuthorization(policy => policy.RequireRole("Admin"))
         .WithName("CreateInvitation")
-        .WithTags("Auth");
+        .WithSummary("Create Invitation")
+        .WithDescription("Creates an invitation for a new user. Only users with the 'Admin' role can create invitations.");
     }
 }
