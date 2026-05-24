@@ -12,22 +12,8 @@ public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
             IHandler<RegisterWithInvitationCommand, RegisterWithInvitationResult> handler, 
             CancellationToken cancellationToken) =>
         {
-            try
-            {
-                var result = await handler.HandleAsync(command, cancellationToken);
-                return Results.Created($"/auth/users/{result.UserId}", result);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Results.Unauthorized();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Results.ValidationProblem(new Dictionary<string, string[]>
-                {
-                    ["Error"] = [ex.Message]
-                });
-            }
+            var result = await handler.HandleAsync(command, cancellationToken);
+            return Results.Created($"/auth/users/{result.UserId}", result);
         })
         .WithValidation<RegisterWithInvitationCommand>()
         .Produces<RegisterWithInvitationResult>(StatusCodes.Status201Created)

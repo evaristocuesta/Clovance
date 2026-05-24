@@ -10,15 +10,8 @@ public sealed class LogoutEndpoint : IApiEndPoint
             IHandler<LogoutCommand, Unit> handler, 
             CancellationToken cancellationToken) =>
         {
-            try
-            {
-                await handler.HandleAsync(new LogoutCommand(), cancellationToken);
-                return Results.NoContent();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Results.Unauthorized();
-            }
+            await handler.HandleAsync(new LogoutCommand(), cancellationToken);
+            return Results.NoContent();
         })
         .RequireAuthorization()
         .Produces<Unit>(StatusCodes.Status204NoContent)

@@ -12,22 +12,8 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
             IHandler<CompleteOnboardingCommand, Unit> handler, 
             CancellationToken cancellationToken) =>
         {
-            try
-            {
-                await handler.HandleAsync(command, cancellationToken);
-                return Results.NoContent();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Results.Unauthorized();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Results.ValidationProblem(new Dictionary<string, string[]>
-                {
-                    ["Error"] = [ex.Message]
-                });
-            }
+            await handler.HandleAsync(command, cancellationToken);
+            return Results.NoContent();
         })
         .WithValidation<CompleteOnboardingCommand>()
         .Produces<Unit>(StatusCodes.Status204NoContent)

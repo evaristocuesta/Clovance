@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using Clovance.ApiService.Exceptions;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
@@ -20,6 +21,8 @@ builder.AddServiceDefaults();
 builder.Services.AddProblemDetails();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>()
+    .AddProblemDetails();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
