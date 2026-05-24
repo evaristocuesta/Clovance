@@ -3,11 +3,13 @@ using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 
-public static class RegisterWithInvitationEndpoint
+public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
 {
-    public static IEndpointRouteBuilder MapRegisterWithInvitationEndpoint(this IEndpointRouteBuilder builder)
+    public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        builder.MapPost("/register-with-invitation", async (
+        var authGroup = app.MapGroup("/auth");
+
+        authGroup.MapPost("/register-with-invitation", async (
             RegisterWithInvitationCommand command, 
             IHandler<RegisterWithInvitationCommand, RegisterWithInvitationResult> handler, 
             CancellationToken cancellationToken) =>
@@ -32,7 +34,5 @@ public static class RegisterWithInvitationEndpoint
         .WithValidation<RegisterWithInvitationCommand>()
         .WithName("RegisterWithInvitation")
         .WithTags("Auth");
-
-        return builder;
     }
 }

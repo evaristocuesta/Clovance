@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using System.Text;
-using Clovance.ApiService.Features.Auth;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
@@ -99,8 +98,8 @@ if (app.Environment.IsDevelopment())
     await dbContext.Database.MigrateAsync();
 }
 
-// Map Auth endpoints
-app.MapAuthEndpoints();
+// Map endpoints
+app.RegisterApiEndpointsFromAssembly(typeof(Program).Assembly);
 
 app.Use(async (context, next) =>
 {

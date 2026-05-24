@@ -1,14 +1,15 @@
 ﻿using Clovance.ApiService.Infrastructure.Validation;
+using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
-using Clovance.ApiService.Features.Shared;
-
-public static class LoginEndpoint
+public sealed class LoginEndpoint : IApiEndPoint
 {
-    public static IEndpointRouteBuilder MapLoginEndpoint(this IEndpointRouteBuilder builder)
+    public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        builder.MapPost("/login", async (
+        var authGroup = app.MapGroup("/auth");
+
+        authGroup.MapPost("/login", async (
             LoginCommand command, 
             IHandler<LoginCommand, LoginResult> handler, 
             CancellationToken cancellationToken) =>
@@ -33,7 +34,5 @@ public static class LoginEndpoint
         .WithTags("Auth")
         .WithSummary("Login to get Bearer token")
         .WithDescription("Returns a Bearer token in the response that can be used for authenticated requests. Copy the 'access_token' value from the response.");
-
-        return builder;
     }
 }

@@ -3,11 +3,13 @@ using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.CompleteOnboarding;
 
-public static class CompleteOnboardingEndpoint
+public sealed class CompleteOnboardingEndpoint : IApiEndPoint
 {
-    public static IEndpointRouteBuilder MapCompleteOnboardingEndpoint(this IEndpointRouteBuilder builder)
+    public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        builder.MapPost("/complete-onboarding", async (
+        var authGroup = app.MapGroup("/auth");
+
+        authGroup.MapPost("/complete-onboarding", async (
             CompleteOnboardingCommand command, 
             IHandler<CompleteOnboardingCommand, Unit> handler, 
             CancellationToken cancellationToken) =>
@@ -33,7 +35,5 @@ public static class CompleteOnboardingEndpoint
         .RequireAuthorization()
         .WithName("CompleteOnboarding")
         .WithTags("Auth");
-
-        return builder;
     }
 }

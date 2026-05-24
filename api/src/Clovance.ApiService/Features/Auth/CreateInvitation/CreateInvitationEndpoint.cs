@@ -3,11 +3,13 @@ using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.CreateInvitation;
 
-public static class CreateInvitationEndpoint
+public sealed class CreateInvitationEndpoint : IApiEndPoint
 {
-    public static IEndpointRouteBuilder MapCreateInvitationEndpoint(this IEndpointRouteBuilder builder)
+    public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        builder.MapPost("/invitations", async (
+        var authGroup = app.MapGroup("/auth");
+
+        authGroup.MapPost("/invitations", async (
             CreateInvitationCommand command, 
             IHandler<CreateInvitationCommand, CreateInvitationResult> handler, 
             CancellationToken cancellationToken) =>
@@ -33,7 +35,5 @@ public static class CreateInvitationEndpoint
         .RequireAuthorization(policy => policy.RequireRole("Admin"))
         .WithName("CreateInvitation")
         .WithTags("Auth");
-
-        return builder;
     }
 }

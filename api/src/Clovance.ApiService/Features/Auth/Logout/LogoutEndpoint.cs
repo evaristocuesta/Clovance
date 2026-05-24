@@ -2,11 +2,13 @@
 
 using Clovance.ApiService.Features.Shared;
 
-public static class LogoutEndpoint
+public sealed class LogoutEndpoint : IApiEndPoint
 {
-    public static IEndpointRouteBuilder MapLogoutEndpoint(this IEndpointRouteBuilder builder)
+    public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        builder.MapPost("/logout", async (
+        var authGroup = app.MapGroup("/auth");
+
+        authGroup.MapPost("/logout", async (
             IHandler<LogoutCommand, Unit> handler, 
             CancellationToken cancellationToken) =>
         {
@@ -16,7 +18,5 @@ public static class LogoutEndpoint
         .RequireAuthorization()
         .WithName("Logout")
         .WithTags("Auth");
-
-        return builder;
     }
 }
