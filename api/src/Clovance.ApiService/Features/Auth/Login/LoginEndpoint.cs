@@ -1,5 +1,4 @@
 ﻿using Clovance.ApiService.Infrastructure.Validation;
-using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
@@ -17,7 +16,12 @@ public static class LoginEndpoint
             try
             {
                 var result = await handler.HandleAsync(command, cancellationToken);
-                return Results.SignIn(result.Principal, authenticationScheme: IdentityConstants.BearerScheme);
+                return Results.Ok(new
+                {
+                    access_token = result.AccessToken,
+                    token_type = "Bearer",
+                    expires_at = result.ExpiresAt
+                });
             }
             catch (UnauthorizedAccessException)
             {

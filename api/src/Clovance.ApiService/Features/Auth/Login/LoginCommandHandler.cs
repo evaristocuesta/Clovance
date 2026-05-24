@@ -1,21 +1,21 @@
-﻿using System.Security.Claims;
-using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
 public sealed class LoginCommandHandler : IHandler<LoginCommand, LoginResult>
 {
-    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IJwtTokenService _jwtTokenService;
 
     public LoginCommandHandler(
-        SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        IJwtTokenService jwtTokenService)
     {
-        _signInManager = signInManager;
         _userManager = userManager;
+        _jwtTokenService = jwtTokenService;
     }
 
     public async Task<LoginResult> HandleAsync(LoginCommand request, CancellationToken cancellationToken)
@@ -27,20 +27,20 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, LoginResult>
             throw new UnauthorizedAccessException("Invalid credentials.");
         }
 
-        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
 
-        if (!signInResult.Succeeded)
+        if (!isPasswordValid)
         {
             throw new UnauthorizedAccessException("Invalid credentials.");
         }
 
-        var tokenResult = await _signInManager.CreateUserPrincipalAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        var (token, expiresAt) = _jwtTokenService.GenerateToken(
+            user.Id,
+            user.Email ?? string.Empty,
+            roles,
+            user.MustCompleteOnboarding);
 
-        if (tokenResult.Identity is ClaimsIdentity identity)
-        {
-            identity.AddClaim(new Claim("must_complete_onboarding", user.MustCompleteOnboarding.ToString()));
-        }
-
-        return new LoginResult(tokenResult);
+        return new LoginResult(token, expiresAt);
     }
 }
