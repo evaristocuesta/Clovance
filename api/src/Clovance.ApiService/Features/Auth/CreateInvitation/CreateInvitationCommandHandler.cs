@@ -1,10 +1,11 @@
-﻿using Clovance.ApiService.Infrastructure.Database;
+﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Clovance.ApiService.Features.Auth.CreateInvitation;
 
-public sealed class CreateInvitationCommandHandler
+public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCommand, CreateInvitationResult>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
@@ -26,7 +27,7 @@ public sealed class CreateInvitationCommandHandler
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<CreateInvitationResult> Handle(CreateInvitationCommand request, CancellationToken cancellationToken = default)
+    public async Task<CreateInvitationResult> HandleAsync(CreateInvitationCommand request, CancellationToken cancellationToken)
     {
         var httpContext = _httpContextAccessor.HttpContext 
             ?? throw new InvalidOperationException("HttpContext is not available.");

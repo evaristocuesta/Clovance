@@ -1,9 +1,10 @@
-﻿using Clovance.ApiService.Infrastructure.Database;
+﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 
-public sealed class RegisterWithInvitationCommandHandler
+public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWithInvitationCommand, RegisterWithInvitationResult>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
@@ -19,7 +20,7 @@ public sealed class RegisterWithInvitationCommandHandler
         _tokenService = tokenService;
     }
 
-    public async Task<RegisterWithInvitationResult> Handle(RegisterWithInvitationCommand request, CancellationToken cancellationToken = default)
+    public async Task<RegisterWithInvitationResult> HandleAsync(RegisterWithInvitationCommand request, CancellationToken cancellationToken)
     {
         var normalizedEmail = request.Email.Trim();
         var tokenHash = _tokenService.HashToken(request.Token.Trim());

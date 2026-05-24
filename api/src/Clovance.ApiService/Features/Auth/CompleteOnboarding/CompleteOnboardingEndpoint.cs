@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Infrastructure.Validation;
+using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.CompleteOnboarding;
 
@@ -6,11 +7,14 @@ public static class CompleteOnboardingEndpoint
 {
     public static IEndpointRouteBuilder MapCompleteOnboardingEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("/complete-onboarding", async (CompleteOnboardingCommand command, CompleteOnboardingCommandHandler handler) =>
+        builder.MapPost("/complete-onboarding", async (
+            CompleteOnboardingCommand command, 
+            IHandler<CompleteOnboardingCommand, Unit> handler, 
+            CancellationToken cancellationToken) =>
         {
             try
             {
-                await handler.Handle(command);
+                await handler.HandleAsync(command, cancellationToken);
                 return Results.NoContent();
             }
             catch (UnauthorizedAccessException)

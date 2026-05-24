@@ -3,15 +3,20 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
+using Clovance.ApiService.Features.Shared;
+
 public static class LoginEndpoint
 {
     public static IEndpointRouteBuilder MapLoginEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("/login", async (LoginCommand command, LoginCommandHandler handler) =>
+        builder.MapPost("/login", async (
+            LoginCommand command, 
+            IHandler<LoginCommand, LoginResult> handler, 
+            CancellationToken cancellationToken) =>
         {
             try
             {
-                var result = await handler.Handle(command);
+                var result = await handler.HandleAsync(command, cancellationToken);
                 return Results.SignIn(result.Principal, authenticationScheme: IdentityConstants.BearerScheme);
             }
             catch (UnauthorizedAccessException)

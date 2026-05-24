@@ -20,9 +20,10 @@ Each operation (Create, Update, Delete, GetById) must have:
 - Endpoints: `CreateUserEndpoint`
 
 ## Handler Pattern
-- Handlers are plain classes (no interfaces required)
-- Must have a `Handle` method that accepts Command/Query and CancellationToken
-- Register handlers as Scoped services in Program.cs
+- Handlers must implement `IHandler<TRequest, TResponse>` from `Features/Shared`
+- Must expose `HandleAsync(TRequest command, CancellationToken cancellationToken)`
+- Commands with no payload response should return `Unit`
+- Register handlers via `AddHandlersFromAssembly(typeof(Program).Assembly)` (automatic scanning for `IHandler<,>` implementations)
 - Inject handlers directly into endpoints
 
 ## Entity Framework

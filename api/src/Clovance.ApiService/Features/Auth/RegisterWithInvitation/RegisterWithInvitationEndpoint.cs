@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Infrastructure.Validation;
+using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 
@@ -6,11 +7,14 @@ public static class RegisterWithInvitationEndpoint
 {
     public static IEndpointRouteBuilder MapRegisterWithInvitationEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("/register-with-invitation", async (RegisterWithInvitationCommand command, RegisterWithInvitationCommandHandler handler) =>
+        builder.MapPost("/register-with-invitation", async (
+            RegisterWithInvitationCommand command, 
+            IHandler<RegisterWithInvitationCommand, RegisterWithInvitationResult> handler, 
+            CancellationToken cancellationToken) =>
         {
             try
             {
-                var result = await handler.Handle(command);
+                var result = await handler.HandleAsync(command, cancellationToken);
                 return Results.Created($"/auth/users/{result.UserId}", result);
             }
             catch (UnauthorizedAccessException)

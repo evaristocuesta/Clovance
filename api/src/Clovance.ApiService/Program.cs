@@ -1,10 +1,6 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Features.Auth;
-using Clovance.ApiService.Features.Auth.CompleteOnboarding;
-using Clovance.ApiService.Features.Auth.CreateInvitation;
-using Clovance.ApiService.Features.Auth.Login;
-using Clovance.ApiService.Features.Auth.Logout;
-using Clovance.ApiService.Features.Auth.RegisterWithInvitation;
+using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -33,11 +29,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 builder.Services.AddHttpContextAccessor();
 
 // Register handlers
-builder.Services.AddScoped<LoginCommandHandler>();
-builder.Services.AddScoped<LogoutCommandHandler>();
-builder.Services.AddScoped<CreateInvitationCommandHandler>();
-builder.Services.AddScoped<RegisterWithInvitationCommandHandler>();
-builder.Services.AddScoped<CompleteOnboardingCommandHandler>();
+builder.Services.AddHandlersFromAssembly(typeof(Program).Assembly);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -54,12 +46,12 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 
+    app.MapGet("/", () => Results.Redirect("/scalar", permanent: false));
+
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ClovanceDbContext>();
     await dbContext.Database.MigrateAsync();
 }
-
-app.MapGet("/", () => "API service is running.");
 
 // Map Auth endpoints
 app.MapAuthEndpoints();

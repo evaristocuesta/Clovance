@@ -1,9 +1,10 @@
-﻿using Clovance.ApiService.Infrastructure.Database;
+﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.CompleteOnboarding;
 
-public sealed class CompleteOnboardingCommandHandler
+public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardingCommand, Unit>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -16,7 +17,7 @@ public sealed class CompleteOnboardingCommandHandler
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task Handle(CompleteOnboardingCommand request, CancellationToken cancellationToken = default)
+    public async Task<Unit> HandleAsync(CompleteOnboardingCommand request, CancellationToken cancellationToken)
     {
         var httpContext = _httpContextAccessor.HttpContext 
             ?? throw new InvalidOperationException("HttpContext is not available.");
@@ -70,5 +71,7 @@ public sealed class CompleteOnboardingCommandHandler
 
         user.MustCompleteOnboarding = false;
         await _userManager.UpdateAsync(user);
+
+        return Unit.Value;
     }
 }

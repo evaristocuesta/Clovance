@@ -1,10 +1,11 @@
 ﻿using System.Security.Claims;
+using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
-public sealed class LoginCommandHandler
+public sealed class LoginCommandHandler : IHandler<LoginCommand, LoginResult>
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -17,7 +18,7 @@ public sealed class LoginCommandHandler
         _userManager = userManager;
     }
 
-    public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken = default)
+    public async Task<LoginResult> HandleAsync(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
 
