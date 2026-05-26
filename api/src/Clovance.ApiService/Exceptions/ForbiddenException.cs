@@ -1,12 +1,14 @@
-﻿namespace Clovance.ApiService.Exceptions;
+﻿using Clovance.ApiService.Shared;
+
+namespace Clovance.ApiService.Exceptions;
 
 public class ForbiddenException : AppException
 {
-    public ForbiddenException(string message = "Forbidden")
+    public ForbiddenException(string message = "Forbidden", string errorCode = ErrorCodes.Common.Forbidden)
         : base(
             message,
             StatusCodes.Status403Forbidden,
-            "FORBIDDEN")
+            errorCode)
     {
     }
 }

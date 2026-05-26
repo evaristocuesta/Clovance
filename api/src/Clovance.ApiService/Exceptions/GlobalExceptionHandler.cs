@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,7 +51,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             {
                 Status = appException.StatusCode,
                 Title = GetTitle(appException.StatusCode),
-                Detail = appException.Message,
+                Detail = ResolveAppExceptionDetail(appException),
                 Instance = context.Request.Path,
                 Type = $"https://httpstatuses.com/{appException.StatusCode}",
                 Extensions =
@@ -81,14 +82,25 @@ public class GlobalExceptionHandler : IExceptionHandler
             Title = "Internal Server Error",
             Detail = _environment.IsDevelopment()
                 ? exception.Message
-                : "Ha ocurrido un error inesperado. Por favor, contacte al soporte.",
+                : "Unexpected server error.",
             Instance = context.Request.Path,
             Type = $"https://httpstatuses.com/{status}",
             Extensions =
             {
-                ["traceId"] = traceId
+                ["traceId"] = traceId,
+                ["errorCode"] = ErrorCodes.Common.UnexpectedError
             }
         };
+    }
+
+    private static string ResolveAppExceptionDetail(AppException appException)
+    {
+        if (string.IsNullOrWhiteSpace(appException.Message))
+        {
+            return appException.ErrorCode;
+        }
+
+        return appException.Message;
     }
 
     private static string GetTitle(int statusCode) => statusCode switch

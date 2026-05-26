@@ -1,4 +1,6 @@
-﻿namespace Clovance.ApiService.Exceptions;
+﻿using Clovance.ApiService.Shared;
+
+namespace Clovance.ApiService.Exceptions;
 
 public class ValidationException : AppException
 {
@@ -6,7 +8,7 @@ public class ValidationException : AppException
         : base(
             "One or more validation errors occurred",
             StatusCodes.Status400BadRequest,
-            "VALIDATION_ERROR",
+            ErrorCodes.Common.ValidationFailed,
             new Dictionary<string, object?>
             {
                 ["errors"] = errors

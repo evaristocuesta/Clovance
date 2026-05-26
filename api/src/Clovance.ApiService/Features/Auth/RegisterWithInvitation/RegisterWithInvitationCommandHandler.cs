@@ -1,6 +1,7 @@
 ﻿using Clovance.ApiService.Exceptions;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
@@ -31,13 +32,13 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
 
         if (invitation is null || invitation.ConsumedAt is not null || invitation.ExpiresAt <= DateTimeOffset.UtcNow)
         {
-            throw new UnauthorizedException("Invalid or expired invitation.");
+            throw new UnauthorizedException("Invalid or expired invitation.", ErrorCodes.Auth.InvitationInvalidOrExpired);
         }
 
         var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
         if (existingUser is not null)
         {
-            throw new ConflictException("A user with this email already exists.");
+            throw new ConflictException("A user with this email already exists.", ErrorCodes.Auth.UserAlreadyExists);
         }
 
         var user = new ApplicationUser
@@ -52,7 +53,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         if (!createResult.Succeeded)
         {
             var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
-            throw new ConflictException($"Failed to create user: {errors}");
+            throw new ConflictException($"Failed to create user: {errors}", ErrorCodes.Auth.UserCreationFailed);
         }
 
         invitation.ConsumedAt = DateTimeOffset.UtcNow;

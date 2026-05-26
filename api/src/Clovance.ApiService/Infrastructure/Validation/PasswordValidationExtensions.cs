@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Clovance.ApiService.Shared;
 
 namespace Clovance.ApiService.Infrastructure.Validation;
 
@@ -8,15 +9,16 @@ public static class PasswordValidationExtensions
     {
         return ruleBuilder
             .NotEmpty()
+            .WithErrorCode(ErrorCodes.Auth.PasswordRequired)
             .MinimumLength(12)
-            .WithMessage("New password must be at least 12 characters long.")
+            .WithErrorCode(ErrorCodes.Auth.PasswordMinLength)
             .Matches("[0-9]")
-            .WithMessage("New password must contain at least one digit.")
+            .WithErrorCode(ErrorCodes.Auth.PasswordMissingDigit)
             .Matches("[a-z]")
-            .WithMessage("New password must contain at least one lowercase letter.")
+            .WithErrorCode(ErrorCodes.Auth.PasswordMissingLowercase)
             .Matches("[A-Z]")
-            .WithMessage("New password must contain at least one uppercase letter.")
+            .WithErrorCode(ErrorCodes.Auth.PasswordMissingUppercase)
             .Matches("[^a-zA-Z0-9]")
-            .WithMessage("New password must contain at least one non-alphanumeric character.");
+            .WithErrorCode(ErrorCodes.Auth.PasswordMissingNonAlphanumeric);
     }
 }

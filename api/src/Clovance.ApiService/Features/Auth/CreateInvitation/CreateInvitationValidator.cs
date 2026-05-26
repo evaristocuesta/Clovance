@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Clovance.ApiService.Shared;
+using FluentValidation;
 
 namespace Clovance.ApiService.Features.Auth.CreateInvitation;
 
@@ -8,7 +9,8 @@ public sealed class CreateInvitationValidator : AbstractValidator<CreateInvitati
     {
         RuleFor(x => x.Email)
             .NotEmpty()
+            .WithErrorCode(ErrorCodes.Auth.EmailRequired)
             .EmailAddress()
-            .WithMessage("A valid email address is required.");
+            .WithErrorCode(ErrorCodes.Auth.EmailInvalid);
     }
 }

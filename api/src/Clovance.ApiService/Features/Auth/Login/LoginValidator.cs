@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Clovance.ApiService.Shared;
+using FluentValidation;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
@@ -8,9 +9,12 @@ public sealed class LoginValidator : AbstractValidator<LoginCommand>
     {
         RuleFor(x => x.Email)
             .NotEmpty()
-            .EmailAddress();
+            .WithErrorCode(ErrorCodes.Auth.EmailRequired)
+            .EmailAddress()
+            .WithErrorCode(ErrorCodes.Auth.EmailInvalid);
 
         RuleFor(x => x.Password)
-            .NotEmpty();
+            .NotEmpty()
+            .WithErrorCode(ErrorCodes.Auth.PasswordRequired);
     }
 }

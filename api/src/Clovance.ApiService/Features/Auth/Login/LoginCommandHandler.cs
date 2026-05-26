@@ -3,6 +3,7 @@ using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Clovance.ApiService.Exceptions;
+using Clovance.ApiService.Shared;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
@@ -25,14 +26,14 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, LoginResult>
 
         if (user is null)
         {
-            throw new UnauthorizedException("Invalid credentials.");
+            throw new UnauthorizedException("Invalid credentials.", ErrorCodes.Auth.InvalidCredentials);
         }
 
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
 
         if (!isPasswordValid)
         {
-            throw new UnauthorizedException("Invalid credentials.");
+            throw new UnauthorizedException("Invalid credentials.", ErrorCodes.Auth.InvalidCredentials);
         }
 
         var roles = await _userManager.GetRolesAsync(user);

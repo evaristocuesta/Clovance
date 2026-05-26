@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Clovance.ApiService.Infrastructure.Validation;
+using Clovance.ApiService.Shared;
 
 namespace Clovance.ApiService.Features.Auth.CompleteOnboarding;
 
@@ -9,14 +10,15 @@ public sealed class CompleteOnboardingValidator : AbstractValidator<CompleteOnbo
     {
         RuleFor(x => x.CurrentPassword)
             .NotEmpty()
-            .WithMessage("Current password is required.");
+            .WithErrorCode(ErrorCodes.Auth.CurrentPasswordRequired);
 
         RuleFor(x => x.NewPassword)
             .ApplyPasswordPolicy();
 
         RuleFor(x => x.NewEmail)
             .NotEmpty()
+            .WithErrorCode(ErrorCodes.Auth.EmailRequired)
             .EmailAddress()
-            .WithMessage("A valid email address is required.");
+            .WithErrorCode(ErrorCodes.Auth.EmailInvalid);
     }
 }

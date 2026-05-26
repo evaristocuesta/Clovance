@@ -50,6 +50,11 @@ Each operation (Create, Update, Delete, GetById) must have:
 ## Transaction Description Search
 - For transaction description search, use case-insensitive free-text contains semantics (not prefix-only).
 
+## Error Handling
+- Use language-agnostic error codes instead of hardcoded English messages.
+- Support multilingual responses across the application.
+- Prefer API responses to return only stable error codes and keep all user-facing translations exclusively in Angular to avoid duplicated translation files.
+
 ## Aspire
 - Configure health checks
 - Use service defaults
