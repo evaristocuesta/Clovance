@@ -13,15 +13,13 @@ public sealed class LoginEndpoint : IApiEndPoint
             CancellationToken cancellationToken) =>
         {
             var result = await handler.HandleAsync(command, cancellationToken);
-            return Results.Ok(new
-            {
-                access_token = result.AccessToken,
-                token_type = "Bearer",
-                expires_at = result.ExpiresAt
-            });
+            return Results.Ok(new LoginResponse(
+                result.AccessToken,
+                "Bearer",
+                result.ExpiresAt));
         })
         .WithValidation<LoginCommand>()
-        .Produces<LoginResult>(StatusCodes.Status200OK)
+        .Produces<LoginResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithName("Login")
