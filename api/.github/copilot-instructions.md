@@ -23,6 +23,7 @@ Each operation (Create, Update, Delete, GetById) must have:
 - Endpoints only map their specific route (e.g., `app.MapPost("/login", ...)`)
 
 ## Validation
+- Prefer cross-cutting concerns (validation and logging) implemented via decorators rather than endpoint filters, to keep behavior independent from endpoint technology.
 - Use FluentValidation for command/query validation
 - Apply validation using `.WithValidation<TCommand>()` extension on endpoint builders
 - Validators are executed automatically via endpoint filter before handler execution
