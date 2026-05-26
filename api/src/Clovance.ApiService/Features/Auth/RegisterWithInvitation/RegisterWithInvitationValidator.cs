@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Clovance.ApiService.Infrastructure.Validation;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 
@@ -16,8 +17,6 @@ public sealed class RegisterWithInvitationValidator : AbstractValidator<Register
             .WithMessage("Invitation token is required.");
 
         RuleFor(x => x.Password)
-            .NotEmpty()
-            .MinimumLength(6)
-            .WithMessage("Password must be at least 6 characters long.");
+            .ApplyPasswordPolicy();
     }
 }

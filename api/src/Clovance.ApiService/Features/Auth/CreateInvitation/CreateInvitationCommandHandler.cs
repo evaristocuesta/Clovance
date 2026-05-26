@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Exceptions;
+using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -35,7 +36,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         var adminUserId = _userManager.GetUserId(httpContext.User);
         if (string.IsNullOrWhiteSpace(adminUserId))
         {
-            throw new UnauthorizedAccessException("User is not authenticated.");
+            throw new UnauthorizedException("User is not authenticated.");
         }
 
         var normalizedEmail = request.Email.Trim();
@@ -43,7 +44,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
         if (existingUser is not null)
         {
-            throw new InvalidOperationException("A user with this email already exists.");
+            throw new ConflictException("A user with this email already exists.");
         }
 
         var activeInvitation = _dbContext.UserInvitations
@@ -51,7 +52,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 
         if (activeInvitation is not null)
         {
-            throw new InvalidOperationException("There is already an active invitation for this email.");
+            throw new ConflictException("There is already an active invitation for this email.");
         }
 
         var rawToken = _tokenService.GenerateToken();

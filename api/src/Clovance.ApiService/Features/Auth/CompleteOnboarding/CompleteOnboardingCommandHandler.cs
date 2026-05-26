@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Exceptions;
+using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 
@@ -26,14 +27,14 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
 
         if (string.IsNullOrWhiteSpace(userId))
         {
-            throw new UnauthorizedAccessException("User is not authenticated.");
+            throw new UnauthorizedException("User is not authenticated.");
         }
 
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user is null)
         {
-            throw new UnauthorizedAccessException("User not found.");
+            throw new UnauthorizedException("User not found.");
         }
 
         var changeResult = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
@@ -41,7 +42,7 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
         if (!changeResult.Succeeded)
         {
             var errors = string.Join(", ", changeResult.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"Failed to change password: {errors}");
+            throw new ConflictException($"Failed to change password: {errors}");
         }
 
         var normalizedEmail = request.NewEmail.Trim();
@@ -50,7 +51,7 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
             var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
             if (existingUser is not null && !string.Equals(existingUser.Id, user.Id, StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("Email is already in use.");
+                throw new ConflictException("Email is already in use.");
             }
 
             var emailToken = await _userManager.GenerateChangeEmailTokenAsync(user, normalizedEmail);
@@ -58,14 +59,14 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
             if (!emailResult.Succeeded)
             {
                 var errors = string.Join(", ", emailResult.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"Failed to change email: {errors}");
+                throw new ConflictException($"Failed to change email: {errors}");
             }
 
             var usernameResult = await _userManager.SetUserNameAsync(user, normalizedEmail);
             if (!usernameResult.Succeeded)
             {
                 var errors = string.Join(", ", usernameResult.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"Failed to change username: {errors}");
+                throw new ConflictException($"Failed to change username: {errors}");
             }
         }
 

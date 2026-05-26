@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Clovance.ApiService.Infrastructure.Validation;
 
 namespace Clovance.ApiService.Features.Auth.CompleteOnboarding;
 
@@ -11,9 +12,7 @@ public sealed class CompleteOnboardingValidator : AbstractValidator<CompleteOnbo
             .WithMessage("Current password is required.");
 
         RuleFor(x => x.NewPassword)
-            .NotEmpty()
-            .MinimumLength(6)
-            .WithMessage("New password must be at least 6 characters long.");
+            .ApplyPasswordPolicy();
 
         RuleFor(x => x.NewEmail)
             .NotEmpty()
