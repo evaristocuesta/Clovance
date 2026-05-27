@@ -1,12 +1,10 @@
-﻿using Clovance.ApiService.Exceptions;
-using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
-using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 
-public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWithInvitationCommand, RegisterWithInvitationResult>
+public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWithInvitationCommand, Result<RegisterWithInvitationResult>>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
@@ -22,7 +20,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         _tokenService = tokenService;
     }
 
-    public async Task<RegisterWithInvitationResult> HandleAsync(RegisterWithInvitationCommand request, CancellationToken cancellationToken)
+    public async Task<Result<RegisterWithInvitationResult>> HandleAsync(RegisterWithInvitationCommand request, CancellationToken cancellationToken)
     {
         var normalizedEmail = request.Email.Trim();
         var tokenHash = _tokenService.HashToken(request.Token.Trim());
@@ -32,13 +30,13 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
 
         if (invitation is null || invitation.ConsumedAt is not null || invitation.ExpiresAt <= DateTimeOffset.UtcNow)
         {
-            throw new UnauthorizedException("Invalid or expired invitation.", ErrorCodes.Auth.InvitationInvalidOrExpired);
+            return Result<RegisterWithInvitationResult>.Failure(AppErrors.Auth.InvitationInvalidOrExpired());
         }
 
         var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
         if (existingUser is not null)
         {
-            throw new ConflictException("A user with this email already exists.", ErrorCodes.Auth.UserAlreadyExists);
+            return Result<RegisterWithInvitationResult>.Failure(AppErrors.Auth.UserAlreadyExists());
         }
 
         var user = new ApplicationUser
@@ -53,13 +51,13 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         if (!createResult.Succeeded)
         {
             var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
-            throw new ConflictException($"Failed to create user: {errors}", ErrorCodes.Auth.UserCreationFailed);
+            return Result<RegisterWithInvitationResult>.Failure(AppErrors.Auth.UserCreationFailed(errors));
         }
 
         invitation.ConsumedAt = DateTimeOffset.UtcNow;
         invitation.ConsumedByUserId = user.Id;
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new RegisterWithInvitationResult(user.Id, user.Email);
+        return Result<RegisterWithInvitationResult>.Success(new RegisterWithInvitationResult(user.Id, user.Email));
     }
 }

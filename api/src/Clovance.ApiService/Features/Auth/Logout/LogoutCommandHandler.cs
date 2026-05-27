@@ -2,12 +2,12 @@
 
 namespace Clovance.ApiService.Features.Auth.Logout;
 
-public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Unit>
+public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
 {
-    public async Task<Unit> HandleAsync(LogoutCommand request, CancellationToken cancellationToken)
+    public async Task<Result> HandleAsync(LogoutCommand request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
 
-        return Unit.Value;
+        return Result.Success();
     }
 }

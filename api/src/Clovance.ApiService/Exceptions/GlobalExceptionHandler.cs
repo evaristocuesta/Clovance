@@ -45,34 +45,6 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         string traceId)
     {
-        if (exception is AppException appException)
-        {
-            var problemDetails = new ProblemDetails
-            {
-                Status = appException.StatusCode,
-                Title = GetTitle(appException.StatusCode),
-                Detail = ResolveAppExceptionDetail(appException),
-                Instance = context.Request.Path,
-                Type = $"https://httpstatuses.com/{appException.StatusCode}",
-                Extensions =
-                {
-                    ["traceId"] = traceId,
-                    ["errorCode"] = appException.ErrorCode
-                }
-            };
-
-            // Añadir extensiones personalizadas
-            if (appException.Extensions != null)
-            {
-                foreach (var (key, value) in appException.Extensions)
-                {
-                    problemDetails.Extensions[key] = value;
-                }
-            }
-
-            return problemDetails;
-        }
-
         // Para excepciones no controladas
         var status = StatusCodes.Status500InternalServerError;
 
@@ -91,16 +63,6 @@ public class GlobalExceptionHandler : IExceptionHandler
                 ["errorCode"] = ErrorCodes.Common.UnexpectedError
             }
         };
-    }
-
-    private static string ResolveAppExceptionDetail(AppException appException)
-    {
-        if (string.IsNullOrWhiteSpace(appException.Message))
-        {
-            return appException.ErrorCode;
-        }
-
-        return appException.Message;
     }
 
     private static string GetTitle(int statusCode) => statusCode switch

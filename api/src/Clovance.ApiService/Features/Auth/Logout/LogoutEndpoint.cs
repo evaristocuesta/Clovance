@@ -7,14 +7,20 @@ public sealed class LogoutEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("/logout", async (
-            IHandler<LogoutCommand, Unit> handler, 
+            IHandler<LogoutCommand, Result> handler,
+            HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
-            await handler.HandleAsync(new LogoutCommand(), cancellationToken);
+            var result = await handler.HandleAsync(new LogoutCommand(), cancellationToken);
+            if (result.IsFailure)
+            {
+                return result.ToProblemResult(httpContext);
+            }
+
             return Results.NoContent();
         })
         .RequireAuthorization()
-        .Produces<Unit>(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithName("Logout")
         .WithSummary("Logout")

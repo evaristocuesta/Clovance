@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Infrastructure.Validation;
-using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
@@ -9,16 +8,21 @@ public sealed class LoginEndpoint : IApiEndPoint
     {
         app.MapPost("/login", async (
             LoginCommand command, 
-            IHandler<LoginCommand, LoginResult> handler, 
+            IHandler<LoginCommand, Result<LoginResult>> handler,
+            HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
             var result = await handler.HandleAsync(command, cancellationToken);
+            if (result.IsFailure)
+            {
+                return result.ToProblemResult(httpContext);
+            }
+
             return Results.Ok(new LoginResponse(
-                result.AccessToken,
+                result.Value.AccessToken,
                 "Bearer",
-                result.ExpiresAt));
+                result.Value.ExpiresAt));
         })
-        .WithValidation<LoginCommand>()
         .Produces<LoginResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)

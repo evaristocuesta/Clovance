@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Infrastructure.Validation;
-using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.CompleteOnboarding;
 
@@ -9,14 +8,19 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
     {
         app.MapPost("/complete-onboarding", async (
             CompleteOnboardingCommand command, 
-            IHandler<CompleteOnboardingCommand, Unit> handler, 
+            IHandler<CompleteOnboardingCommand, Result> handler,
+            HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
-            await handler.HandleAsync(command, cancellationToken);
+            var result = await handler.HandleAsync(command, cancellationToken);
+            if (result.IsFailure)
+            {
+                return result.ToProblemResult(httpContext);
+            }
+
             return Results.NoContent();
         })
-        .WithValidation<CompleteOnboardingCommand>()
-        .Produces<Unit>(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .RequireAuthorization()

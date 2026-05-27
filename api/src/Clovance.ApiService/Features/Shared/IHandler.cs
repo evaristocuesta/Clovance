@@ -4,8 +4,3 @@ public interface IHandler<in TRequest, TResponse>
 {
     Task<TResponse> HandleAsync(TRequest command, CancellationToken cancellationToken);
 }
-
-public readonly record struct Unit
-{
-    public static readonly Unit Value = new();
-}

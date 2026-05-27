@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Clovance.ApiService.Pipelines;
+using FluentValidation;
 
 namespace Clovance.ApiService.Features.Shared;
 
@@ -23,9 +25,25 @@ public static class HandlerServiceCollectionExtensions
 
         foreach (var registration in handlerRegistrations)
         {
+            services.AddScoped(registration.Implementation);
+
             foreach (var serviceType in registration.Interfaces)
             {
-                services.AddScoped(serviceType, registration.Implementation);
+                services.AddScoped(serviceType, serviceProvider =>
+                {
+                    var requestType = serviceType.GenericTypeArguments[0];
+                    var responseType = serviceType.GenericTypeArguments[1];
+
+                    var baseHandler = serviceProvider.GetRequiredService(registration.Implementation);
+
+                    var validationDecoratorType = typeof(ValidationDecorator<,>).MakeGenericType(requestType, responseType);
+                    var validationDecorator = ActivatorUtilities.CreateInstance(serviceProvider, validationDecoratorType, baseHandler);
+
+                    var loggingDecoratorType = typeof(LoggingDecorator<,>).MakeGenericType(requestType, responseType);
+                    var loggingDecorator = ActivatorUtilities.CreateInstance(serviceProvider, loggingDecoratorType, validationDecorator);
+
+                    return loggingDecorator;
+                });
             }
         }
 

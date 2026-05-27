@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Infrastructure.Validation;
-using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Features.Shared;
 
 namespace Clovance.ApiService.Features.Auth.CreateInvitation;
 
@@ -9,13 +8,18 @@ public sealed class CreateInvitationEndpoint : IApiEndPoint
     {
         app.MapPost("/invitations", async (
             CreateInvitationCommand command, 
-            IHandler<CreateInvitationCommand, CreateInvitationResult> handler, 
+            IHandler<CreateInvitationCommand, Result<CreateInvitationResult>> handler,
+            HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
             var result = await handler.HandleAsync(command, cancellationToken);
-            return Results.Created($"/auth/invitations/{result.Id}", result);
+            if (result.IsFailure)
+            {
+                return result.ToProblemResult(httpContext);
+            }
+
+            return Results.Created($"/auth/invitations/{result.Value.Id}", result.Value);
         })
-        .WithValidation<CreateInvitationCommand>()
         .Produces<CreateInvitationResult>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)

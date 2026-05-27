@@ -1,13 +1,11 @@
-﻿using Clovance.ApiService.Exceptions;
-using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
-using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Clovance.ApiService.Features.Auth.CreateInvitation;
 
-public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCommand, CreateInvitationResult>
+public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCommand, Result<CreateInvitationResult>>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
@@ -29,7 +27,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<CreateInvitationResult> HandleAsync(CreateInvitationCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateInvitationResult>> HandleAsync(CreateInvitationCommand request, CancellationToken cancellationToken)
     {
         var httpContext = _httpContextAccessor.HttpContext 
             ?? throw new InvalidOperationException("HttpContext is not available.");
@@ -37,7 +35,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         var adminUserId = _userManager.GetUserId(httpContext.User);
         if (string.IsNullOrWhiteSpace(adminUserId))
         {
-            throw new UnauthorizedException("User is not authenticated.", ErrorCodes.Auth.UserNotAuthenticated);
+            return Result<CreateInvitationResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
 
         var normalizedEmail = request.Email.Trim();
@@ -45,7 +43,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
         if (existingUser is not null)
         {
-            throw new ConflictException("A user with this email already exists.", ErrorCodes.Auth.UserAlreadyExists);
+            return Result<CreateInvitationResult>.Failure(AppErrors.Auth.UserAlreadyExists());
         }
 
         var activeInvitation = _dbContext.UserInvitations
@@ -53,7 +51,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 
         if (activeInvitation is not null)
         {
-            throw new ConflictException("There is already an active invitation for this email.", ErrorCodes.Auth.ActiveInvitationAlreadyExists);
+            return Result<CreateInvitationResult>.Failure(AppErrors.Auth.ActiveInvitationAlreadyExists());
         }
 
         var rawToken = _tokenService.GenerateToken();
@@ -73,6 +71,6 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         _dbContext.UserInvitations.Add(invitation);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new CreateInvitationResult(invitation.Id, invitation.Email, invitation.ExpiresAt, rawToken);
+        return Result<CreateInvitationResult>.Success(new CreateInvitationResult(invitation.Id, invitation.Email, invitation.ExpiresAt, rawToken));
     }
 }

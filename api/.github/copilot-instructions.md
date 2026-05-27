@@ -5,6 +5,7 @@
 - Each feature is self-contained
 - Minimal APIs (no MediatR)
 - Direct handler injection in endpoints
+- Use Result for expected failures and reserve exceptions only for truly exceptional cases.
 
 ## Slice Structure
 Each operation (Create, Update, Delete, GetById) must have:
