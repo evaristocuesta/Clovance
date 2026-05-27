@@ -1,14 +1,10 @@
-﻿using System.Security.Claims;
-using System.Text;
-using Clovance.ApiService.Exceptions;
+﻿using Clovance.ApiService.Exceptions;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.HttpRequest;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
@@ -24,25 +20,7 @@ builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>()
     .AddProblemDetails();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-            ?? throw new InvalidOperationException("Jwt configuration section is missing.");
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidAudience = jwtOptions.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    });
-
+builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 
 // Add FluentValidation
@@ -78,7 +56,8 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseHttpRequestTracing();
+
 app.UseExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -93,7 +72,7 @@ if (app.Environment.IsDevelopment())
         .AddPreferredSecuritySchemes("Bearer")
         .AddHttpAuthentication("Bearer", auth =>
         {
-            auth.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+            auth.Token = "";
         }));
 
     app.MapGet("/", () => Results.Redirect("/scalar", permanent: false));
@@ -106,46 +85,7 @@ if (app.Environment.IsDevelopment())
 // Map endpoints
 app.RegisterApiEndpointsFromAssembly(typeof(Program).Assembly);
 
-app.Use(async (context, next) =>
-{
-    if (!context.User.Identity?.IsAuthenticated ?? true)
-    {
-        await next();
-        return;
-    }
-
-    var endpoint = context.GetEndpoint();
-    var path = context.Request.Path;
-
-    if (path.StartsWithSegments("/auth/complete-onboarding", StringComparison.OrdinalIgnoreCase))
-    {
-        await next();
-        return;
-    }
-
-    if (endpoint?.Metadata.GetMetadata<AllowAnonymousAttribute>() is not null)
-    {
-        await next();
-        return;
-    }
-
-    var mustChangePasswordClaim = context.User.FindFirstValue("must_complete_onboarding");
-
-    var mustChangePassword = string.Equals(mustChangePasswordClaim, bool.TrueString, StringComparison.OrdinalIgnoreCase);
-
-    if (mustChangePassword)
-    {
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        await context.Response.WriteAsJsonAsync(new
-        {
-            error = "password_change_required",
-            detail = "You must change your password before accessing protected endpoints."
-        });
-        return;
-    }
-
-    await next();
-});
+app.UseOnboardingEnforcement();
 
 app.MapDefaultEndpoints();
 
