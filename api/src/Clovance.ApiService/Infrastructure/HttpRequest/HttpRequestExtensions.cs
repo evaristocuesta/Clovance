@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Security.Claims;
+using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Clovance.ApiService.Infrastructure.HttpRequest;
@@ -64,17 +66,16 @@ public static class HttpRequestExtensions
                 return;
             }
 
-            var mustChangePasswordClaim = context.User.FindFirstValue("must_complete_onboarding");
-            var mustChangePassword = string.Equals(mustChangePasswordClaim, bool.TrueString, StringComparison.OrdinalIgnoreCase);
+            var mustCompleteOnBoardingClaim = context.User.FindFirstValue(JwtTokenService.MUST_COMPLETE_ONBOARDING);
+            var mustCompleteOnBoarding = string.Equals(mustCompleteOnBoardingClaim, bool.TrueString, StringComparison.OrdinalIgnoreCase);
 
-            if (mustChangePassword)
+            if (mustCompleteOnBoarding)
             {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(new
-                {
-                    error = "password_change_required",
-                    detail = "You must change your password before accessing protected endpoints."
-                });
+                var error = AppErrors.Auth.MustCompleteOnBoarding();
+                var result = Result.Failure(error);
+                await result.ToProblemResult(context).ExecuteAsync(context);
+                //context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                //await context.Response.WriteAsJsonAsync(result.ToProblemResult(context));
                 return;
             }
 

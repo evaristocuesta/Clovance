@@ -64,16 +64,4 @@ public class GlobalExceptionHandler : IExceptionHandler
             }
         };
     }
-
-    private static string GetTitle(int statusCode) => statusCode switch
-    {
-        StatusCodes.Status400BadRequest => "Bad Request",
-        StatusCodes.Status401Unauthorized => "Unauthorized",
-        StatusCodes.Status403Forbidden => "Forbidden",
-        StatusCodes.Status404NotFound => "Not Found",
-        StatusCodes.Status409Conflict => "Conflict",
-        StatusCodes.Status422UnprocessableEntity => "Unprocessable Entity",
-        StatusCodes.Status500InternalServerError => "Internal Server Error",
-        _ => "Error"
-    };
 }

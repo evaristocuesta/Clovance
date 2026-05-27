@@ -12,6 +12,8 @@ public interface IJwtTokenService
 
 public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
 {
+    public static string MUST_COMPLETE_ONBOARDING = "must_complete_onboarding";
+
     public (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles, bool mustCompleteOnboarding)
     {
         var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
@@ -23,7 +25,7 @@ public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenSer
             new(JwtRegisteredClaimNames.Email, email),
             new(ClaimTypes.NameIdentifier, userId),
             new(ClaimTypes.Email, email),
-            new("must_complete_onboarding", mustCompleteOnboarding.ToString())
+            new(MUST_COMPLETE_ONBOARDING, mustCompleteOnboarding.ToString())
         };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
