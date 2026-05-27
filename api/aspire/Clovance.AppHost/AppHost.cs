@@ -1,4 +1,4 @@
-var builder = DistributedApplication.CreateBuilder(args);
+﻿var builder = DistributedApplication.CreateBuilder(args);
 
 // Add the following line to configure the Docker Compose environment
 builder.AddDockerComposeEnvironment("env");
@@ -22,6 +22,7 @@ var database = postgres.AddDatabase("database");
 var apiService = builder.AddProject<Projects.Clovance_ApiService>("apiservice")
     .WithEnvironment("ConnectionStrings__Database", database)
     .WithReference(database)
+    .WaitFor(database)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints();
 
