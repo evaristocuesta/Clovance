@@ -6,6 +6,8 @@
 - Minimal APIs (no MediatR)
 - Direct handler injection in endpoints
 - Use Result for expected failures and reserve exceptions only for truly exceptional cases.
+- Use Central Package Management (CPM) - all package versions must be declared in Directory.Packages.props, and project files should use PackageReference without Version attributes.
+- Set TreatWarningsAsErrors to true in Directory.Build.props, ensuring all code compiles without warnings.
 
 ## Slice Structure
 Each operation (Create, Update, Delete, GetById) must have:
