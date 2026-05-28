@@ -54,13 +54,16 @@ public static class HttpRequestExtensions
             var endpoint = context.GetEndpoint();
             var path = context.Request.Path;
 
-            if (path.StartsWithSegments("/auth/complete-onboarding", StringComparison.OrdinalIgnoreCase))
+            if (path.StartsWithSegments("/api/auth/complete-onboarding", StringComparison.OrdinalIgnoreCase))
             {
                 await next();
                 return;
             }
 
-            if (endpoint?.Metadata.GetMetadata<AllowAnonymousAttribute>() is not null)
+            var requiresAuth = endpoint?.Metadata.GetOrderedMetadata<IAuthorizeData>()?.Count > 0;
+            var isAnonymous = endpoint?.Metadata.GetMetadata<AllowAnonymousAttribute>() is not null;
+
+            if (!requiresAuth || isAnonymous)
             {
                 await next();
                 return;
@@ -74,8 +77,6 @@ public static class HttpRequestExtensions
                 var error = AppErrors.Auth.MustCompleteOnBoarding();
                 var result = Result.Failure(error);
                 await result.ToProblemResult(context).ExecuteAsync(context);
-                //context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                //await context.Response.WriteAsJsonAsync(result.ToProblemResult(context));
                 return;
             }
 

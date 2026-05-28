@@ -63,3 +63,13 @@ Each operation (Create, Update, Delete, GetById) must have:
 - Configure health checks
 - Use service defaults
 - Telemetry enabled by default
+
+## Tests
+- Use xunit.v3 for unit and integration tests
+- Place unit tests in Clovance.Tests and integration tests in Clovance.IntegrationTests
+- Use in-memory database for Unit tests and Aspire testing for integration tests
+- Follow Arrange-Act-Assert pattern in tests
+- Use descriptive test method names (e.g., `CreateUser_ShouldReturnSuccess_WhenValidRequest`)
+- Mock external dependencies using NSubstitute
+
+

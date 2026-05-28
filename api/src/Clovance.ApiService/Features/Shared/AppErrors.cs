@@ -81,7 +81,7 @@ public static class AppErrors
             CreateConflict(ErrorCodes.Auth.UserCreationFailed, $"Failed to create user: {details}");
 
         public static Error MustCompleteOnBoarding() =>
-            CreateUnauthorized(ErrorCodes.Auth.MustCompleteOnBoarding, "User must complete onboarding.");
+            CreateForbidden(ErrorCodes.Auth.MustCompleteOnBoarding, "User must complete onboarding.");
     }
 
     private static Error CreateUnauthorized(string code, string description) =>
@@ -89,4 +89,13 @@ public static class AppErrors
 
     private static Error CreateConflict(string code, string description) =>
         new(code, description, StatusCodes.Status409Conflict);
+
+    private static Error CreateBadRequest(string code, string description) =>
+        new(code, description, StatusCodes.Status400BadRequest);    
+
+    private static Error CreateNotFound(string code, string description) =>
+        new(code, description, StatusCodes.Status404NotFound);
+
+    private static Error CreateForbidden(string code, string description) =>
+        new(code, description, StatusCodes.Status403Forbidden);
 }

@@ -1,8 +1,11 @@
+﻿using System.Net;
+using Aspire.Hosting.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Clovance.Tests;
+namespace Clovance.IntegrationTests.Infrastructure;
 
-public class WebTests
+public class AspireTests
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 

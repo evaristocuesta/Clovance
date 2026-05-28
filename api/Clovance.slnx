@@ -17,6 +17,7 @@
     <Project Path="src/Clovance.ApiService/Clovance.ApiService.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Clovance.Tests/Clovance.Tests.csproj" />
+    <Project Path="tests/Clovance.IntegrationTests/Clovance.IntegrationTests.csproj" />
+    <Project Path="tests/Clovance.UnitTests/Clovance.UnitTests.csproj" />
   </Folder>
 </Solution>

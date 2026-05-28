@@ -60,6 +60,7 @@ app.UseHttpRequestTracing();
 
 app.UseExceptionHandler();
 app.UseAuthentication();
+app.UseOnboardingEnforcement();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
@@ -84,8 +85,6 @@ if (app.Environment.IsDevelopment())
 
 // Map endpoints
 app.RegisterApiEndpointsFromAssembly(typeof(Program).Assembly);
-
-app.UseOnboardingEnforcement();
 
 app.MapDefaultEndpoints();
 
