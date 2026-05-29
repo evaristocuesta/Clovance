@@ -7,6 +7,9 @@ namespace Clovance.IntegrationTests.Infrastructure;
 /// </summary>
 public class TokenDiagnosticsTests : IntegrationTestBase
 {
+    public TokenDiagnosticsTests(AspireFixture fixture) : base(fixture)
+    {
+    }
     [Fact]
     public async Task GeneratedToken_CanBeValidated()
     {

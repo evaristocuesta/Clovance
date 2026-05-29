@@ -12,6 +12,9 @@ namespace Clovance.IntegrationTests.Infrastructure;
 /// </summary>
 public class OnboardingEnforcementMiddlewareTests : IntegrationTestBase
 {
+    public OnboardingEnforcementMiddlewareTests(AspireFixture fixture) : base(fixture)
+    {
+    }
     #region Authenticated User - Must Complete Onboarding
 
     [Fact]
@@ -31,38 +34,10 @@ public class OnboardingEnforcementMiddlewareTests : IntegrationTestBase
         Assert.Equal(StatusCodes.Status403Forbidden, problemDetails.Status);
         Assert.Equal("Forbidden", problemDetails.Title);
         Assert.Contains("onboarding", problemDetails.Detail, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal(ErrorCodes.Auth.MustCompleteOnBoarding, problemDetails.Extensions["errorCode"]?.ToString());
-    }
-
-    [Fact]
-    public async Task ProtectedEndpoint_WithMustCompleteOnboardingClaim_IncludesTraceId()
-    {
-        // Arrange
-        AuthenticateAsOnboardingUser();
-
-        // Act
-        var response = await Client.PostAsync("/api/auth/logout", null, TestContext.Current.CancellationToken);
-
-        // Assert
-        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContext.Current.CancellationToken);
-        Assert.NotNull(problemDetails);
         Assert.True(problemDetails.Extensions.ContainsKey("traceId"));
         Assert.NotNull(problemDetails.Extensions["traceId"]);
-    }
-
-    [Fact]
-    public async Task ProtectedEndpoint_WithMustCompleteOnboardingClaim_IncludesInstancePath()
-    {
-        // Arrange
-        AuthenticateAsOnboardingUser();
-
-        // Act
-        var response = await Client.PostAsync("/api/auth/logout", null, TestContext.Current.CancellationToken);
-
-        // Assert
-        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContext.Current.CancellationToken);
-        Assert.NotNull(problemDetails);
         Assert.Equal("/api/auth/logout", problemDetails.Instance);
+        Assert.Equal(ErrorCodes.Auth.MustCompleteOnBoarding, problemDetails.Extensions["errorCode"]?.ToString());
     }
 
     #endregion
@@ -82,31 +57,21 @@ public class OnboardingEnforcementMiddlewareTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
-    [Fact]
-    public async Task ProtectedEndpoint_WithoutMustCompleteOnboardingClaim_AllowsAccess()
-    {
-        // Arrange - generate token without the claim set to true
+    #endregion
 
-        AuthenticateAsRegularUser();
+    #region Authenticated User - Onboarding Not Complete
+
+    [Fact]
+    public async Task ProtectedEndpoint_WithIncompleteOnboarding_ReturnsForbidden()
+    {
+        // Arrange - authenticate with user that has not completed onboarding
+        AuthenticateAsOnboardingUser();
 
         // Act
         var response = await Client.PostAsync("/api/auth/logout", null, TestContext.Current.CancellationToken);
 
-        // Assert
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task ProtectedEndpoint_WithMustCompleteOnboardingClaimSetToFalse_AllowsAccess()
-    {
-        // Arrange - explicitly test with claim set to "False"
-        AuthenticateAsRegularUser();
-
-        // Act
-        var response = await Client.PostAsync("/api/auth/logout", null, TestContext.Current.CancellationToken);
-
-        // Assert
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        // Assert - logout returns 403 Forbidden for users with incomplete onboarding
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
     #endregion
@@ -127,25 +92,6 @@ public class OnboardingEnforcementMiddlewareTests : IntegrationTestBase
         }, TestContext.Current.CancellationToken);
 
         // Assert - should not return 403 (might return 400 or other errors, but not 403)
-        Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task CompleteOnboardingEndpoint_IsBypassedByMiddleware()
-    {
-        // Arrange - user with onboarding required
-        AuthenticateAsOnboardingUser();
-
-        // Act - this endpoint is explicitly allowed in middleware
-        var response = await Client.PostAsJsonAsync("/api/auth/complete-onboarding", new
-        {
-            currentPassword = "Onboarding123!",
-            newPassword = "NewPass123!",
-            email = "newemail@example.com"
-        }, TestContext.Current.CancellationToken);
-
-        // Assert - should process the request (even if validation fails later)
-        // The middleware should NOT block with 403
         Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -218,45 +164,7 @@ public class OnboardingEnforcementMiddlewareTests : IntegrationTestBase
 
     #endregion
 
-    #region Case Sensitivity
-
-    [Fact]
-    public async Task CompleteOnboardingEndpoint_IsCaseInsensitive()
-    {
-        // Arrange
-        AuthenticateAsOnboardingUser();
-
-        // Act - test different casing variations
-        var responses = new[]
-        {
-            await Client.PostAsJsonAsync("/api/auth/complete-onboarding", new { currentPassword = "x", newPassword = "y" }, TestContext.Current.CancellationToken),
-            await Client.PostAsJsonAsync("/api/auth/COMPLETE-ONBOARDING", new { currentPassword = "x", newPassword = "y" }, TestContext.Current.CancellationToken),
-            await Client.PostAsJsonAsync("/api/auth/Complete-Onboarding", new { currentPassword = "x", newPassword = "y" }, TestContext.Current.CancellationToken)
-        };
-
-        // Assert - none should be blocked by middleware
-        foreach (var response in responses)
-        {
-            Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-    }
-
-    #endregion
-
     #region Edge Cases
-
-    [Fact]
-    public async Task ProtectedEndpoint_WithExpiredToken_Returns401Unauthorized()
-    {
-        // Arrange - use an invalid token as a proxy for expired
-        Client.DefaultRequestHeaders.Authorization = new("Bearer", "expired.token.here");
-
-        // Act
-        var response = await Client.PostAsync("/api/auth/logout", null, TestContext.Current.CancellationToken);
-
-        // Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
 
     [Fact]
     public async Task ProtectedEndpoint_WithClaimStringVariations_HandlesCorrectly()

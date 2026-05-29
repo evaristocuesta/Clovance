@@ -1,53 +1,21 @@
-﻿using Aspire.Hosting;
-using Aspire.Hosting.Testing;
-using Clovance.ApiService.Infrastructure.Authentication;
-using Microsoft.Extensions.Configuration;
+﻿using Clovance.ApiService.Infrastructure.Authentication;
 
 namespace Clovance.IntegrationTests;
 
 /// <summary>
-/// Base class for integration tests that provides Aspire infrastructure.
+/// Base class for integration tests that provides shared access to Aspire infrastructure.
+/// Uses IClassFixture to share the Aspire app instance across all tests in the class.
 /// </summary>
-public abstract class IntegrationTestBase : IAsyncLifetime
+public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 {
-    private DistributedApplication _app = null!;
-    private IJwtTokenService _jwtTokenService = null!;
+    private readonly AspireFixture _fixture;
 
-    protected HttpClient Client { get; private set; } = null!;
+    protected HttpClient Client => _fixture.Client;
+    private IJwtTokenService JwtTokenService => _fixture.JwtTokenService;
 
-    public async ValueTask InitializeAsync()
+    protected IntegrationTestBase(AspireFixture fixture)
     {
-        // Create and start Aspire application
-        var appHost = await DistributedApplicationTestingBuilder
-            .CreateAsync<Projects.Clovance_AppHost>();
-
-        _app = await appHost.BuildAsync();
-
-        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-        await _app.StartAsync(cts.Token);
-
-        // Create HTTP client for the API service
-        Client = _app.CreateHttpClient("apiservice");
-
-        // Load configuration from the API project's appsettings files
-        // This ensures tests use the exact same JWT configuration as the Development environment
-        // Current directory during test execution is: tests/Clovance.IntegrationTests/bin/Debug/net10.0
-        var apiProjectPath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "..", "..", "..", "..", "..",
-            "src", "Clovance.ApiService");
-
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(apiProjectPath)
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile($"appsettings.{environment}.json", optional: true)
-            .Build();
-
-        _jwtTokenService = new JwtTokenService(configuration);
-
-        // Wait for the service to be fully ready
-        await Task.Delay(3000);
+        _fixture = fixture;
     }
 
     /// <summary>
@@ -60,7 +28,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         bool mustCompleteOnboarding = false,
         IEnumerable<string>? roles = null)
     {
-        var (token, _) = _jwtTokenService.GenerateToken(
+        var (token, _) = JwtTokenService.GenerateToken(
             userId,
             email,
             roles ?? [],
@@ -99,15 +67,5 @@ public abstract class IntegrationTestBase : IAsyncLifetime
             email: "regular@example.com",
             mustCompleteOnboarding: false);
         AuthenticateWithToken(token);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        Client?.Dispose();
-
-        if (_app is not null)
-        {
-            await _app.DisposeAsync();
-        }
     }
 }
