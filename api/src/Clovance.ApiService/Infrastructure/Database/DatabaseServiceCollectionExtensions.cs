@@ -21,12 +21,12 @@ public static class DatabaseServiceCollectionExtensions
         services
           .AddIdentityCore<ApplicationUser>(options =>
           {
-            options.User.RequireUniqueEmail = true;
-            options.Password.RequireDigit = true;
-            options.Password.RequiredLength = 12;
-            options.Password.RequireNonAlphanumeric = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireLowercase = true;
+              options.User.RequireUniqueEmail = true;
+              options.Password.RequireDigit = true;
+              options.Password.RequiredLength = 12;
+              options.Password.RequireNonAlphanumeric = true;
+              options.Password.RequireUppercase = true;
+              options.Password.RequireLowercase = true;
           })
           .AddRoles<IdentityRole>()
           .AddSignInManager()
