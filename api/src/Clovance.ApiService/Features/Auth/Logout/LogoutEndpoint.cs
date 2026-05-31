@@ -21,7 +21,7 @@ public sealed class LogoutEndpoint : IApiEndPoint
         })
         .RequireAuthorization()
         .Produces(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
         .WithName("Logout")
         .WithSummary("Logout")
         .WithDescription("Logs out the current user and invalidates the Bearer token.");
