@@ -6,6 +6,8 @@ public sealed class UserInvitation
 
     public string Email { get; set; } = string.Empty;
 
+    public bool IsAdmin { get; set; }
+
     public string TokenHash { get; set; } = string.Empty;
 
     public DateTimeOffset ExpiresAt { get; set; }

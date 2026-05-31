@@ -62,6 +62,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         {
             Id = Guid.NewGuid(),
             Email = normalizedEmail,
+            IsAdmin = request.IsAdmin,
             TokenHash = tokenHash,
             ExpiresAt = expiresAt,
             CreatedAt = DateTimeOffset.UtcNow,
