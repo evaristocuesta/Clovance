@@ -45,9 +45,11 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
         }
 
         var normalizedEmail = request.NewEmail.Trim();
+
         if (!string.Equals(user.Email, normalizedEmail, StringComparison.OrdinalIgnoreCase))
         {
             var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
+
             if (existingUser is not null && !string.Equals(existingUser.Id, user.Id, StringComparison.Ordinal))
             {
                 return Result.Failure(AppErrors.Auth.EmailAlreadyInUse());
@@ -55,6 +57,7 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
 
             var emailToken = await _userManager.GenerateChangeEmailTokenAsync(user, normalizedEmail);
             var emailResult = await _userManager.ChangeEmailAsync(user, normalizedEmail, emailToken);
+
             if (!emailResult.Succeeded)
             {
                 var errors = string.Join(", ", emailResult.Errors.Select(e => e.Description));
@@ -62,6 +65,7 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
             }
 
             var usernameResult = await _userManager.SetUserNameAsync(user, normalizedEmail);
+
             if (!usernameResult.Succeeded)
             {
                 var errors = string.Join(", ", usernameResult.Errors.Select(e => e.Description));

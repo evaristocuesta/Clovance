@@ -6,7 +6,7 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapPost("/complete-onboarding", async (
+        app.MapPut("/complete-onboarding", async (
             CompleteOnboardingCommand command, 
             IHandler<CompleteOnboardingCommand, Result> handler,
             HttpContext httpContext,
@@ -21,9 +21,9 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
             return Results.NoContent();
         })
         .Produces(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status401Unauthorized)
-        .RequireAuthorization()
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .RequireAuthorization(policy => policy.RequireRole("Admin"))
         .WithName("CompleteOnboarding")
         .WithSummary("Complete Onboarding")
         .WithDescription("Completes the onboarding process for first admin user. First admin user must change the email and password.");
