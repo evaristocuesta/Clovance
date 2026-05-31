@@ -18,8 +18,11 @@ public static class ErrorCodes
         public const string InvalidCredentials = "auth.invalid_credentials";
         public const string UserNotAuthenticated = "auth.user.not_authenticated";
         public const string UserNotFound = "auth.user.not_found";
+        public const string UserDeletionFailed = "auth.user.deletion_failed";
         public const string UserAlreadyExists = "auth.user.already_exists";
         public const string UserCreationFailed = "auth.user.creation_failed";
+        public const string UserIdRequired = "auth.user_id.required";
+        public const string UserIdInvalid = "auth.user_id.invalid";
 
         public const string InvitationInvalidOrExpired = "auth.invitation.invalid_or_expired";
         public const string ActiveInvitationAlreadyExists = "auth.invitation.active_already_exists";

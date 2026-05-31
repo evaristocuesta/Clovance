@@ -54,7 +54,10 @@ public static class AppErrors
             CreateUnauthorized(ErrorCodes.Auth.UserNotAuthenticated, "User is not authenticated.");
 
         public static Error UserNotFound() =>
-            CreateUnauthorized(ErrorCodes.Auth.UserNotFound, "User not found.");
+            CreateNotFound(ErrorCodes.Auth.UserNotFound, "User not found.");
+
+        public static Error UserDeletionFailed() =>
+            CreateConflict(ErrorCodes.Auth.UserDeletionFailed, "Failed to delete user.");
 
         public static Error InvitationInvalidOrExpired() =>
             CreateUnauthorized(ErrorCodes.Auth.InvitationInvalidOrExpired, "Invalid or expired invitation.");
