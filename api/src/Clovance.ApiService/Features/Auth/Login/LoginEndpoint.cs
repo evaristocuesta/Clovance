@@ -7,7 +7,7 @@ public sealed class LoginEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("/login", async (
-            LoginCommand command, 
+            LoginCommand command,
             IHandler<LoginCommand, Result<LoginResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>

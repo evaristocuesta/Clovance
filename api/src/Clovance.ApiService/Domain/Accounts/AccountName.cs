@@ -4,30 +4,30 @@ namespace Clovance.ApiService.Domain.Accounts;
 
 public sealed class AccountName : ValueObject
 {
-  private AccountName(string value)
-  {
-    Value = value;
-  }
-
-  public string Value { get; }
-
-  public static AccountName Create(string value)
-  {
-    if (string.IsNullOrWhiteSpace(value))
+    private AccountName(string value)
     {
-      throw new ArgumentException("Account name is required.", nameof(value));
+        Value = value;
     }
 
-    return new AccountName(value.Trim());
-  }
+    public string Value { get; }
 
-  protected override IEnumerable<object?> GetEqualityComponents()
-  {
-    yield return Value;
-  }
+    public static AccountName Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new ArgumentException("Account name is required.", nameof(value));
+        }
 
-  public override string ToString()
-  {
-    return Value;
-  }
+        return new AccountName(value.Trim());
+    }
+
+    protected override IEnumerable<object?> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+
+    public override string ToString()
+    {
+        return Value;
+    }
 }

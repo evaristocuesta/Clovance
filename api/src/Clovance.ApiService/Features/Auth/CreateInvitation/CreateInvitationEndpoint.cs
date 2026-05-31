@@ -7,7 +7,7 @@ public sealed class CreateInvitationEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("/invitations", async (
-            CreateInvitationCommand command, 
+            CreateInvitationCommand command,
             IHandler<CreateInvitationCommand, Result<CreateInvitationResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>

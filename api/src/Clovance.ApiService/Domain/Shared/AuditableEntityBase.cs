@@ -3,33 +3,33 @@
 public abstract class AuditableEntityBase<TId> : EntityBase<TId>
   where TId : struct, IEquatable<TId>
 {
-  public DateTimeOffset CreatedAt { get; protected set; }
+    public DateTimeOffset CreatedAt { get; protected set; }
 
-  public string CreatedBy { get; protected set; } = string.Empty;
+    public string CreatedBy { get; protected set; } = string.Empty;
 
-  public DateTimeOffset? ModifiedAt { get; protected set; }
+    public DateTimeOffset? ModifiedAt { get; protected set; }
 
-  public string? ModifiedBy { get; protected set; }
+    public string? ModifiedBy { get; protected set; }
 
-  protected void MarkAsCreated(string createdBy, DateTimeOffset? createdAt = null)
-  {
-    if (string.IsNullOrWhiteSpace(createdBy))
+    protected void MarkAsCreated(string createdBy, DateTimeOffset? createdAt = null)
     {
-      throw new ArgumentException("Creator is required.", nameof(createdBy));
+        if (string.IsNullOrWhiteSpace(createdBy))
+        {
+            throw new ArgumentException("Creator is required.", nameof(createdBy));
+        }
+
+        CreatedBy = createdBy;
+        CreatedAt = createdAt ?? DateTimeOffset.UtcNow;
     }
 
-    CreatedBy = createdBy;
-    CreatedAt = createdAt ?? DateTimeOffset.UtcNow;
-  }
-
-  protected void MarkAsModified(string modifiedBy, DateTimeOffset? modifiedAt = null)
-  {
-    if (string.IsNullOrWhiteSpace(modifiedBy))
+    protected void MarkAsModified(string modifiedBy, DateTimeOffset? modifiedAt = null)
     {
-      throw new ArgumentException("Modifier is required.", nameof(modifiedBy));
-    }
+        if (string.IsNullOrWhiteSpace(modifiedBy))
+        {
+            throw new ArgumentException("Modifier is required.", nameof(modifiedBy));
+        }
 
-    ModifiedBy = modifiedBy;
-    ModifiedAt = modifiedAt ?? DateTimeOffset.UtcNow;
-  }
+        ModifiedBy = modifiedBy;
+        ModifiedAt = modifiedAt ?? DateTimeOffset.UtcNow;
+    }
 }

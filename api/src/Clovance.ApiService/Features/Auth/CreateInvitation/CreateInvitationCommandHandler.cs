@@ -29,7 +29,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 
     public async Task<Result<CreateInvitationResult>> HandleAsync(CreateInvitationCommand request, CancellationToken cancellationToken)
     {
-        var httpContext = _httpContextAccessor.HttpContext 
+        var httpContext = _httpContextAccessor.HttpContext
             ?? throw new InvalidOperationException("HttpContext is not available.");
 
         var adminUserId = _userManager.GetUserId(httpContext.User);

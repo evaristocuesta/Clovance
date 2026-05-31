@@ -1,6 +1,6 @@
-﻿using FluentValidation;
-using Clovance.ApiService.Infrastructure.Validation;
+﻿using Clovance.ApiService.Infrastructure.Validation;
 using Clovance.ApiService.Shared;
+using FluentValidation;
 
 namespace Clovance.ApiService.Features.Auth.CompleteOnboarding;
 

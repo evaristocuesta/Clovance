@@ -7,7 +7,7 @@ public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("/register-with-invitation", async (
-            RegisterWithInvitationCommand command, 
+            RegisterWithInvitationCommand command,
             IHandler<RegisterWithInvitationCommand, Result<RegisterWithInvitationResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>

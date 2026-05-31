@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Clovance.ApiService.Shared;
+﻿using Clovance.ApiService.Shared;
+using FluentValidation;
 
 namespace Clovance.ApiService.Infrastructure.Validation;
 

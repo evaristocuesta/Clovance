@@ -3,5 +3,5 @@
 public abstract class EntityBase<TId>
   where TId : struct, IEquatable<TId>
 {
-  public TId Id { get; protected set; }
+    public TId Id { get; protected set; }
 }

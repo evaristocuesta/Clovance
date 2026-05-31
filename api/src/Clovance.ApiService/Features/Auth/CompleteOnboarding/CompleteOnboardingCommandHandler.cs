@@ -19,7 +19,7 @@ public sealed class CompleteOnboardingCommandHandler : IHandler<CompleteOnboardi
 
     public async Task<Result> HandleAsync(CompleteOnboardingCommand request, CancellationToken cancellationToken)
     {
-        var httpContext = _httpContextAccessor.HttpContext 
+        var httpContext = _httpContextAccessor.HttpContext
             ?? throw new InvalidOperationException("HttpContext is not available.");
 
         var userId = _userManager.GetUserId(httpContext.User);

@@ -7,7 +7,7 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPut("/complete-onboarding", async (
-            CompleteOnboardingCommand command, 
+            CompleteOnboardingCommand command,
             IHandler<CompleteOnboardingCommand, Result> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>

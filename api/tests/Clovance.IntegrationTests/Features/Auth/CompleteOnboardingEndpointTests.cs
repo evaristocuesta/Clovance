@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Json;
 using Clovance.ApiService.Features.Auth.CompleteOnboarding;
-using Clovance.IntegrationTests.Helpers;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace Clovance.IntegrationTests.Features.Auth;
 
@@ -23,7 +21,7 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
         AuthenticateWithToken(token);
 
         // Act - call the complete onboarding endpoint
-        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", 
+        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding",
             new CompleteOnboardingCommand(user.Password, "NewPassword123!", user.Email),
             TestContext.Current.CancellationToken);
 
@@ -43,7 +41,7 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
         AuthenticateWithToken(token);
 
         // Act - call the complete onboarding endpoint
-        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", 
+        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding",
             new CompleteOnboardingCommand(user.Password, "NewPassword123!", user.Email),
             TestContext.Current.CancellationToken);
 
@@ -58,7 +56,7 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
         AuthenticateAsOnboardingUser();
 
         // Act - call the complete onboarding endpoint with invalid data
-        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", 
+        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding",
             new CompleteOnboardingCommand("", "", ""), // Invalid: empty values
             TestContext.Current.CancellationToken);
 
@@ -72,7 +70,7 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
         // Arrange - do not authenticate
 
         // Act - call the complete onboarding endpoint
-        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", 
+        var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding",
             new CompleteOnboardingCommand("SomePassword123!", "NewPassword123!", "test@example.com"),
             TestContext.Current.CancellationToken);
 

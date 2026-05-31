@@ -16,13 +16,13 @@ public class GetUsersRequestHandler : IHandler<GetUsersRequest, Result<GetUsersR
     {
         var users = _userManager.Users.ToList();
         var userDtos = new List<UserDto>();
-        
+
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
             userDtos.Add(user.ToDto(roles));
         }
-        
+
         return Result<GetUsersResult>.Success(new GetUsersResult(userDtos));
     }
 }

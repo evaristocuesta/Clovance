@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Features.Auth.CreateInvitation;
+﻿using System.Security.Claims;
+using Clovance.ApiService.Features.Auth.CreateInvitation;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using System.Security.Claims;
 
 namespace Clovance.Tests.Features.Auth;
 

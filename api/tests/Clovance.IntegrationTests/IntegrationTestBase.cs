@@ -85,7 +85,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         var token = GenerateTestToken(
             userId: "admin-user-id",
             email: "admin@example.com",
-            mustCompleteOnboarding: false, 
+            mustCompleteOnboarding: false,
             roles: ["Admin"]);
         AuthenticateWithToken(token);
     }
@@ -109,7 +109,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         var response = await client.PostAsJsonAsync("/api/auth/invitations", request);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<CreateInvitationResult>();
-        
+
         var res = await client.PostAsJsonAsync("/api/auth/register-with-invitation", new
         {
             Email = email,
@@ -141,12 +141,12 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     {
         var users = await GetAllUsersAsync(client);
         var adminUser = users.FirstOrDefault(u => u.Roles.Contains("Admin"));
-        
+
         if (adminUser is null)
         {
             throw new InvalidOperationException("Admin user not found.");
         }
-        
+
         return adminUser;
     }
 

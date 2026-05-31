@@ -17,7 +17,7 @@ public class GetUserByIdRequestHandler : IHandler<GetUserByIdRequest, Result<Get
         var user = _userManager
             .Users
             .FirstOrDefault(u => u.Id == request.UserId);
-        
+
         if (user is null)
         {
             return Result<GetUserByIdResult>.Failure(AppErrors.Auth.UserNotFound());

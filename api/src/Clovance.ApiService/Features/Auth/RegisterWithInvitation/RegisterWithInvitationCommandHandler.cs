@@ -34,7 +34,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         }
 
         var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
-        
+
         if (existingUser is not null)
         {
             return Result<RegisterWithInvitationResult>.Failure(AppErrors.Auth.UserAlreadyExists());
@@ -49,7 +49,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         };
 
         var createResult = await _userManager.CreateAsync(user, request.Password);
-        
+
         if (!createResult.Succeeded)
         {
             var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
@@ -61,7 +61,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         if (invitation.IsAdmin)
-        { 
+        {
             var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
 
             if (!roleResult.Succeeded)

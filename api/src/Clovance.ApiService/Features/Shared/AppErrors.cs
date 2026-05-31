@@ -94,7 +94,7 @@ public static class AppErrors
         new(code, description, StatusCodes.Status409Conflict);
 
     private static Error CreateBadRequest(string code, string description) =>
-        new(code, description, StatusCodes.Status400BadRequest);    
+        new(code, description, StatusCodes.Status400BadRequest);
 
     private static Error CreateNotFound(string code, string description) =>
         new(code, description, StatusCodes.Status404NotFound);

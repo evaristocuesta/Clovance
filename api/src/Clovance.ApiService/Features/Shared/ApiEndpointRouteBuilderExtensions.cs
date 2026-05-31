@@ -7,7 +7,7 @@ public static class ApiEndpointRouteBuilderExtensions
     public static IEndpointRouteBuilder RegisterApiEndpointsFromAssembly(
         this IEndpointRouteBuilder app,
         Assembly assembly,
-        string? prefix = "api") 
+        string? prefix = "api")
     {
         var endpointTypes = assembly
             .DefinedTypes

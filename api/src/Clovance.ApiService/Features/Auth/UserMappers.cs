@@ -5,7 +5,7 @@ namespace Clovance.ApiService.Features.Auth;
 public static class UserMappers
 {
     public static UserDto ToDto(
-        this ApplicationUser user, 
+        this ApplicationUser user,
         IEnumerable<string> roles)
     {
         return new(
