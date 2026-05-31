@@ -1,0 +1,32 @@
+﻿using Clovance.ApiService.Features.Shared;
+
+namespace Clovance.ApiService.Features.Auth.GetUserById;
+
+public class GetUserByIdEndpoint : IApiEndPoint
+{
+    public void MapApiEndpoints(IEndpointRouteBuilder app)
+    {
+        app.MapGet("users/{id}", async (
+            IHandler<GetUserByIdRequest, Result<GetUserByIdResult>> handler,
+            HttpContext httpContext,
+            CancellationToken cancellationToken,
+            string id) =>
+        {
+            var result = await handler.HandleAsync(new GetUserByIdRequest(id), cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return result.ToProblemResult(httpContext);
+            }
+
+            return Results.Ok(result.Value);
+        })
+        .Produces<GetUserByIdResult>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .WithName("GetUserById")
+        .WithSummary("Get user by Id")
+        .WithDescription("Get a user by its Id.");
+    }
+}
