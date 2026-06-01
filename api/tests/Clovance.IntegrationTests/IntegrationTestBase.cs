@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Clovance.ApiService.Features.Auth;
+using Clovance.ApiService.Features.Auth.CompleteOnboarding;
 using Clovance.ApiService.Features.Auth.CreateInvitation;
 using Clovance.ApiService.Features.Auth.GetUserById;
 using Clovance.ApiService.Features.Auth.GetUsers;
@@ -16,11 +17,14 @@ namespace Clovance.IntegrationTests;
 public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 {
     private readonly AspireFixture _fixture;
+    private static bool _adminOnboardingCompleted = false;
+    private static readonly SemaphoreSlim _adminLock = new(1, 1);
 
     protected HttpClient Client => _fixture.Client;
-    private IJwtTokenService JwtTokenService => _fixture.JwtTokenService;
+    private IJwtTokenService _jwtTokenService => _fixture.JwtTokenService;
 
-    protected IntegrationTestBase(AspireFixture fixture)
+    protected IntegrationTestBase(
+        AspireFixture fixture)
     {
         _fixture = fixture;
     }
@@ -35,7 +39,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         bool mustCompleteOnboarding = false,
         IEnumerable<string>? roles = null)
     {
-        var (token, _) = JwtTokenService.GenerateToken(
+        var (token, _) = _jwtTokenService.GenerateToken(
             userId,
             email,
             roles ?? [],
@@ -92,10 +96,9 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 
     /// <summary>
     /// Creates a test user via the registration API.
-    /// Returns the user's email and password for later authentication.
+    /// Returns the user's ID, email, and password for later authentication.
     /// </summary>
     public async Task<(string UserID, string Email, string Password)> CreateTestUserAsync(
-        HttpClient client,
         string? email = null,
         string? password = null,
         bool requiresOnboarding = false,
@@ -104,42 +107,98 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         email ??= $"test-{Guid.NewGuid()}@example.com";
         password ??= "TestPassword123!";
 
-        var request = new CreateInvitationCommand(Email: email, IsAdmin: roles?.Contains("Admin") ?? false);
+        // Determine if the user should be an admin based on roles
+        bool isAdmin = roles?.Contains("Admin") ?? false;
 
-        var response = await client.PostAsJsonAsync("/api/auth/invitations", request);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<CreateInvitationResult>();
+        // Get an authenticated admin token
+        var adminToken = await EnsureAdminReadyAsync();
+        AuthenticateWithToken(adminToken);
 
-        var res = await client.PostAsJsonAsync("/api/auth/register-with-invitation", new
+        // Create an invitation
+        var invitationRequest = new CreateInvitationCommand(Email: email, IsAdmin: isAdmin);
+        var invitationResponse = await Client.PostAsJsonAsync("/api/auth/invitations", invitationRequest);
+        invitationResponse.EnsureSuccessStatusCode();
+        var invitation = await invitationResponse.Content.ReadFromJsonAsync<CreateInvitationResult>();
+
+        // Clear authentication to register as a new user
+        Client.DefaultRequestHeaders.Authorization = null;
+
+        // Register with the invitation
+        var registerRequest = new RegisterWithInvitationCommand(Email: email, Password: password, Token: invitation!.Token);
+        var registerResponse = await Client.PostAsJsonAsync("/api/auth/register-with-invitation", registerRequest);
+        registerResponse.EnsureSuccessStatusCode();
+        var registerResult = await registerResponse.Content.ReadFromJsonAsync<RegisterWithInvitationResult>();
+
+        return (registerResult!.UserId, email, password);
+    }
+
+    /// <summary>
+    /// Ensures the admin user is ready (onboarding completed) and returns a valid token.
+    /// Thread-safe and caches the onboarding completion state.
+    /// </summary>
+    private async Task<string> EnsureAdminReadyAsync()
+    {
+        const string adminEmail = "admin@clovance.local";
+        const string originalPassword = "Change.Me.1234";
+        const string newPassword = "NewAdmin.Password.123";
+
+        await _adminLock.WaitAsync();
+        try
         {
-            Email = email,
-            Password = password,
-            result!.Token,
-        });
+            if (_adminOnboardingCompleted)
+            {
+                // Admin already set up, just login with new password
+                return await LoginUserAsync(adminEmail, newPassword);
+            }
 
-        var registrationResult = await res.Content.ReadFromJsonAsync<RegisterWithInvitationResult>();
+            // Try login with original password (first time setup)
+            string adminToken;
+            try
+            {
+                adminToken = await LoginUserAsync(adminEmail, originalPassword);
+            }
+            catch
+            {
+                // If original password fails, admin must already be set up
+                _adminOnboardingCompleted = true;
+                return await LoginUserAsync(adminEmail, newPassword);
+            }
 
-        res.EnsureSuccessStatusCode();
+            // Complete onboarding
+            AuthenticateWithToken(adminToken);
+            var completeOnboardingRequest = new CompleteOnboardingCommand( 
+                CurrentPassword: originalPassword, 
+                NewPassword: newPassword, 
+                NewEmail: adminEmail
+            );
+            var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", completeOnboardingRequest);
+            response.EnsureSuccessStatusCode();
 
-        return (registrationResult!.UserId, email, password);
+            // Mark as completed and login with new password
+            _adminOnboardingCompleted = true;
+            return await LoginUserAsync(adminEmail, newPassword);
+        }
+        finally
+        {
+            _adminLock.Release();
+        }
     }
 
     /// <summary>
     /// Gets all users via the API.
     /// </summary>
-    /// <param name="client"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<UserDto>> GetAllUsersAsync(HttpClient client)
+    public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
     {
-        var response = await client.GetAsync("/api/auth/users");
+        var response = await Client.GetAsync("/api/auth/users");
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<GetUsersResult>();
         return result!.Users;
     }
 
-    public async Task<UserDto> GetAdminUserAsync(HttpClient client)
+    public async Task<UserDto> GetAdminUserAsync()
     {
-        var users = await GetAllUsersAsync(client);
+        var users = await GetAllUsersAsync();
         var adminUser = users.FirstOrDefault(u => u.Roles.Contains("Admin"));
 
         if (adminUser is null)
@@ -150,9 +209,9 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         return adminUser;
     }
 
-    public async Task<UserDto> GetUserById(HttpClient client, string id)
+    public async Task<UserDto> GetUserById(string id)
     {
-        var response = await client.GetAsync($"/api/users/{id}");
+        var response = await Client.GetAsync($"/api/users/{id}");
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<GetUserByIdResult>();
         return result!.User;
@@ -162,12 +221,11 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     /// Authenticates a user and returns the JWT token.
     /// </summary>
     public async Task<string> LoginUserAsync(
-        HttpClient client,
         string email,
         string password)
     {
-        var request = new { email, password };
-        var response = await client.PostAsJsonAsync("/api/auth/login", request);
+        var request = new LoginCommand(Email: email, Password: password);
+        var response = await Client.PostAsJsonAsync("/api/auth/login", request);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
         return result!.AccessToken;

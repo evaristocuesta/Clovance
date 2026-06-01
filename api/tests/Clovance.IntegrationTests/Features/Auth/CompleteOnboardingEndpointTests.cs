@@ -14,10 +14,10 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
     {
         // Arrange - authenticate with user that has not completed onboarding
         AuthenticateAsAdminUser();
-        var adminUser = await GetAdminUserAsync(Client);
+        var adminUser = await GetAdminUserAsync();
         AuthenticateWithToken(GenerateTestToken(adminUser.Id, adminUser.Email, adminUser.MustCompleteOnboarding, adminUser.Roles));
-        var user = await CreateTestUserAsync(Client, null, null, requiresOnboarding: true, roles: ["Admin"]);
-        var token = await LoginUserAsync(client: Client, email: user.Email, password: user.Password);
+        var user = await CreateTestUserAsync(null, null, requiresOnboarding: true, roles: ["Admin"]);
+        var token = await LoginUserAsync(email: user.Email, password: user.Password);
         AuthenticateWithToken(token);
 
         // Act - call the complete onboarding endpoint
@@ -34,10 +34,10 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
     {
         // Arrange - authenticate with user that has already completed onboarding
         AuthenticateAsAdminUser();
-        var adminUser = await GetAdminUserAsync(Client);
+        var adminUser = await GetAdminUserAsync();
         AuthenticateWithToken(GenerateTestToken(adminUser.Id, adminUser.Email, adminUser.MustCompleteOnboarding, adminUser.Roles));
-        var user = await CreateTestUserAsync(Client, null, null, requiresOnboarding: true);
-        var token = await LoginUserAsync(client: Client, email: user.Email, password: user.Password);
+        var user = await CreateTestUserAsync(null, null, requiresOnboarding: true);
+        var token = await LoginUserAsync(email: user.Email, password: user.Password);
         AuthenticateWithToken(token);
 
         // Act - call the complete onboarding endpoint
