@@ -109,7 +109,8 @@ public static class Extensions
     {
         // Adding health checks endpoints to applications in non-development environments has security implications.
         // See https://aka.ms/aspire/healthchecks for details before enabling these endpoints in non-development environments.
-        if (app.Environment.IsDevelopment())
+        // Enable health checks in Development and Testing environments
+        if (app.Environment.IsDevelopment() || app.Environment.IsTesting())
         {
             // All health checks must pass for app to be considered ready to accept traffic after starting
             app.MapHealthChecks(HealthEndpointPath);
@@ -122,5 +123,14 @@ public static class Extensions
         }
 
         return app;
+    }
+
+    /// <summary>
+    /// Determines whether the current environment is Testing.
+    /// </summary>
+    public static bool IsTesting(this IHostEnvironment environment)
+    {
+        ArgumentNullException.ThrowIfNull(environment);
+        return environment.IsEnvironment("Testing");
     }
 }

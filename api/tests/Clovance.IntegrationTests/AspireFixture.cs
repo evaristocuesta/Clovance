@@ -18,6 +18,10 @@ public class AspireFixture : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
+        // Set environment before creating the app host so it's picked up during build
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Testing");
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+
         // Create and start Aspire application
         var appHost = await DistributedApplicationTestingBuilder
             .CreateAsync<Projects.Clovance_AppHost>();
@@ -36,11 +40,10 @@ public class AspireFixture : IAsyncLifetime
             "..", "..", "..", "..", "..",
             "src", "Clovance.ApiService");
 
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         var configuration = new ConfigurationBuilder()
             .SetBasePath(apiProjectPath)
             .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile($"appsettings.{environment}.json", optional: true)
+            .AddJsonFile("appsettings.Testing.json", optional: true)
             .Build();
 
         _jwtTokenService = new JwtTokenService(configuration);
@@ -57,5 +60,9 @@ public class AspireFixture : IAsyncLifetime
         {
             await _app.DisposeAsync();
         }
+
+        // Clean up environment variables
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", null);
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
     }
 }
