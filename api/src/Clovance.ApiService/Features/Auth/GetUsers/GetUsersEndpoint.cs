@@ -22,7 +22,8 @@ public class GetUsersEndPoint : IApiEndPoint
         })
         .Produces<GetUsersResult>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
-        .RequireAuthorization()
+        .ProducesProblem(StatusCodes.Status403Forbidden)
+        .RequireAuthorization(policy => policy.RequireRole("Admin"))
         .WithName("GetUsers")
         .WithSummary("Get Users")
         .WithDescription("Retrieves a list of all users in the system.");

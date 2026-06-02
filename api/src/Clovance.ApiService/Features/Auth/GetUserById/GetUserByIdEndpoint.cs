@@ -25,6 +25,8 @@ public class GetUserByIdEndpoint : IApiEndPoint
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
+        .RequireAuthorization(policy => policy.RequireRole("Admin"))
         .WithName("GetUserById")
         .WithSummary("Get user by Id")
         .WithDescription("Get a user by its Id.");
