@@ -23,6 +23,7 @@ public sealed class CompleteOnboardingEndpoint : IApiEndPoint
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
         .RequireAuthorization(policy => policy.RequireRole("Admin"))
         .WithName("CompleteOnboarding")
         .WithSummary("Complete Onboarding")

@@ -17,8 +17,6 @@ namespace Clovance.IntegrationTests;
 public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 {
     private readonly AspireFixture _fixture;
-    private static bool _adminOnboardingCompleted = false;
-    private static readonly SemaphoreSlim _adminLock = new(1, 1);
 
     protected HttpClient Client => _fixture.Client;
     private IJwtTokenService _jwtTokenService => _fixture.JwtTokenService;
@@ -134,24 +132,24 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 
     /// <summary>
     /// Ensures the admin user is ready (onboarding completed) and returns a valid token.
-    /// Thread-safe and caches the onboarding completion state.
+    /// Thread-safe and caches the onboarding completion state per Aspire instance.
     /// </summary>
-    private async Task<string> EnsureAdminReadyAsync()
+    protected async Task<string> EnsureAdminReadyAsync()
     {
         const string adminEmail = "admin@clovance.local";
         const string originalPassword = "Change.Me.1234";
         const string newPassword = "NewAdmin.Password.123";
 
-        await _adminLock.WaitAsync();
+        await _fixture.AdminLock.WaitAsync();
         try
         {
-            if (_adminOnboardingCompleted)
+            if (_fixture.AdminOnboardingCompleted)
             {
-                // Admin already set up, just login with new password
+                // Admin already set up in this Aspire instance, just login with new password
                 return await LoginUserAsync(adminEmail, newPassword);
             }
 
-            // Try login with original password (first time setup)
+            // Try login with original password (first time setup for this Aspire instance)
             string adminToken;
             try
             {
@@ -160,7 +158,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
             catch
             {
                 // If original password fails, admin must already be set up
-                _adminOnboardingCompleted = true;
+                _fixture.AdminOnboardingCompleted = true;
                 return await LoginUserAsync(adminEmail, newPassword);
             }
 
@@ -174,13 +172,13 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
             var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", completeOnboardingRequest);
             response.EnsureSuccessStatusCode();
 
-            // Mark as completed and login with new password
-            _adminOnboardingCompleted = true;
+            // Mark as completed for this Aspire instance and login with new password
+            _fixture.AdminOnboardingCompleted = true;
             return await LoginUserAsync(adminEmail, newPassword);
         }
         finally
         {
-            _adminLock.Release();
+            _fixture.AdminLock.Release();
         }
     }
 

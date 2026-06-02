@@ -23,6 +23,7 @@ public sealed class CreateInvitationEndpoint : IApiEndPoint
         .Produces<CreateInvitationResult>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
         .RequireAuthorization(policy => policy.RequireRole("Admin"))
         .WithName("CreateInvitation")
         .WithSummary("Create Invitation")

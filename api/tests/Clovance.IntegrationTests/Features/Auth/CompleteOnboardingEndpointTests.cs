@@ -33,16 +33,11 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
     public async Task CompleteOnboardingEndpoint_ReturnsForbidden_ForNotAdminUser()
     {
         // Arrange - authenticate with user that has already completed onboarding
-        AuthenticateAsAdminUser();
-        var adminUser = await GetAdminUserAsync();
-        AuthenticateWithToken(GenerateTestToken(adminUser.Id, adminUser.Email, adminUser.MustCompleteOnboarding, adminUser.Roles));
-        var user = await CreateTestUserAsync(null, null, requiresOnboarding: true);
-        var token = await LoginUserAsync(email: user.Email, password: user.Password);
-        AuthenticateWithToken(token);
+        AuthenticateAsRegularUser();
 
         // Act - call the complete onboarding endpoint
         var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding",
-            new CompleteOnboardingCommand(user.Password, "NewPassword123!", user.Email),
+            new CompleteOnboardingCommand("OldPassword123!", "NewPassword123!", "test@example.com"),
             TestContext.Current.CancellationToken);
 
         // Assert - should return 403 Forbidden
@@ -68,6 +63,7 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
     public async Task CompleteOnboardingEndpoint_ReturnsUnauthorized_ForUnauthenticatedUser()
     {
         // Arrange - do not authenticate
+        AuthenticateWithToken(string.Empty);
 
         // Act - call the complete onboarding endpoint
         var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding",

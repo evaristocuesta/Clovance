@@ -16,6 +16,16 @@ public class AspireFixture : IAsyncLifetime
     public HttpClient Client { get; private set; } = null!;
     public IJwtTokenService JwtTokenService => _jwtTokenService;
 
+    /// <summary>
+    /// Tracks whether the admin user has completed onboarding for THIS Aspire instance.
+    /// </summary>
+    public bool AdminOnboardingCompleted { get; set; } = false;
+
+    /// <summary>
+    /// Lock for thread-safe admin setup for THIS Aspire instance.
+    /// </summary>
+    public SemaphoreSlim AdminLock { get; } = new(1, 1);
+
     public async ValueTask InitializeAsync()
     {
         // Set environment before creating the app host so it's picked up during build
