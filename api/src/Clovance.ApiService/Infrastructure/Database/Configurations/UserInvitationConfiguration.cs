@@ -39,15 +39,5 @@ public sealed class UserInvitationConfiguration : IEntityTypeConfiguration<UserI
         builder.HasIndex(x => x.TokenHash)
             .IsUnique();
         builder.HasIndex(x => x.ExpiresAt);
-
-        builder.HasOne<ApplicationUser>()
-            .WithMany()
-            .HasForeignKey(x => x.CreatedByUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne<ApplicationUser>()
-            .WithMany()
-            .HasForeignKey(x => x.ConsumedByUserId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }
