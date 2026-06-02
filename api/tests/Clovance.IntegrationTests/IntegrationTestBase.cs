@@ -16,6 +16,10 @@ namespace Clovance.IntegrationTests;
 /// </summary>
 public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 {
+    protected const string AdminEmail = "admin@clovance.local";
+    protected const string OriginalAdminPassword = "Change.Me.1234";
+    protected const string NewAdminPassword = "NewAdmin.Password.123";
+
     private readonly AspireFixture _fixture;
 
     protected HttpClient Client => _fixture.Client;
@@ -136,45 +140,41 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     /// </summary>
     protected async Task<string> EnsureAdminReadyAsync()
     {
-        const string adminEmail = "admin@clovance.local";
-        const string originalPassword = "Change.Me.1234";
-        const string newPassword = "NewAdmin.Password.123";
-
         await _fixture.AdminLock.WaitAsync();
         try
         {
             if (_fixture.AdminOnboardingCompleted)
             {
                 // Admin already set up in this Aspire instance, just login with new password
-                return await LoginUserAsync(adminEmail, newPassword);
+                return await LoginUserAsync(AdminEmail, NewAdminPassword);
             }
 
             // Try login with original password (first time setup for this Aspire instance)
             string adminToken;
             try
             {
-                adminToken = await LoginUserAsync(adminEmail, originalPassword);
+                adminToken = await LoginUserAsync(AdminEmail, OriginalAdminPassword);
             }
             catch
             {
                 // If original password fails, admin must already be set up
                 _fixture.AdminOnboardingCompleted = true;
-                return await LoginUserAsync(adminEmail, newPassword);
+                return await LoginUserAsync(AdminEmail, NewAdminPassword);
             }
 
             // Complete onboarding
             AuthenticateWithToken(adminToken);
             var completeOnboardingRequest = new CompleteOnboardingCommand( 
-                CurrentPassword: originalPassword, 
-                NewPassword: newPassword, 
-                NewEmail: adminEmail
+                CurrentPassword: OriginalAdminPassword, 
+                NewPassword: NewAdminPassword, 
+                NewEmail: AdminEmail
             );
             var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", completeOnboardingRequest);
             response.EnsureSuccessStatusCode();
 
             // Mark as completed for this Aspire instance and login with new password
             _fixture.AdminOnboardingCompleted = true;
-            return await LoginUserAsync(adminEmail, newPassword);
+            return await LoginUserAsync(AdminEmail, NewAdminPassword);
         }
         finally
         {
