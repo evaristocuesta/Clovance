@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Clovance.ApiService.Features.Auth.GetUsers;
+﻿using Clovance.ApiService.Features.Auth.GetUsers;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
@@ -18,7 +15,7 @@ public class GetUsersRequestHandlerTests
         _userManager = Substitute.For<UserManager<ApplicationUser>>(
             Substitute.For<IUserStore<ApplicationUser>>(),
             null, null, null, null, null, null, null, null);
-        
+
         _handler = new GetUsersRequestHandler(_userManager);
     }
 

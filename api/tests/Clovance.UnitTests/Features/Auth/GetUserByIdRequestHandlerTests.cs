@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Features.Auth.DeleteUser;
-using Clovance.ApiService.Features.Auth.GetUserById;
+﻿using Clovance.ApiService.Features.Auth.GetUserById;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;

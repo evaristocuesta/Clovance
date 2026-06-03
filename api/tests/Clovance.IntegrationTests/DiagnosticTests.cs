@@ -1,5 +1,4 @@
-﻿using Aspire.Hosting;
-using Aspire.Hosting.Testing;
+﻿using Aspire.Hosting.Testing;
 
 namespace Clovance.IntegrationTests;
 

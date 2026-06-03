@@ -17,8 +17,8 @@ public class LoginEndpointTests : IntegrationTestBase
 
         // Act
         var response = await Client.PostAsJsonAsync(
-            "/api/auth/login", 
-            new LoginCommand(Email: user.Email, Password: "Password123!"), 
+            "/api/auth/login",
+            new LoginCommand(Email: user.Email, Password: "Password123!"),
             TestContext.Current.CancellationToken);
 
         var result = await response.Content.ReadFromJsonAsync<LoginResponse>(TestContext.Current.CancellationToken);
@@ -37,8 +37,8 @@ public class LoginEndpointTests : IntegrationTestBase
 
         // Act
         var response = await Client.PostAsJsonAsync(
-            "/api/auth/login", 
-            new LoginCommand(Email: user.Email, Password: "WrongPassword!"), 
+            "/api/auth/login",
+            new LoginCommand(Email: user.Email, Password: "WrongPassword!"),
             TestContext.Current.CancellationToken);
 
         var result = await response.Content.ReadFromJsonAsync<LoginResponse>(TestContext.Current.CancellationToken);
@@ -55,8 +55,8 @@ public class LoginEndpointTests : IntegrationTestBase
 
         // Act
         var response = await Client.PostAsJsonAsync(
-            "/api/auth/login", 
-            new LoginCommand(Email: user.Email, Password: ""), 
+            "/api/auth/login",
+            new LoginCommand(Email: user.Email, Password: ""),
             TestContext.Current.CancellationToken);
 
         // Assert

@@ -19,7 +19,7 @@ public class LogoutEndpointTests : IntegrationTestBase
 
         // Act
         var response = await Client.PostAsJsonAsync(
-            "/api/auth/logout", 
+            "/api/auth/logout",
             new LogoutCommand(),
             TestContext.Current.CancellationToken);
 
@@ -35,7 +35,7 @@ public class LogoutEndpointTests : IntegrationTestBase
 
         // Act
         var response = await Client.PostAsJsonAsync(
-            "/api/auth/logout", 
+            "/api/auth/logout",
             new LogoutCommand(),
             TestContext.Current.CancellationToken);
 

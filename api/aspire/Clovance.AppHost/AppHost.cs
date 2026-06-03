@@ -12,8 +12,8 @@ var postgresResourceName = isTestEnvironment ? "postgres-test" : "postgres";
 var postgres = builder.AddPostgres(postgresResourceName, password: postgresPassword)
     // Set the name of the default database to auto-create on container startup.
     .WithEnvironment("POSTGRES_DB", "database");
-    // Mount the SQL scripts directory into the container so that the init scripts run.
-    //.WithBindMount("../DatabaseContainers.ApiService/data/postgres", "/docker-entrypoint-initdb.d")
+// Mount the SQL scripts directory into the container so that the init scripts run.
+//.WithBindMount("../DatabaseContainers.ApiService/data/postgres", "/docker-entrypoint-initdb.d")
 
 if (!isTestEnvironment)
 {

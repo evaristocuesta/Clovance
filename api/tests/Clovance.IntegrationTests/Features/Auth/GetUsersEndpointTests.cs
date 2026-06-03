@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Clovance.ApiService.Features.Auth;
 using Clovance.ApiService.Features.Auth.GetUsers;
 
 namespace Clovance.IntegrationTests.Features.Auth;

@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Json;
-using Clovance.ApiService.Features.Auth.CompleteOnboarding;
 using Clovance.ApiService.Features.Auth.CreateInvitation;
-using ModelContextProtocol.Protocol;
 
 namespace Clovance.IntegrationTests.Features.Auth;
 
@@ -25,7 +23,7 @@ public class CreateInvitationEndpointTests : IntegrationTestBase
         AuthenticateWithToken(adminToken);
 
         // Act
-        var response = await Client.PostAsJsonAsync("/api/auth/invitations", 
+        var response = await Client.PostAsJsonAsync("/api/auth/invitations",
             new CreateInvitationCommand(Email: email, IsAdmin: false),
             TestContext.Current.CancellationToken);
 

@@ -164,9 +164,9 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 
             // Complete onboarding
             AuthenticateWithToken(adminToken);
-            var completeOnboardingRequest = new CompleteOnboardingCommand( 
-                CurrentPassword: OriginalAdminPassword, 
-                NewPassword: NewAdminPassword, 
+            var completeOnboardingRequest = new CompleteOnboardingCommand(
+                CurrentPassword: OriginalAdminPassword,
+                NewPassword: NewAdminPassword,
                 NewEmail: AdminEmail
             );
             var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", completeOnboardingRequest);
