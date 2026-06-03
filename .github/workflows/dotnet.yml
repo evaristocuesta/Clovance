@@ -15,6 +15,21 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: clovance_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
@@ -23,6 +38,11 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.x
+
+    - name: Pull Docker images
+      run: |
+        docker pull postgres:17
+        docker pull mcr.microsoft.com/dotnet/aspnet:10.0        
         
     - name: Restore dependencies
       run: dotnet restore
@@ -41,7 +61,7 @@ jobs:
       working-directory: ./api/tests/Clovance.UnitTests      
     
     - name: Run unit tests
-      run: dotnet test --no-build --verbosity normal --configuration Release
+      run: dotnet test --no-build --verbosity normal --configuration Release --filter "FullyQualifiedName~UnitTests"
       working-directory: ./api/tests/Clovance.UnitTests
 
     - name: Restore integration tests dependencies
@@ -53,5 +73,7 @@ jobs:
       working-directory: ./api/tests/Clovance.IntegrationTests
     
     - name: Run integration tests
-      run: dotnet test --no-build --verbosity normal --configuration Release
+      run: dotnet test --no-build --verbosity normal --configuration Release --filter "FullyQualifiedName~IntegrationTests" --blame-hang-timeout 10m
       working-directory: ./api/tests/Clovance.IntegrationTests
+      env:
+        ConnectionStrings__Database: "Host=localhost;Port=5432;Database=clovance_test;Username=postgres;Password=postgres"
