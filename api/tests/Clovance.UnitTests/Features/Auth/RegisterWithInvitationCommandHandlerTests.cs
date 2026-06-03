@@ -49,7 +49,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        
+
         var invitation = UserInvitation.Create(
             email: "newuser@example.com",
             isAdmin: false,
@@ -111,7 +111,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        
+
         var expiredInvitation = UserInvitation.Create(
             email: "user@example.com",
             isAdmin: false,
@@ -173,7 +173,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        
+
         var invitation = UserInvitation.Create(
             email: "existing@example.com",
             isAdmin: false,
@@ -210,7 +210,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        
+
         var invitation = UserInvitation.Create(
             email: "newuser@example.com",
             isAdmin: false,

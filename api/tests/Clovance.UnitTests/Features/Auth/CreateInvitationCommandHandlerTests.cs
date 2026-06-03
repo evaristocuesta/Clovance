@@ -134,7 +134,7 @@ public class CreateInvitationCommandHandlerTests : IDisposable
     {
         var command = new CreateInvitationCommand("invited@example.com");
         var adminUserId = "admin-123";
-        
+
         var activeInvitation = UserInvitation.Create(
             email: "invited@example.com",
             isAdmin: false,
@@ -167,7 +167,7 @@ public class CreateInvitationCommandHandlerTests : IDisposable
     {
         var command = new CreateInvitationCommand("user@example.com");
         var adminUserId = "admin-123";
-        
+
         var expiredInvitation = UserInvitation.Create(
             email: "user@example.com",
             isAdmin: false,
@@ -175,7 +175,7 @@ public class CreateInvitationCommandHandlerTests : IDisposable
             expiresAt: DateTimeOffset.UtcNow.AddHours(-1),
             createdBy: adminUserId
         );
-        
+
 
         _dbContext.UserInvitations.Add(expiredInvitation);
         await _dbContext.SaveChangesAsync(CancellationToken.None);

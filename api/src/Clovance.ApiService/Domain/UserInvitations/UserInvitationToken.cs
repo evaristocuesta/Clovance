@@ -37,5 +37,5 @@ public sealed class UserInvitationToken : ValueObject
     public override string ToString()
     {
         return Value;
-    } 
+    }
 }

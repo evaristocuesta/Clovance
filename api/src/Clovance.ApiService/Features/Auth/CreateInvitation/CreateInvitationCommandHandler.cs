@@ -44,7 +44,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         var email = UserInvitationEmail.Create(request.Email);
 
         var existingUser = await _userManager.FindByEmailAsync(email.Value);
-        
+
         if (existingUser is not null)
         {
             return Result<CreateInvitationResult>.Failure(AppErrors.Auth.UserAlreadyExists());
