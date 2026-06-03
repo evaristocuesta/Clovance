@@ -41,7 +41,7 @@ jobs:
       working-directory: ./api/tests/Clovance.UnitTests      
     
     - name: Run unit tests
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --configuration Release
       working-directory: ./api/tests/Clovance.UnitTests
 
     - name: Restore integration tests dependencies
@@ -53,5 +53,5 @@ jobs:
       working-directory: ./api/tests/Clovance.IntegrationTests
     
     - name: Run integration tests
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --configuration Release
       working-directory: ./api/tests/Clovance.IntegrationTests
