@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
-namespace Clovance.Tests.Features.Auth;
+namespace Clovance.UnitTests.Features.Auth;
 
 public class CreateInvitationCommandHandlerTests : IDisposable
 {

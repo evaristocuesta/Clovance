@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
-namespace Clovance.Tests.Features.Auth;
+namespace Clovance.UnitTests.Features.Auth;
 
 public class RegisterWithInvitationCommandHandlerTests : IDisposable
 {

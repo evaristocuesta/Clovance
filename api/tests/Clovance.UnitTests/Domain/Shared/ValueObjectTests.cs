@@ -1,6 +1,6 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
 
-namespace Clovance.Tests.Domain.Shared;
+namespace Clovance.UnitTests.Domain.Shared;
 
 public class ValueObjectTests
 {

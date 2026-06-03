@@ -5,7 +5,7 @@ using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 
-namespace Clovance.Tests.Features.Auth;
+namespace Clovance.UnitTests.Features.Auth;
 
 public class LoginCommandHandlerTests
 {

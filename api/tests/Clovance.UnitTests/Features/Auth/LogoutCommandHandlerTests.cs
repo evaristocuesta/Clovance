@@ -1,6 +1,6 @@
 ﻿using Clovance.ApiService.Features.Auth.Logout;
 
-namespace Clovance.Tests.Features.Auth;
+namespace Clovance.UnitTests.Features.Auth;
 
 public class LogoutCommandHandlerTests
 {

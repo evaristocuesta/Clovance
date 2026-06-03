@@ -1,7 +1,7 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
 
-namespace Clovance.Tests.Domain.Shared;
+namespace Clovance.UnitTests.Domain.Shared;
 
 public class EntityIdTests
 {

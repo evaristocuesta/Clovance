@@ -1,7 +1,7 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
 
-namespace Clovance.Tests.Domain.Transactions;
+namespace Clovance.UnitTests.Domain.Transactions;
 
 public class TransactionTests
 {

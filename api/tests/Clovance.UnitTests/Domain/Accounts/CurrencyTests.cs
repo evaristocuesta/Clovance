@@ -1,6 +1,6 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
 
-namespace Clovance.Tests.Domain.Accounts;
+namespace Clovance.UnitTests.Domain.Accounts;
 
 public class CurrencyTests
 {

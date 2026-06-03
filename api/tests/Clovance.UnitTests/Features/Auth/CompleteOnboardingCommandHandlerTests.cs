@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 
-namespace Clovance.Tests.Features.Auth;
+namespace Clovance.UnitTests.Features.Auth;
 
 public class CompleteOnboardingCommandHandlerTests
 {
