@@ -1,16 +1,16 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Clovance.ApiService.Infrastructure.Database;
+namespace Clovance.ApiService.Domain.UserInvitations;
 
-public interface IInvitationTokenService
+public interface IUserInvitationTokenService
 {
     string GenerateToken();
 
     string HashToken(string token);
 }
 
-public sealed class InvitationTokenService : IInvitationTokenService
+public sealed class UserInvitationTokenService : IUserInvitationTokenService
 {
     public string GenerateToken()
     {

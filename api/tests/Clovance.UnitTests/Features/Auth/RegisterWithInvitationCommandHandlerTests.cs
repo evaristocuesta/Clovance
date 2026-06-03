@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Features.Auth.RegisterWithInvitation;
+﻿using Clovance.ApiService.Domain.UserInvitations;
+using Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +12,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IInvitationTokenService _tokenService;
+    private readonly IUserInvitationTokenService _tokenService;
     private readonly RegisterWithInvitationCommandHandler _handler;
 
     public RegisterWithInvitationCommandHandlerTests()
@@ -25,7 +26,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             .Options;
         _dbContext = new ClovanceDbContext(options);
 
-        _tokenService = Substitute.For<IInvitationTokenService>();
+        _tokenService = Substitute.For<IUserInvitationTokenService>();
 
         _handler = new RegisterWithInvitationCommandHandler(
             _userManager,
@@ -48,14 +49,14 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        var invitation = new UserInvitation
-        {
-            Id = Guid.NewGuid(),
-            Email = "newuser@example.com",
-            TokenHash = tokenHash,
-            ExpiresAt = DateTimeOffset.UtcNow.AddHours(24),
-            ConsumedAt = null
-        };
+        
+        var invitation = UserInvitation.Create(
+            email: "newuser@example.com",
+            isAdmin: false,
+            tokenHash: tokenHash,
+            expiresAt: DateTimeOffset.UtcNow.AddHours(24),
+            createdBy: "admin-123"
+        );
 
         _dbContext.UserInvitations.Add(invitation);
         await _dbContext.SaveChangesAsync(CancellationToken.None);
@@ -81,7 +82,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
         var updatedInvitation = await _dbContext.UserInvitations.FindAsync([invitation.Id], CancellationToken.None);
         Assert.NotNull(updatedInvitation);
         Assert.NotNull(updatedInvitation.ConsumedAt);
-        Assert.Equal(createdUserId, updatedInvitation.ConsumedByUserId);
+        Assert.Equal(createdUserId, updatedInvitation.ConsumedBy);
     }
 
     [Fact]
@@ -110,14 +111,14 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        var expiredInvitation = new UserInvitation
-        {
-            Id = Guid.NewGuid(),
-            Email = "user@example.com",
-            TokenHash = tokenHash,
-            ExpiresAt = DateTimeOffset.UtcNow.AddHours(-1),
-            ConsumedAt = null
-        };
+        
+        var expiredInvitation = UserInvitation.Create(
+            email: "user@example.com",
+            isAdmin: false,
+            tokenHash: tokenHash,
+            expiresAt: DateTimeOffset.UtcNow.AddHours(-1),
+            createdBy: "admin-123"
+        );
 
         _dbContext.UserInvitations.Add(expiredInvitation);
         await _dbContext.SaveChangesAsync(CancellationToken.None);
@@ -140,14 +141,16 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        var consumedInvitation = new UserInvitation
-        {
-            Id = Guid.NewGuid(),
-            Email = "user@example.com",
-            TokenHash = tokenHash,
-            ExpiresAt = DateTimeOffset.UtcNow.AddHours(24),
-            ConsumedAt = DateTimeOffset.UtcNow.AddHours(-1)
-        };
+
+        var consumedInvitation = UserInvitation.Create(
+            email: "user@example.com",
+            isAdmin: false,
+            tokenHash: tokenHash,
+            expiresAt: DateTimeOffset.UtcNow.AddHours(24),
+            createdBy: "admin-123"
+        );
+
+        consumedInvitation.Consume("user-123");
 
         _dbContext.UserInvitations.Add(consumedInvitation);
         await _dbContext.SaveChangesAsync(CancellationToken.None);
@@ -170,14 +173,14 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        var invitation = new UserInvitation
-        {
-            Id = Guid.NewGuid(),
-            Email = "existing@example.com",
-            TokenHash = tokenHash,
-            ExpiresAt = DateTimeOffset.UtcNow.AddHours(24),
-            ConsumedAt = null
-        };
+        
+        var invitation = UserInvitation.Create(
+            email: "existing@example.com",
+            isAdmin: false,
+            tokenHash: tokenHash,
+            expiresAt: DateTimeOffset.UtcNow.AddHours(24),
+            createdBy: "admin-123"
+        );
 
         _dbContext.UserInvitations.Add(invitation);
         await _dbContext.SaveChangesAsync(CancellationToken.None);
@@ -207,14 +210,14 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             "valid-token");
 
         var tokenHash = "hashed-token";
-        var invitation = new UserInvitation
-        {
-            Id = Guid.NewGuid(),
-            Email = "newuser@example.com",
-            TokenHash = tokenHash,
-            ExpiresAt = DateTimeOffset.UtcNow.AddHours(24),
-            ConsumedAt = null
-        };
+        
+        var invitation = UserInvitation.Create(
+            email: "newuser@example.com",
+            isAdmin: false,
+            tokenHash: tokenHash,
+            expiresAt: DateTimeOffset.UtcNow.AddHours(24),
+            createdBy: "admin-123"
+        );
 
         _dbContext.UserInvitations.Add(invitation);
         await _dbContext.SaveChangesAsync(CancellationToken.None);

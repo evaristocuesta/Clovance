@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Clovance.ApiService.Domain.UserInvitations;
+using Clovance.ApiService.Infrastructure.UserInvitations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Infrastructure.Database;
@@ -8,8 +10,8 @@ public static class DatabaseServiceCollectionExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<IdentityAdminOptions>(configuration.GetSection(IdentityAdminOptions.SectionName));
-        services.Configure<InvitationOptions>(configuration.GetSection(InvitationOptions.SectionName));
-        services.AddSingleton<IInvitationTokenService, InvitationTokenService>();
+        services.Configure<UserInvitationOptions>(configuration.GetSection(UserInvitationOptions.SectionName));
+        services.AddSingleton<IUserInvitationTokenService, UserInvitationTokenService>();
 
         var connectionString = configuration.GetConnectionString("Database");
 

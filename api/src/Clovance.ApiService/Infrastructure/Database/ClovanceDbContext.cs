@@ -1,5 +1,6 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
+using Clovance.ApiService.Domain.UserInvitations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

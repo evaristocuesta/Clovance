@@ -1,6 +1,6 @@
-﻿namespace Clovance.ApiService.Infrastructure.Database;
+﻿namespace Clovance.ApiService.Infrastructure.UserInvitations;
 
-public sealed class InvitationOptions
+public sealed class UserInvitationOptions
 {
     public const string SectionName = "Identity:Invitations";
 

@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Domain.UserInvitations;
+using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,12 +9,12 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IInvitationTokenService _tokenService;
+    private readonly IUserInvitationTokenService _tokenService;
 
     public RegisterWithInvitationCommandHandler(
         UserManager<ApplicationUser> userManager,
         ClovanceDbContext dbContext,
-        IInvitationTokenService tokenService)
+        IUserInvitationTokenService tokenService)
     {
         _userManager = userManager;
         _dbContext = dbContext;
@@ -22,18 +23,17 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
 
     public async Task<Result<RegisterWithInvitationResult>> HandleAsync(RegisterWithInvitationCommand request, CancellationToken cancellationToken)
     {
-        var normalizedEmail = request.Email.Trim();
         var tokenHash = _tokenService.HashToken(request.Token.Trim());
 
         var invitation = _dbContext.UserInvitations
-            .FirstOrDefault(i => i.Email == normalizedEmail && i.TokenHash == tokenHash);
+            .FirstOrDefault(i => i.Email == UserInvitationEmail.Create(request.Email) && i.TokenHash == UserInvitationToken.Create(tokenHash));
 
         if (invitation is null || invitation.ConsumedAt is not null || invitation.ExpiresAt <= DateTimeOffset.UtcNow)
         {
             return Result<RegisterWithInvitationResult>.Failure(AppErrors.Auth.InvitationInvalidOrExpired());
         }
 
-        var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
+        var existingUser = await _userManager.FindByEmailAsync(request.Email);
 
         if (existingUser is not null)
         {
@@ -42,8 +42,8 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
 
         var user = new ApplicationUser
         {
-            UserName = normalizedEmail,
-            Email = normalizedEmail,
+            UserName = request.Email,
+            Email = request.Email,
             EmailConfirmed = true,
             MustCompleteOnboarding = false
         };
@@ -56,8 +56,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
             return Result<RegisterWithInvitationResult>.Failure(AppErrors.Auth.UserCreationFailed(errors));
         }
 
-        invitation.ConsumedAt = DateTimeOffset.UtcNow;
-        invitation.ConsumedByUserId = user.Id;
+        invitation.Consume(user.Id);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         if (invitation.IsAdmin)

@@ -1,5 +1,7 @@
-﻿using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Domain.UserInvitations;
+using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.UserInvitations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -9,15 +11,15 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IInvitationTokenService _tokenService;
-    private readonly IOptions<InvitationOptions> _invitationOptions;
+    private readonly IUserInvitationTokenService _tokenService;
+    private readonly IOptions<UserInvitationOptions> _invitationOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CreateInvitationCommandHandler(
         UserManager<ApplicationUser> userManager,
         ClovanceDbContext dbContext,
-        IInvitationTokenService tokenService,
-        IOptions<InvitationOptions> invitationOptions,
+        IUserInvitationTokenService tokenService,
+        IOptions<UserInvitationOptions> invitationOptions,
         IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
@@ -33,21 +35,23 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
             ?? throw new InvalidOperationException("HttpContext is not available.");
 
         var adminUserId = _userManager.GetUserId(httpContext.User);
+
         if (string.IsNullOrWhiteSpace(adminUserId))
         {
             return Result<CreateInvitationResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
 
-        var normalizedEmail = request.Email.Trim();
+        var email = UserInvitationEmail.Create(request.Email);
 
-        var existingUser = await _userManager.FindByEmailAsync(normalizedEmail);
+        var existingUser = await _userManager.FindByEmailAsync(email.Value);
+        
         if (existingUser is not null)
         {
             return Result<CreateInvitationResult>.Failure(AppErrors.Auth.UserAlreadyExists());
         }
 
         var activeInvitation = _dbContext.UserInvitations
-            .FirstOrDefault(i => i.Email == normalizedEmail && i.ConsumedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow);
+            .FirstOrDefault(i => i.Email == email && i.ConsumedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow);
 
         if (activeInvitation is not null)
         {
@@ -58,20 +62,11 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         var tokenHash = _tokenService.HashToken(rawToken);
         var expiresAt = DateTimeOffset.UtcNow.AddHours(Math.Max(1, _invitationOptions.Value.ExpirationHours));
 
-        var invitation = new UserInvitation
-        {
-            Id = Guid.NewGuid(),
-            Email = normalizedEmail,
-            IsAdmin = request.IsAdmin,
-            TokenHash = tokenHash,
-            ExpiresAt = expiresAt,
-            CreatedAt = DateTimeOffset.UtcNow,
-            CreatedByUserId = adminUserId
-        };
+        var invitation = UserInvitation.Create(email.Value, request.IsAdmin, tokenHash, expiresAt, adminUserId);
 
         _dbContext.UserInvitations.Add(invitation);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return Result<CreateInvitationResult>.Success(new CreateInvitationResult(invitation.Id, invitation.Email, invitation.ExpiresAt, rawToken));
+        return Result<CreateInvitationResult>.Success(new CreateInvitationResult(invitation.Id.Value, invitation.Email.Value, invitation.ExpiresAt, rawToken));
     }
 }
