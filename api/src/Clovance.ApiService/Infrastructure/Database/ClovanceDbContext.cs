@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
+using Clovance.ApiService.Domain.RefreshTokens;
 using Clovance.ApiService.Domain.Transactions;
 using Clovance.ApiService.Domain.UserInvitations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,6 +14,8 @@ public sealed class ClovanceDbContext(DbContextOptions<ClovanceDbContext> option
     public DbSet<Transaction> Transactions => Set<Transaction>();
 
     public DbSet<UserInvitation> UserInvitations => Set<UserInvitation>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
