@@ -59,8 +59,8 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             createdBy: "admin-123"
         );
 
-        _dbContext.UserInvitations.Add(invitation);
-        await _dbContext.SaveChangesAsync(CancellationToken.None);
+        await _dbContext.UserInvitations.AddAsync(invitation, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var createdUserId = "new-user-123";
 
@@ -74,13 +74,13 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
                 return IdentityResult.Success;
             });
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(createdUserId, result.Value.UserId);
         Assert.Equal(command.Email, result.Value.Email);
 
-        var updatedInvitation = await _dbContext.UserInvitations.FindAsync([invitation.Id], CancellationToken.None);
+        var updatedInvitation = await _dbContext.UserInvitations.FindAsync(new object[] { invitation.Id }, TestContext.Current.CancellationToken);
         Assert.NotNull(updatedInvitation);
         Assert.NotNull(updatedInvitation.ConsumedAt);
         Assert.Equal(createdUserId, updatedInvitation.ConsumedBy);
@@ -96,7 +96,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
 
         _tokenService.HashToken(command.Token.Trim()).Returns("wrong-hash");
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -121,12 +121,12 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             createdBy: "admin-123"
         );
 
-        _dbContext.UserInvitations.Add(expiredInvitation);
-        await _dbContext.SaveChangesAsync(CancellationToken.None);
+        await _dbContext.UserInvitations.AddAsync(expiredInvitation, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         _tokenService.HashToken(command.Token.Trim()).Returns(tokenHash);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -153,12 +153,12 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
 
         consumedInvitation.Consume("user-123");
 
-        _dbContext.UserInvitations.Add(consumedInvitation);
-        await _dbContext.SaveChangesAsync(CancellationToken.None);
+        await _dbContext.UserInvitations.AddAsync(consumedInvitation, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         _tokenService.HashToken(command.Token.Trim()).Returns(tokenHash);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -183,8 +183,8 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             createdBy: "admin-123"
         );
 
-        _dbContext.UserInvitations.Add(invitation);
-        await _dbContext.SaveChangesAsync(CancellationToken.None);
+        await _dbContext.UserInvitations.AddAsync(invitation, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var existingUser = new ApplicationUser
         {
@@ -195,7 +195,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
         _tokenService.HashToken(command.Token.Trim()).Returns(tokenHash);
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns(existingUser);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -220,15 +220,15 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             createdBy: "admin-123"
         );
 
-        _dbContext.UserInvitations.Add(invitation);
-        await _dbContext.SaveChangesAsync(CancellationToken.None);
+        await _dbContext.UserInvitations.AddAsync(invitation, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         _tokenService.HashToken(command.Token.Trim()).Returns(tokenHash);
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns((ApplicationUser?)null);
         _userManager.CreateAsync(Arg.Any<ApplicationUser>(), command.Password)
             .Returns(IdentityResult.Failed(new IdentityError { Description = "Password too weak" }));
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);

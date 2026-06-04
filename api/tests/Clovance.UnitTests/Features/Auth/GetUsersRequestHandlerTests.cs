@@ -34,7 +34,7 @@ public class GetUsersRequestHandlerTests
         var request = new GetUsersRequest();
 
         // Act
-        var result = await _handler.HandleAsync(request, CancellationToken.None);
+        var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -50,7 +50,7 @@ public class GetUsersRequestHandlerTests
         var request = new GetUsersRequest();
 
         // Act
-        var result = await _handler.HandleAsync(request, CancellationToken.None);
+        var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.IsSuccess);

@@ -3,6 +3,7 @@ using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 
@@ -26,8 +27,12 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
     {
         var tokenHash = _tokenService.HashToken(request.Token.Trim());
 
-        var invitation = _dbContext.UserInvitations
-            .FirstOrDefault(i => i.Email == UserInvitationEmail.Create(request.Email) && i.TokenHash == UserInvitationToken.Create(tokenHash));
+        var invitation = await _dbContext
+            .UserInvitations
+            .FirstOrDefaultAsync(
+                i => i.Email == UserInvitationEmail.Create(request.Email) 
+                && i.TokenHash == UserInvitationToken.Create(tokenHash)
+                , cancellationToken);
 
         if (invitation is null || invitation.ConsumedAt is not null || invitation.ExpiresAt <= DateTimeOffset.UtcNow)
         {

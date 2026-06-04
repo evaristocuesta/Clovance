@@ -27,6 +27,9 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
 
     public async Task<Result<LoginResult>> HandleAsync(LoginCommand request, CancellationToken cancellationToken)
     {
+        var httpContext = _httpContextAccessor.HttpContext
+            ?? throw new InvalidOperationException("HttpContext is not available.");
+
         var user = await _userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
@@ -51,25 +54,25 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
 
         var refreshToken = _jwtTokenService.GenerateToken();
 
-        _dbContext.RefreshTokens.Add(RefreshToken.Create(
-            user.Id, 
-            _jwtTokenService.HashToken(refreshToken), 
-            expiresAt.AddDays(7)));
+        await _dbContext
+            .RefreshTokens
+            .AddAsync(
+                RefreshToken.Create(
+                    user.Id, 
+                    _jwtTokenService.HashToken(refreshToken), 
+                    expiresAt.AddDays(7))
+                , cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        var httpContext = _httpContextAccessor.HttpContext;
 
-        if (httpContext is not null)
+        httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
         {
-            httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = expiresAt.AddDays(7).UtcDateTime
-            });
-        }
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = expiresAt.AddDays(7).UtcDateTime
+        });
 
         return Result<LoginResult>.Success(new LoginResult(token, expiresAt));
     }

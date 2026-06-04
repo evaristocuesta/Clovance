@@ -31,7 +31,7 @@ public class DeleteUserCommandHandlerTests
         var command = new DeleteUserCommand(UserId: "testuser");
 
         // Act
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -46,7 +46,7 @@ public class DeleteUserCommandHandlerTests
         var command = new DeleteUserCommand(UserId: "nonexistentuser");
 
         // Act
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -66,7 +66,7 @@ public class DeleteUserCommandHandlerTests
         var command = new DeleteUserCommand(UserId: "testuser");
 
         // Act
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(result.IsSuccess);

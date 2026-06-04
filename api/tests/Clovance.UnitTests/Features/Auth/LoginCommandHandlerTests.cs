@@ -71,7 +71,7 @@ public class LoginCommandHandlerTests
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
 
         // Act
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -104,7 +104,7 @@ public class LoginCommandHandlerTests
 
         _userManager.FindByEmailAsync(command.Email).Returns((ApplicationUser?)null);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -124,7 +124,7 @@ public class LoginCommandHandlerTests
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(false);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -155,7 +155,7 @@ public class LoginCommandHandlerTests
         _jwtTokenService.GenerateToken().Returns("refresh-token");
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashed-refresh-token");
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         _jwtTokenService.Received(1).GenerateToken(
@@ -193,7 +193,7 @@ public class LoginCommandHandlerTests
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
 
         // Act
-        await _handler.HandleAsync(command, CancellationToken.None);
+        await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
         var savedToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
@@ -229,7 +229,7 @@ public class LoginCommandHandlerTests
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashed-refresh-token");
 
         // Act
-        await _handler.HandleAsync(command, CancellationToken.None);
+        await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert - Verify cookie was set with correct properties
         Assert.True(_httpContext.Response.Headers.ContainsKey("Set-Cookie"));
