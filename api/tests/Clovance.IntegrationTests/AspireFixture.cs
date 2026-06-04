@@ -42,7 +42,7 @@ public class AspireFixture : IAsyncLifetime
         await _app.StartAsync(cts.Token);
 
         // Create HTTP client for the API service
-        Client = _app.CreateHttpClient("apiservice");
+        Client = _app.CreateHttpClient("clovance-apiservice");
 
         // Initialize JWT token service with configuration from API project
         var apiProjectPath = Path.Combine(

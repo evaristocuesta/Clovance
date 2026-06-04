@@ -30,7 +30,7 @@ public class DiagnosticTests
             Console.WriteLine("Step 4: App started successfully!");
 
             Console.WriteLine("Step 5: Creating HTTP client...");
-            var client = app.CreateHttpClient("apiservice");
+            var client = app.CreateHttpClient("clovance-apiservice");
 
             Console.WriteLine("Step 6: Waiting for API to respond...");
             var maxAttempts = 60;
