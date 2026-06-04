@@ -10,7 +10,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class LoginCommandHandlerTests
+public class LoginCommandHandlerTests : IAsyncLifetime
 {
     private readonly ClovanceDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -21,12 +21,7 @@ public class LoginCommandHandlerTests
 
     public LoginCommandHandlerTests()
     {
-        // Setup in-memory database for testing
-        var options = new DbContextOptionsBuilder<ClovanceDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _dbContext = new ClovanceDbContext(options);
+        _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
 
         _userManager = Substitute.For<UserManager<ApplicationUser>>(
             Substitute.For<IUserStore<ApplicationUser>>(),
@@ -38,6 +33,16 @@ public class LoginCommandHandlerTests
         _httpContextAccessor.HttpContext.Returns(_httpContext);
 
         _handler = new LoginCommandHandler(_dbContext, _httpContextAccessor, _userManager, _jwtTokenService);
+    }
+
+    public ValueTask InitializeAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _dbContext.DisposeAsync();
     }
 
     [Fact]

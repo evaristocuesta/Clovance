@@ -13,7 +13,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class CreateInvitationCommandHandlerTests : IDisposable
+public class CreateInvitationCommandHandlerTests : IAsyncLifetime
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
@@ -29,10 +29,7 @@ public class CreateInvitationCommandHandlerTests : IDisposable
             Substitute.For<IUserStore<ApplicationUser>>(),
             null, null, null, null, null, null, null, null);
 
-        var options = new DbContextOptionsBuilder<ClovanceDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        _dbContext = new ClovanceDbContext(options);
+        _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
 
         _tokenService = Substitute.For<IJwtTokenService>();
         _invitationOptions = Substitute.For<IOptions<UserInvitationOptions>>();
@@ -50,10 +47,14 @@ public class CreateInvitationCommandHandlerTests : IDisposable
             _httpContextAccessor);
     }
 
-    public void Dispose()
+    public ValueTask InitializeAsync()
     {
-        _dbContext?.Dispose();
-        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _dbContext.DisposeAsync();
     }
 
     [Fact]
