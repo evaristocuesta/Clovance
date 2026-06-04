@@ -70,18 +70,14 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Clovance.ApiService.Domain.RefreshTokens.RefreshToken", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsUsed")
                         .HasColumnType("boolean");
@@ -91,12 +87,19 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ExpiresAt");
 
                     b.HasIndex("Token")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("refresh_tokens", (string)null);
                 });
@@ -157,8 +160,8 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ConsumedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");

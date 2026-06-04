@@ -35,7 +35,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(x => x.IsUsed)
             .IsRequired();
 
-        builder.HasKey(x => x.UserId);
+        builder.HasIndex(x => x.UserId);
 
         builder.HasIndex(x => x.Token)
             .IsUnique();
