@@ -31,4 +31,14 @@ public class RefreshToken : EntityBase<RefreshTokenId>
     {
         return new RefreshToken(RefreshTokenId.New(), userId, token, expiresAt, false);
     }
+
+    public void MarkAsUsed()
+    {
+        if (IsUsed)
+        {
+            throw new InvalidOperationException("Refresh token has already been used.");
+        }
+
+        IsUsed = true;
+    }
 }

@@ -33,4 +33,34 @@ public class RefreshTokenTests
         // Act & Assert
         Assert.Throws<ArgumentException>(() => RefreshToken.Create(userId, token, expiresAt));
     }
+
+    [Fact]
+    public void MarkAsUsed_ShouldSetIsUsedToTrue()
+    {
+        // Arrange
+        var userId = Guid.NewGuid().ToString();
+        var token = "refreshToken123";
+        var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
+        var refreshToken = RefreshToken.Create(userId, token, expiresAt);
+
+        // Act
+        refreshToken.MarkAsUsed();
+
+        // Assert
+        Assert.True(refreshToken.IsUsed);
+    }
+
+    [Fact]
+    public void MarkAsUsed_ShouldThrowException_WhenAlreadyUsed()
+    {
+        // Arrange
+        var userId = Guid.NewGuid().ToString();
+        var token = "refreshToken123";
+        var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
+        var refreshToken = RefreshToken.Create(userId, token, expiresAt);
+        refreshToken.MarkAsUsed();
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => refreshToken.MarkAsUsed());
+    }
 }
