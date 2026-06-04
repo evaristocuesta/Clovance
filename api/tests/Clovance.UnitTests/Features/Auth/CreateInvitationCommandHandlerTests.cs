@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Auth.CreateInvitation;
+using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.UserInvitations;
 using Clovance.ApiService.Shared;
@@ -16,7 +17,7 @@ public class CreateInvitationCommandHandlerTests : IDisposable
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IUserInvitationTokenService _tokenService;
+    private readonly IJwtTokenService _tokenService;
     private readonly IOptions<UserInvitationOptions> _invitationOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly CreateInvitationCommandHandler _handler;
@@ -33,7 +34,7 @@ public class CreateInvitationCommandHandlerTests : IDisposable
             .Options;
         _dbContext = new ClovanceDbContext(options);
 
-        _tokenService = Substitute.For<IUserInvitationTokenService>();
+        _tokenService = Substitute.For<IJwtTokenService>();
         _invitationOptions = Substitute.For<IOptions<UserInvitationOptions>>();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _httpContext = Substitute.For<HttpContext>();

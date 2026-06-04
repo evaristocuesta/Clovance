@@ -1,5 +1,6 @@
 ﻿using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.UserInvitations;
 using Microsoft.AspNetCore.Identity;
@@ -11,14 +12,14 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IUserInvitationTokenService _tokenService;
+    private readonly IJwtTokenService _tokenService;
     private readonly IOptions<UserInvitationOptions> _invitationOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CreateInvitationCommandHandler(
         UserManager<ApplicationUser> userManager,
         ClovanceDbContext dbContext,
-        IUserInvitationTokenService tokenService,
+        IJwtTokenService tokenService,
         IOptions<UserInvitationOptions> invitationOptions,
         IHttpContextAccessor httpContextAccessor)
     {

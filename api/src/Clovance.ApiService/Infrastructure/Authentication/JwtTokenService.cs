@@ -8,7 +8,10 @@ namespace Clovance.ApiService.Infrastructure.Authentication;
 
 public interface IJwtTokenService
 {
+    string GenerateToken();
     (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles, bool mustCompleteOnboarding);
+    ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+    string HashToken(string token);
 }
 
 public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
@@ -45,10 +48,17 @@ public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenSer
         return (new JwtSecurityTokenHandler().WriteToken(token), expiresAt);
     }
 
-    public string GenerateRefreshToken()
+    public string GenerateToken()
     {
         var bytes = RandomNumberGenerator.GetBytes(64);
-        return Convert.ToBase64String(bytes);
+        return Convert.ToHexString(bytes).ToLower();
+    }
+
+    public string HashToken(string token)
+    {
+        var bytes = Encoding.UTF8.GetBytes(token);
+        var hash = SHA256.HashData(bytes);
+        return Convert.ToHexString(hash);
     }
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)

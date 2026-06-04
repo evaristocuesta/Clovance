@@ -1,5 +1,6 @@
 ﻿using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Auth.RegisterWithInvitation;
+using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +13,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IUserInvitationTokenService _tokenService;
+    private readonly IJwtTokenService _tokenService;
     private readonly RegisterWithInvitationCommandHandler _handler;
 
     public RegisterWithInvitationCommandHandlerTests()
@@ -26,7 +27,7 @@ public class RegisterWithInvitationCommandHandlerTests : IDisposable
             .Options;
         _dbContext = new ClovanceDbContext(options);
 
-        _tokenService = Substitute.For<IUserInvitationTokenService>();
+        _tokenService = Substitute.For<IJwtTokenService>();
 
         _handler = new RegisterWithInvitationCommandHandler(
             _userManager,
