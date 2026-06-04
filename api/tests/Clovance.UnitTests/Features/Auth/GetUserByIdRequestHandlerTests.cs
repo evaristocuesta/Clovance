@@ -30,7 +30,7 @@ public class GetUserByIdRequestHandlerTests
         var request = new GetUserByIdRequest(UserId: "testuser");
 
         // Act
-        var result = await _handler.HandleAsync(request, CancellationToken.None);
+        var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -47,7 +47,7 @@ public class GetUserByIdRequestHandlerTests
         var request = new GetUserByIdRequest(UserId: "nonexistentuser");
 
         // Act
-        var result = await _handler.HandleAsync(request, CancellationToken.None);
+        var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(result.IsSuccess);

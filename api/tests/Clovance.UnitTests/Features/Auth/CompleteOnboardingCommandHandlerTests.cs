@@ -67,7 +67,7 @@ public class CompleteOnboardingCommandHandlerTests
             .Returns(IdentityResult.Success);
         _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.False(user.MustCompleteOnboarding);
@@ -88,7 +88,7 @@ public class CompleteOnboardingCommandHandlerTests
         _httpContext.User.Returns(new ClaimsPrincipal());
         _userManager.GetUserId(Arg.Any<ClaimsPrincipal>()).Returns((string?)null);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -113,7 +113,7 @@ public class CompleteOnboardingCommandHandlerTests
         _userManager.GetUserId(claimsPrincipal).Returns(userId);
         _userManager.FindByIdAsync(userId).Returns((ApplicationUser?)null);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -147,7 +147,7 @@ public class CompleteOnboardingCommandHandlerTests
         _userManager.ChangePasswordAsync(user, command.CurrentPassword, command.NewPassword)
             .Returns(IdentityResult.Failed(new IdentityError { Description = "Incorrect password" }));
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -188,7 +188,7 @@ public class CompleteOnboardingCommandHandlerTests
             .Returns(IdentityResult.Success);
         _userManager.FindByEmailAsync(command.NewEmail.Trim()).Returns(existingUser);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -224,7 +224,7 @@ public class CompleteOnboardingCommandHandlerTests
             .Returns(IdentityResult.Success);
         _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.False(user.MustCompleteOnboarding);
@@ -266,7 +266,7 @@ public class CompleteOnboardingCommandHandlerTests
         _userManager.ChangeEmailAsync(user, command.NewEmail.Trim(), "email-token")
             .Returns(IdentityResult.Failed(new IdentityError { Description = "Email change failed" }));
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -307,7 +307,7 @@ public class CompleteOnboardingCommandHandlerTests
         _userManager.SetUserNameAsync(user, command.NewEmail.Trim())
             .Returns(IdentityResult.Failed(new IdentityError { Description = "Username change failed" }));
 
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);

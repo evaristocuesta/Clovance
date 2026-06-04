@@ -11,7 +11,6 @@ public static class DatabaseServiceCollectionExtensions
     {
         services.Configure<IdentityAdminOptions>(configuration.GetSection(IdentityAdminOptions.SectionName));
         services.Configure<UserInvitationOptions>(configuration.GetSection(UserInvitationOptions.SectionName));
-        services.AddSingleton<IUserInvitationTokenService, UserInvitationTokenService>();
 
         var connectionString = configuration.GetConnectionString("Database");
 

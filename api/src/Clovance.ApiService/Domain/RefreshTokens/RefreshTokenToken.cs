@@ -1,21 +1,21 @@
 ﻿using Clovance.ApiService.Domain.Shared;
 
-namespace Clovance.ApiService.Domain.UserInvitations;
+namespace Clovance.ApiService.Domain.RefreshTokens;
 
-public sealed class UserInvitationToken : ValueObject
+public sealed class RefreshTokenToken : ValueObject
 {
-    private UserInvitationToken(string value)
+    private RefreshTokenToken(string value)
     {
         Value = value;
     }
 
     public string Value { get; }
 
-    public static UserInvitationToken Create(string value)
+    public static RefreshTokenToken Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            throw new ArgumentException("Token is required.", nameof(value));
+            throw new ArgumentException("Refresh token is required.", nameof(value));
         }
 
         var normalizedToken = value
@@ -23,10 +23,10 @@ public sealed class UserInvitationToken : ValueObject
 
         if (normalizedToken.Length > 200)
         {
-            throw new ArgumentException("Token is too long.", nameof(value));
+            throw new ArgumentException("Refresh token is too long.", nameof(value));
         }
 
-        return new UserInvitationToken(normalizedToken);
+        return new RefreshTokenToken(normalizedToken);
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

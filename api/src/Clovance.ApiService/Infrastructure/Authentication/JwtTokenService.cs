@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
@@ -7,7 +8,10 @@ namespace Clovance.ApiService.Infrastructure.Authentication;
 
 public interface IJwtTokenService
 {
+    string GenerateToken();
     (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles, bool mustCompleteOnboarding);
+    ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+    string HashToken(string token);
 }
 
 public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
@@ -42,5 +46,56 @@ public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenSer
             signingCredentials: credentials);
 
         return (new JwtSecurityTokenHandler().WriteToken(token), expiresAt);
+    }
+
+    public string GenerateToken()
+    {
+        var bytes = RandomNumberGenerator.GetBytes(64);
+        return Convert.ToHexString(bytes).ToLower();
+    }
+
+    public string HashToken(string token)
+    {
+        var bytes = Encoding.UTF8.GetBytes(token);
+        var hash = SHA256.HashData(bytes);
+        return Convert.ToHexString(hash);
+    }
+
+    public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+    {
+        var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+            ?? throw new InvalidOperationException("Jwt options are not configured.");
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtOptions.Key));
+
+        var validation = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = key
+        };
+
+        try
+        {
+            var principal = new JwtSecurityTokenHandler()
+                .ValidateToken(token, validation, out var validatedToken);
+
+            if (validatedToken is not JwtSecurityToken jwt ||
+                !jwt.Header.Alg.Equals(SecurityAlgorithms.HmacSha256))
+            {
+                return null;
+            }
+
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

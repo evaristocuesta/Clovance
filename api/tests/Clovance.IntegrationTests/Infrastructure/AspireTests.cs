@@ -34,8 +34,8 @@ public class AspireTests
         await app.StartAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
 
         // Act
-        var httpClient = app.CreateHttpClient("frontend");
-        await app.ResourceNotifications.WaitForResourceHealthyAsync("frontend", cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
+        var httpClient = app.CreateHttpClient("clovance-frontend");
+        await app.ResourceNotifications.WaitForResourceHealthyAsync("clovance-frontend", cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
         var response = await httpClient.GetAsync("/", cancellationToken);
 
         // Assert

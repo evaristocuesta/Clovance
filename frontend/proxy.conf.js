@@ -1,10 +1,10 @@
-const aspireHttps = process.env['services__apiservice__https__0'];
-const aspireHttp = process.env['services__apiservice__http__0'];
+const aspireHttps = process.env['services__clovance-apiservice__https__0'];
+const aspireHttp = process.env['services__clovance-apiservice__http__0'];
 
 const target = aspireHttps ?? aspireHttp ?? 'http://localhost:52862';
 
 if (!aspireHttps && !aspireHttp) {
-  throw new Error('services__apiservice__https__0/services__apiservice__http__0 are missing');
+  throw new Error('services__clovance-apiservice__https__0/services__clovance-apiservice__http__0 are missing');
 }
 
 module.exports = {

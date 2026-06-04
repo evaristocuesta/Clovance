@@ -46,7 +46,7 @@ public sealed class UserInvitationConfiguration : IEntityTypeConfiguration<UserI
             .HasMaxLength(100);
 
         builder.Property(x => x.ConsumedBy)
-            .HasMaxLength(450);
+            .HasMaxLength(100);
 
         builder.HasIndex(x => x.Email);
 
