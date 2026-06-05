@@ -19,7 +19,7 @@ public class CreateInvitationEndpointTests : IntegrationTestBase
         var email = $"test-{Guid.NewGuid()}@example.com";
 
         // Get an authenticated admin token
-        var adminToken = await EnsureAdminReadyAsync();
+        var (adminToken, adminRefreshToken) = await EnsureAdminReadyAsync();
         AuthenticateWithToken(adminToken);
 
         // Act

@@ -14,7 +14,7 @@ public class LogoutEndpointTests : IntegrationTestBase
     {
         // Arrange
         await EnsureAdminReadyAsync();
-        var token = await LoginUserAsync(AdminEmail, NewAdminPassword);
+        var (token, refreshToken) = await LoginUserAsync(AdminEmail, NewAdminPassword);
         AuthenticateWithToken(token);
 
         // Act

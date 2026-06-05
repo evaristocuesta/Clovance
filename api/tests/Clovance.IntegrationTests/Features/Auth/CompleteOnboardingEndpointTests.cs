@@ -17,7 +17,7 @@ public class CompleteOnboardingEndpointTests : IntegrationTestBase
         var adminUser = await GetAdminUserAsync();
         AuthenticateWithToken(GenerateTestToken(adminUser.Id, adminUser.Email, adminUser.MustCompleteOnboarding, adminUser.Roles));
         var user = await CreateTestUserAsync(null, null, requiresOnboarding: true, roles: ["Admin"]);
-        var token = await LoginUserAsync(email: user.Email, password: user.Password);
+        var (token, refreshToken) = await LoginUserAsync(email: user.Email, password: user.Password);
         AuthenticateWithToken(token);
 
         // Act - call the complete onboarding endpoint

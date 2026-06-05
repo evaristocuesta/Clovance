@@ -5,7 +5,6 @@ using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Clovance.ApiService.Features.Auth.Refresh;
 
@@ -48,17 +47,19 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
 
-        var userId = principal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (userId is null)
         {
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
 
+        var hashedToken = _jwtTokenService.HashToken(refreshTokenValue);
+
         var storedToken = await _dbContext
             .RefreshTokens
             .FirstOrDefaultAsync(t =>
-                t.Token == RefreshTokenToken.Create(refreshTokenValue) &&
+                t.Token == RefreshTokenToken.Create(hashedToken) &&
                 t.UserId == RefreshTokenUserId.Create(userId) &&
                 !t.IsUsed &&
                 t.ExpiresAt > DateTime.UtcNow, cancellationToken);
@@ -67,6 +68,9 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
         {
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
+
+        storedToken.MarkAsUsed();
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         var user = await _userManager.FindByIdAsync(userId!);
 
