@@ -19,11 +19,11 @@ public sealed class RefreshEndpoint : IApiEndPoint
                 return result.ToProblemResult(httpContext);
             }
 
-            return Results.Ok(result.Value);
+            return Results.Created(string.Empty, result.Value);
         })
-        .Produces<RefreshResult>(StatusCodes.Status200OK)
+        .Produces<RefreshResult>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
-        .RequireAuthorization()
+        .AllowAnonymous()
         .WithName("Refresh")
         .WithSummary("Refresh")
         .WithDescription("Refresh the authentication token");

@@ -113,7 +113,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         bool isAdmin = roles?.Contains("Admin") ?? false;
 
         // Get an authenticated admin token
-        var adminToken = await EnsureAdminReadyAsync();
+        var (adminToken, adminRefreshToken) = await EnsureAdminReadyAsync();
         AuthenticateWithToken(adminToken);
 
         // Create an invitation
@@ -138,7 +138,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     /// Ensures the admin user is ready (onboarding completed) and returns a valid token.
     /// Thread-safe and caches the onboarding completion state per Aspire instance.
     /// </summary>
-    protected async Task<string> EnsureAdminReadyAsync()
+    protected async Task<(string Token, string RefreshToken)> EnsureAdminReadyAsync()
     {
         await _fixture.AdminLock.WaitAsync();
         try
@@ -153,7 +153,8 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
             string adminToken;
             try
             {
-                adminToken = await LoginUserAsync(AdminEmail, OriginalAdminPassword);
+                var (Token, RefreshToken) = await LoginUserAsync(AdminEmail, OriginalAdminPassword);
+                adminToken = Token;
             }
             catch
             {
@@ -216,9 +217,9 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     }
 
     /// <summary>
-    /// Authenticates a user and returns the JWT token.
+    /// Authenticates a user and returns the JWT token and refresh token.
     /// </summary>
-    public async Task<string> LoginUserAsync(
+    public async Task<(string Token, string RefreshToken)> LoginUserAsync(
         string email,
         string password)
     {
@@ -226,6 +227,32 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         var response = await Client.PostAsJsonAsync("/api/auth/login", request);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        return result!.AccessToken;
+
+        // Extract refresh token from Set-Cookie header
+        if (!response.Headers.TryGetValues("Set-Cookie", out var setCookieValues))
+        {
+            throw new InvalidOperationException("No Set-Cookie header found in login response");
+        }
+
+        var setCookieHeader = setCookieValues.FirstOrDefault();
+        Assert.NotNull(setCookieHeader);
+
+        var refreshToken = ExtractCookieValue(setCookieHeader, "refreshToken");
+        Assert.NotNull(refreshToken);
+
+        return (result!.AccessToken, refreshToken);
+    }
+
+    private static string? ExtractCookieValue(string setCookieHeader, string cookieName)
+    {
+        var cookies = setCookieHeader.Split(';');
+        var cookiePair = cookies[0].Split('=');
+
+        if (cookiePair.Length == 2 && cookiePair[0].Trim() == cookieName)
+        {
+            return cookiePair[1].Trim();
+        }
+
+        return null;
     }
 }

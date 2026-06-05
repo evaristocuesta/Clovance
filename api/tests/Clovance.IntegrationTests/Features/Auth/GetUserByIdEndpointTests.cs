@@ -11,7 +11,7 @@ public class GetUserByIdEndpointTests : IntegrationTestBase
     {
         // Arrange
         var user = await CreateTestUserAsync();
-        var token = await LoginUserAsync(AdminEmail, NewAdminPassword);
+        var (token, refreshToken) = await LoginUserAsync(AdminEmail, NewAdminPassword);
         AuthenticateWithToken(token);
 
         // Act
@@ -67,7 +67,7 @@ public class GetUserByIdEndpointTests : IntegrationTestBase
     {
         // Arrange
         var user = await CreateTestUserAsync("test@example.com", "Password123!");
-        var token = await LoginUserAsync(user.Email, "Password123!");
+        var (token, refreshToken) = await LoginUserAsync(user.Email, "Password123!");
         AuthenticateWithToken(token);
 
         // Act

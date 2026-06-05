@@ -7,6 +7,7 @@ using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
@@ -62,7 +63,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
         _userManager.FindByIdAsync(Arg.Any<string>()).Returns(user.Entity);
 
         await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(user.Entity.Id, "token", DateTimeOffset.UtcNow.AddDays(7)),
+            RefreshToken.Create(user.Entity.Id, "hashedNewRefreshToken", DateTimeOffset.UtcNow.AddDays(7)),
             TestContext.Current.CancellationToken);
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -73,7 +74,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
             .GetPrincipalFromExpiredToken(Arg.Any<string>())
             .Returns(new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Entity.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Entity.Id)
             })));
 
         _jwtTokenService
@@ -95,6 +96,13 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
 
         // Assert
         Assert.True(result.IsSuccess);
+
+        var usedRefreshToken = await _dbContext
+            .RefreshTokens
+            .FirstOrDefaultAsync(rt => rt.Token == RefreshTokenToken.Create("hashedNewRefreshToken"), TestContext.Current.CancellationToken);
+
+        Assert.NotNull(usedRefreshToken);
+        Assert.True(usedRefreshToken.IsUsed);
     }
 
     [Fact]
