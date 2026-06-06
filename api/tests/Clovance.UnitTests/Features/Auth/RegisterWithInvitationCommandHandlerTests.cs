@@ -4,7 +4,6 @@ using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;

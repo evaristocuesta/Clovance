@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Domain.RefreshTokens;
-using Clovance.ApiService.Features.Auth.Login;
+﻿using Clovance.ApiService.Features.Auth.Login;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
@@ -68,10 +67,10 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
-        
+
         _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<bool>())
             .Returns((expectedToken, expectedExpiresAt));
-        
+
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
 
@@ -190,10 +189,10 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
-        
+
         _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<bool>())
             .Returns(("jwt-token", expectedExpiresAt));
-        
+
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
 
@@ -226,10 +225,10 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
-        
+
         _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<bool>())
             .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(60)));
-        
+
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashed-refresh-token");
 

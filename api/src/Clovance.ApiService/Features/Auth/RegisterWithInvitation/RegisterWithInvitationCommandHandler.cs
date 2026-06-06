@@ -30,7 +30,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         var invitation = await _dbContext
             .UserInvitations
             .FirstOrDefaultAsync(
-                i => i.Email == UserInvitationEmail.Create(request.Email) 
+                i => i.Email == UserInvitationEmail.Create(request.Email)
                 && i.TokenHash == UserInvitationToken.Create(tokenHash)
                 , cancellationToken);
 

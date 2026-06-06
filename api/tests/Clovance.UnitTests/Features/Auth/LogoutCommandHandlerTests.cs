@@ -50,14 +50,14 @@ public class LogoutCommandHandlerTests : IAsyncLifetime
         }, TestContext.Current.CancellationToken);
 
         await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(userId.ToString(), "hashedToken", DateTimeOffset.UtcNow.AddDays(7)), 
+            RefreshToken.Create(userId.ToString(), "hashedToken", DateTimeOffset.UtcNow.AddDays(7)),
             TestContext.Current.CancellationToken);
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashedToken");   
+        _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashedToken");
 
         var command = new LogoutCommand();
 

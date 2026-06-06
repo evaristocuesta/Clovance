@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Json;
-using Clovance.ApiService.Domain.RefreshTokens;
 using Clovance.ApiService.Features.Auth.Login;
-using Clovance.ApiService.Features.Auth.Logout;
 using Clovance.ApiService.Features.Auth.Refresh;
 using Microsoft.AspNetCore.Http;
 
