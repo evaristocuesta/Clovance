@@ -58,8 +58,8 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
             .RefreshTokens
             .AddAsync(
                 RefreshToken.Create(
-                    user.Id, 
-                    _jwtTokenService.HashToken(refreshToken), 
+                    user.Id,
+                    _jwtTokenService.HashToken(refreshToken),
                     expiresAt.AddDays(7))
                 , cancellationToken);
 

@@ -13,8 +13,8 @@ public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
     private readonly IJwtTokenService _jwtTokenService;
 
     public LogoutCommandHandler(
-        IHttpContextAccessor httpContextAccessor, 
-        ClovanceDbContext dbContext, 
+        IHttpContextAccessor httpContextAccessor,
+        ClovanceDbContext dbContext,
         IJwtTokenService jwtTokenService)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -33,8 +33,8 @@ public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
         {
             var token = await _dbContext
                 .RefreshTokens
-                .FirstOrDefaultAsync(t => 
-                    t.Token.Equals(RefreshTokenToken.Create(_jwtTokenService.HashToken(refreshToken))), 
+                .FirstOrDefaultAsync(t =>
+                    t.Token.Equals(RefreshTokenToken.Create(_jwtTokenService.HashToken(refreshToken))),
                     cancellationToken);
 
             if (token is not null)

@@ -16,9 +16,9 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
     private readonly ClovanceDbContext _dbContext;
 
     public RefreshCommandHandler(
-        IHttpContextAccessor httpContextAccessor, 
-        IJwtTokenService jwtTokenService, 
-        UserManager<ApplicationUser> userManager, 
+        IHttpContextAccessor httpContextAccessor,
+        IJwtTokenService jwtTokenService,
+        UserManager<ApplicationUser> userManager,
         ClovanceDbContext dbContext)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -87,9 +87,9 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
             .RefreshTokens
             .AddAsync(
                 RefreshToken.Create(
-                    userId!, 
-                    _jwtTokenService.HashToken(newRefreshToken), 
-                    DateTime.UtcNow.AddDays(7)), 
+                    userId!,
+                    _jwtTokenService.HashToken(newRefreshToken),
+                    DateTime.UtcNow.AddDays(7)),
                 cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);

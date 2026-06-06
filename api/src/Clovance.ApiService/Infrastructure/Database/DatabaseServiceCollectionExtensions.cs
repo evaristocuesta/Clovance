@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Domain.UserInvitations;
-using Clovance.ApiService.Infrastructure.UserInvitations;
+﻿using Clovance.ApiService.Infrastructure.UserInvitations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
