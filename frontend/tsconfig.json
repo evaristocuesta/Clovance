@@ -12,8 +12,14 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "baseUrl": ".",
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve", 
+    "paths": {
+      "@core/*": ["./src/app/core/*"], 
+      "@layouts/*": ["./src/app/layouts/*"], 
+      "@features/*": ["./src/app/features/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
