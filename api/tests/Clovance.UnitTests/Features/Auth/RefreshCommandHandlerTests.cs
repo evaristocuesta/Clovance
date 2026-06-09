@@ -133,12 +133,8 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService
-            .GetPrincipalFromExpiredToken(Arg.Any<string>())
-            .Returns(new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Entity.Id)
-            })));
+        _jwtTokenService.HashToken(Arg.Any<string>())
+            .Returns("hashedToken");
 
         var command = new RefreshCommand();
 
@@ -152,7 +148,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task HandleAsync_ReturnFailure_WhenUsedToken()
+    public async Task HandleAsync_ReturnFailure_WhenUsedRefreshToken()
     {
         // Arrange
         var user = await _dbContext.Users.AddAsync(new ApplicationUser
@@ -172,12 +168,8 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService
-            .GetPrincipalFromExpiredToken(Arg.Any<string>())
-            .Returns(new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Entity.Id)
-            })));
+        _jwtTokenService.HashToken(Arg.Any<string>())
+            .Returns("hashedToken");
 
         var command = new RefreshCommand();
 
@@ -191,7 +183,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task HandleAsync_ReturnFailure_WhenExpiredToken()
+    public async Task HandleAsync_ReturnFailure_WhenExpiredRefreshToken()
     {
         // Arrange
         var user = await _dbContext.Users.AddAsync(new ApplicationUser
@@ -202,19 +194,15 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
         _userManager.FindByIdAsync(Arg.Any<string>()).Returns(user.Entity);
 
         var refreshToken = await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(user.Entity.Id, "token", DateTimeOffset.UtcNow.AddDays(-7)),
+            RefreshToken.Create(user.Entity.Id, "hashedToken", DateTimeOffset.UtcNow.AddDays(-7)),
             TestContext.Current.CancellationToken);
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService
-            .GetPrincipalFromExpiredToken(Arg.Any<string>())
-            .Returns(new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Entity.Id)
-            })));
+        _jwtTokenService.HashToken(Arg.Any<string>())
+            .Returns("hashedToken");
 
         var command = new RefreshCommand();
 
