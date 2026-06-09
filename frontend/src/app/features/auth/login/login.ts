@@ -4,11 +4,14 @@ import { AuthService } from '@core/services/auth.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { initFlowbite } from 'flowbite';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { LoginRequest } from '@core/models/auth.models';
+import { ThemeToggle } from '@shared/components/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, ThemeToggle],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

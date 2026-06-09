@@ -5,7 +5,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
-import { authInterceptor } from '@core/interceptors/auth-interceptor';
+import { authInterceptor } from '@core/interceptors/auth.interceptor';
 import { AuthService } from '@core/services/auth.service';
 import { catchError, of } from 'rxjs';
 
