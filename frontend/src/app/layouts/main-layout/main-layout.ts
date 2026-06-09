@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { initFlowbite } from 'flowbite';
 
 @Component({
   selector: 'app-main-layout',
@@ -7,4 +8,12 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
 })
-export class MainLayout {}
+export class MainLayout implements OnInit {
+
+  ngOnInit(): void {
+    // Initialize Flowbite after layout is rendered
+    setTimeout(() => {
+      initFlowbite();
+    }, 0);// Initialization logic here
+  }
+}
