@@ -1,2 +1,25 @@
-<p>auth-layout works!</p>
-<router-outlet></router-outlet>
+<div class="min-h-screen flex">
+  <!-- Left column -->
+  <div class="hidden md:flex flex-1 bg-slate-100 dark:bg-slate-900 items-center justify-center">
+    <div class="text-center">
+      <img
+        src="images/clovance-logo.svg"
+        alt="Clovance logo"
+        class="w-40 mx-auto mb-6"
+      />
+
+      <img
+        src="images/clovance.svg"
+        alt="Clovance logo"
+        class="w-80 mx-auto mb-6"
+      />
+    </div>
+  </div>
+
+  <!-- Right column -->
+  <div class="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div class="w-full max-w-lg">
+        <router-outlet />
+    </div>
+  </div>
+</div>
