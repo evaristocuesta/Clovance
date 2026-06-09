@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { LoginRequest, LoginResponse, TokenPayload } from '../models/auth.models';
+import { LoginRequest, LoginResponse, RefreshResult, TokenPayload } from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root',
@@ -39,12 +39,12 @@ export class AuthService {
 
   refreshToken() {
     return this.http
-      .post<LoginResponse>('/api/auth/refresh', {}, {
+      .post<RefreshResult>('/api/auth/refresh', {}, {
         withCredentials: true,
       })
       .pipe(
         tap({
-          next: response => this._accessToken.set(response.access_token)
+          next: response => this._accessToken.set(response.token)
         })
       );
   }
