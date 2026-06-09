@@ -30,29 +30,12 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
     public async Task<Result<RefreshResult>> HandleAsync(RefreshCommand command, CancellationToken cancellationToken)
     {
         var httpContext = _httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException("HttpContext is not available.");
+                ?? throw new InvalidOperationException("HttpContext is not available.");
 
         var refreshTokenValue = httpContext.Request.Cookies["refreshToken"];
 
         if (string.IsNullOrEmpty(refreshTokenValue))
-        {
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
-        }
-
-        var token = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-        var principal = _jwtTokenService.GetPrincipalFromExpiredToken(token);
-
-        if (principal is null)
-        {
-            return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
-        }
-
-        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId is null)
-        {
-            return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
-        }
 
         var hashedToken = _jwtTokenService.HashToken(refreshTokenValue);
 
@@ -60,14 +43,13 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
             .RefreshTokens
             .FirstOrDefaultAsync(t =>
                 t.Token == RefreshTokenToken.Create(hashedToken) &&
-                t.UserId == RefreshTokenUserId.Create(userId) &&
                 !t.IsUsed &&
                 t.ExpiresAt > DateTime.UtcNow, cancellationToken);
 
         if (storedToken is null)
-        {
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
-        }
+
+        var userId = storedToken.UserId.Value;
 
         storedToken.MarkAsUsed();
         await _dbContext.SaveChangesAsync(cancellationToken);
