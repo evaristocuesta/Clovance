@@ -9,6 +9,11 @@ export interface LoginResponse {
   token_type: string;
 }
 
+export interface RefreshResult {
+  token: string;
+  expiresAt: Date;
+}
+
 export interface TokenPayload {
   sub: string;
   email: string;
