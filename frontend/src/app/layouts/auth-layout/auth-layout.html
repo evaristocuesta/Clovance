@@ -28,6 +28,13 @@
 
   <!-- Right column -->
   <div class="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <!-- Language and Theme controls -->
+    <div class="absolute top-4 right-4 flex items-center gap-2">
+      <!-- Language selector -->
+      <app-language-selection></app-language-selection>
+      <!-- Theme toggle -->
+      <app-theme-toggle></app-theme-toggle>
+    </div>
     <div class="w-full max-w-lg">
         <router-outlet />
     </div>

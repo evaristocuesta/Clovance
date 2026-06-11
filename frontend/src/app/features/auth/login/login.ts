@@ -5,8 +5,6 @@ import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
 import { initFlowbite } from 'flowbite';
 import { CommonModule } from '@angular/common';
 import { LoginRequest } from '@core/models/auth.models';
-import { ThemeToggle } from '@shared/components/theme-toggle/theme-toggle';
-import { LanguageSelection } from '@shared/components/language-selection/language-selection';
 import { form, required, email, FormField, FormRoot } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -14,12 +12,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, TranslocoDirective, ThemeToggle, LanguageSelection, FormField, FormRoot],
+  imports: [CommonModule, TranslocoDirective, FormField, FormRoot],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './login.css',
 })
-export class Login implements AfterViewInit {
+export class Login {
   errorMessage = signal('');
   loginRequest = signal<LoginRequest>({ email: '', password: '' });
   private readonly authService = inject(AuthService);
@@ -53,19 +51,4 @@ export class Login implements AfterViewInit {
       },
     },
   );
-
-  constructor() {
-    // Load saved language preference
-    const savedLang = localStorage.getItem('transloco-lang');
-    if (savedLang && (savedLang === 'es' || savedLang === 'en')) {
-      this.translocoService.setActiveLang(savedLang);
-    }
-  }
-
-  ngAfterViewInit(): void {
-    // Initialize Flowbite after view is rendered
-    setTimeout(() => {
-      initFlowbite();
-    }, 100);
-  }
 }
