@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ThemeService } from '@core/services/theme.service';
 import { TranslocoDirective } from '@jsverse/transloco';
 
@@ -6,6 +6,7 @@ import { TranslocoDirective } from '@jsverse/transloco';
   selector: 'app-theme-toggle',
   imports: [TranslocoDirective],
   templateUrl: './theme-toggle.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './theme-toggle.css',
 })
 export class ThemeToggle {
@@ -17,5 +18,5 @@ export class ThemeToggle {
 
   isDark(): boolean {
     return this.themeService.theme() === 'dark';
- }
+  }
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
@@ -16,10 +16,10 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, TranslocoDirective, ThemeToggle, LanguageSelection, FormField, FormRoot],
   templateUrl: './login.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './login.css',
 })
 export class Login implements AfterViewInit {
-
   errorMessage = signal('');
   loginRequest = signal<LoginRequest>({ email: '', password: '' });
   private readonly authService = inject(AuthService);
@@ -27,31 +27,31 @@ export class Login implements AfterViewInit {
   private readonly translocoService = inject(TranslocoService);
 
   loginForm = form(
-    this.loginRequest, 
+    this.loginRequest,
     (schema) => {
-      required(schema.email, {message: this.translocoService.translate('login.emailRequired')});
-      email(schema.email, {message: this.translocoService.translate('login.emailInvalid')});
-      required(schema.password, {message: this.translocoService.translate('login.passwordRequired')});
-    }, 
-    { 
+      required(schema.email, { message: this.translocoService.translate('login.emailRequired') });
+      email(schema.email, { message: this.translocoService.translate('login.emailInvalid') });
+      required(schema.password, {
+        message: this.translocoService.translate('login.passwordRequired'),
+      });
+    },
+    {
       submission: {
         action: async (field) => {
           this.errorMessage.set('');
-          
+
           try {
             await firstValueFrom(this.authService.login(field().value()));
             void this.router.navigateByUrl('/');
           } catch (err: HttpErrorResponse | any) {
             const status = (err as { status?: number })?.status;
             const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
-            const key = status === 401 && errorCode
-              ? errorCode
-              : 'login.serverError';
+            const key = status === 401 && errorCode ? errorCode : 'login.serverError';
             this.errorMessage.set(this.translocoService.translate(key));
           }
         },
-      }
-    }
+      },
+    },
   );
 
   constructor() {
@@ -63,7 +63,7 @@ export class Login implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-// Initialize Flowbite after view is rendered
+    // Initialize Flowbite after view is rendered
     setTimeout(() => {
       initFlowbite();
     }, 100);

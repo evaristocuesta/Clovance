@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-language-selection',
   imports: [TranslocoDirective],
   templateUrl: './language-selection.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './language-selection.css',
 })
 export class LanguageSelection {
