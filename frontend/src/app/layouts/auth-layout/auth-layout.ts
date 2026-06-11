@@ -6,7 +6,7 @@ import { initFlowbite } from 'flowbite';
   selector: 'app-auth-layout',
   imports: [RouterOutlet],
   templateUrl: './auth-layout.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './auth-layout.css',
 })
 export class AuthLayout implements OnInit {
