@@ -1,1 +1,23 @@
-{}
+{
+    "language": {
+        "english": "English (US)",
+        "spanish": "Español"
+    },
+    "theme": {
+        "darkTheme": "Dark theme",
+        "lightTheme": "Light theme"
+    },
+    "login": {
+        "title": "Sign in to your account",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?",
+        "signInButton": "Sign in",
+        "emailRequired": "Email is required",
+        "passwordRequired": "Password is required",
+        "invalidCredentials": "Invalid email or password"
+    }
+}
