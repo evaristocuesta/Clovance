@@ -1,17 +1,18 @@
 import { AfterViewInit, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
 import { initFlowbite } from 'flowbite';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LoginRequest } from '@core/models/auth.models';
 import { ThemeToggle } from '@shared/components/theme-toggle/theme-toggle';
+import { LanguageSelection } from '@shared/components/language-selection/language-selection';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ThemeToggle],
+  imports: [CommonModule, ReactiveFormsModule, TranslocoDirective, ThemeToggle, LanguageSelection],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -37,7 +38,7 @@ export class Login implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Initialize Flowbite after view is rendered
+// Initialize Flowbite after view is rendered
     setTimeout(() => {
       initFlowbite();
     }, 100);
