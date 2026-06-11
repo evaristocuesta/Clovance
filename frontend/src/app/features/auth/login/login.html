@@ -17,25 +17,25 @@
         <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
           {{ t('login.title') }}
         </h1>
-        <form class="space-y-4 md:space-y-6" [formGroup]="form" (ngSubmit)="submit()">
+        <form [formRoot]="loginForm" class="space-y-4 md:space-y-6" novalidate>
           <div>
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('login.emailLabel') }}</label>
-            <input type="email" name="email" id="email" formControlName="email" autocomplete="email" placeholder="{{ t('login.emailPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="form.controls.email.invalid && form.controls.email.touched" [class.border-gray-300]="!form.controls.email.invalid || !form.controls.email.touched" [class.dark:border-red-500]="form.controls.email.invalid && form.controls.email.touched" [class.dark:border-gray-600]="!form.controls.email.invalid || !form.controls.email.touched" required="">
-            @if (form.controls.email.invalid && form.controls.email.touched) {
-              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t('login.emailRequired')}}</p>
+            <input type="email" id="email" [formField]="loginForm.email" autocomplete="email" placeholder="{{ t('login.emailPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="loginForm.email().invalid() && loginForm.email().touched()" [class.border-gray-300]="!loginForm.email().invalid() || !loginForm.email().touched()" [class.dark:border-red-500]="loginForm.email().invalid() && loginForm.email().touched()" [class.dark:border-gray-600]="!loginForm.email().invalid() || !loginForm.email().touched()">
+            @if (loginForm.email().touched() && loginForm.email().errors().length && loginForm.email().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(loginForm.email().errors()[0].message!) }}</p>
             }
           </div>
           <div>
             <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('login.passwordLabel') }}</label>
-            <input type="password" name="password" id="password" formControlName="password" autocomplete="current-password" placeholder="{{ t('login.passwordPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="form.controls.password.invalid && form.controls.password.touched" [class.border-gray-300]="!form.controls.password.invalid || !form.controls.password.touched" [class.dark:border-red-500]="form.controls.password.invalid && form.controls.password.touched" [class.dark:border-gray-600]="!form.controls.password.invalid || !form.controls.password.touched" required="">
-            @if (form.controls.password.invalid && form.controls.password.touched) {
-              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t('login.passwordRequired')}}</p>
+            <input type="password" id="password" [formField]="loginForm.password" autocomplete="current-password" placeholder="{{ t('login.passwordPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="loginForm.password().invalid() && loginForm.password().touched()" [class.border-gray-300]="!loginForm.password().invalid() || !loginForm.password().touched()" [class.dark:border-red-500]="loginForm.password().invalid() && loginForm.password().touched()" [class.dark:border-gray-600]="!loginForm.password().invalid() || !loginForm.password().touched()">
+            @if (loginForm.password().touched() && loginForm.password().errors().length && loginForm.password().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(loginForm.password().errors()[0].message!) }}</p>
             }
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-start">
               <div class="flex items-center h-5">
-                <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="">
+                <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800">
               </div>
               <div class="ml-3 text-sm">
                 <label for="remember" class="text-gray-500 dark:text-gray-300">{{ t('login.rememberMe') }}</label>
@@ -43,7 +43,13 @@
             </div>
             <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">{{ t('login.forgotPassword') }}</a>
           </div>
-          <button type="submit" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">{{ t('login.signInButton') }}</button>
+          <button type="submit" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" [disabled]="loginForm().submitting()">
+            @if (loginForm().submitting()) {
+              {{ t('login.signInButton') }}...
+            } @else {
+              {{ t('login.signInButton') }}
+            }
+          </button>
           @if (errorMessage()) {
             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ errorMessage() }}</p>
           }

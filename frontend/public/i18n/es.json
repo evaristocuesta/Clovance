@@ -17,7 +17,10 @@
         "forgotPassword": "¿Olvidaste tu contraseña?",
         "signInButton": "Iniciar sesión",
         "emailRequired": "El email es obligatorio",
-        "passwordRequired": "La contraseña es obligatoria",
-        "invalidCredentials": "Email o contraseña inválidos"
+        "emailInvalid": "Por favor, introduce una dirección de email válida",
+        "passwordRequired": "La contraseña es obligatoria"
+    }, 
+    "auth": {
+        "invalid_credentials": "Email o contraseña inválidos"
     }
 }

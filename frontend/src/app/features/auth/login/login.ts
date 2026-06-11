@@ -3,31 +3,56 @@ import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
 import { initFlowbite } from 'flowbite';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LoginRequest } from '@core/models/auth.models';
 import { ThemeToggle } from '@shared/components/theme-toggle/theme-toggle';
 import { LanguageSelection } from '@shared/components/language-selection/language-selection';
+import { form, required, email, FormField, FormRoot } from '@angular/forms/signals';
+import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslocoDirective, ThemeToggle, LanguageSelection],
+  imports: [CommonModule, TranslocoDirective, ThemeToggle, LanguageSelection, FormField, FormRoot],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login implements AfterViewInit {
 
   errorMessage = signal('');
-  private readonly fb = inject(FormBuilder);
+  loginRequest = signal<LoginRequest>({ email: '', password: '' });
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly translocoService = inject(TranslocoService);
 
-  readonly form = this.fb.nonNullable.group({
-    email: ['', [Validators.required]],
-    password: ['', [Validators.required]],
-  });
+  loginForm = form(
+    this.loginRequest, 
+    (schema) => {
+      required(schema.email, {message: this.translocoService.translate('login.emailRequired')});
+      email(schema.email, {message: this.translocoService.translate('login.emailInvalid')});
+      required(schema.password, {message: this.translocoService.translate('login.passwordRequired')});
+    }, 
+    { 
+      submission: {
+        action: async (field) => {
+          this.errorMessage.set('');
+          
+          try {
+            await firstValueFrom(this.authService.login(field().value()));
+            void this.router.navigateByUrl('/');
+          } catch (err: HttpErrorResponse | any) {
+            const status = (err as { status?: number })?.status;
+            const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
+            const key = status === 401 && errorCode
+              ? errorCode
+              : 'login.serverError';
+            this.errorMessage.set(this.translocoService.translate(key));
+          }
+        },
+      }
+    }
+  );
 
   constructor() {
     // Load saved language preference
@@ -43,26 +68,4 @@ export class Login implements AfterViewInit {
       initFlowbite();
     }, 100);
   }
-
-  submit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.errorMessage.set('');
-    const { email, password } = this.form.getRawValue();
-
-    const loginRequest: LoginRequest = {
-      email: email,
-      password: password,
-    };
-
-    this.authService.login(loginRequest).subscribe({
-      next: () => void this.router.navigateByUrl('/'),
-      error: () => {
-        this.errorMessage.set(this.translocoService.translate('login.invalidCredentials'));
-      },
-    });
-  }  
 }
