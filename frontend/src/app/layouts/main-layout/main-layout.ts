@@ -6,7 +6,7 @@ import { initFlowbite } from 'flowbite';
   selector: 'app-main-layout',
   imports: [RouterOutlet],
   templateUrl: './main-layout.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './main-layout.css',
 })
 export class MainLayout implements OnInit {

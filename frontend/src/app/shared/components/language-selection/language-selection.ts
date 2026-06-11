@@ -5,7 +5,7 @@ import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
   selector: 'app-language-selection',
   imports: [TranslocoDirective],
   templateUrl: './language-selection.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './language-selection.css',
 })
 export class LanguageSelection {

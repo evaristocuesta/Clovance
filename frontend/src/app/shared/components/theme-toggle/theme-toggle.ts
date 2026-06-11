@@ -6,7 +6,7 @@ import { TranslocoDirective } from '@jsverse/transloco';
   selector: 'app-theme-toggle',
   imports: [TranslocoDirective],
   templateUrl: './theme-toggle.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './theme-toggle.css',
 })
 export class ThemeToggle {

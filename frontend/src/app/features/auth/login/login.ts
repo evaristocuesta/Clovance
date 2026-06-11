@@ -16,7 +16,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, TranslocoDirective, ThemeToggle, LanguageSelection, FormField, FormRoot],
   templateUrl: './login.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './login.css',
 })
 export class Login implements AfterViewInit {
