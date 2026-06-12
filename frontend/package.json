@@ -9,15 +9,7 @@
     "test": "ng test"
   },
   "private": true,
-  "packageManager": "pnpm@11.1.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "esbuild",
-      "lmdb",
-      "msgpackr-extract"
-    ]
-  },
+  "packageManager": "pnpm@11.6.0",
   "dependencies": {
     "@angular/common": "^22.0.1",
     "@angular/compiler": "^22.0.1",
