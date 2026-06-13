@@ -22,5 +22,16 @@
     }, 
     "auth": {
         "invalid_credentials": "Email o contraseña inválidos"
+    },
+    "mainLayout": {
+        "sidebar": {
+            "transactions": "Transacciones",
+            "summary": "Resumen",
+            "accounts": "Cuentas"
+        },
+        "userMenu": {
+            "accountSettings": "Configuración cuenta",
+            "logout": "Cerrar sesión"
+        }
     }
 }
