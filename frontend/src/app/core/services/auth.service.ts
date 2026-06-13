@@ -50,8 +50,8 @@ export class AuthService {
   }
 
   logout() {
-    this.http
-      .post('/api/auth/logout', {}, { withCredentials: true })
+    return this.http
+      .post<void>('/api/auth/logout', {}, { withCredentials: true })
       .pipe(
         tap({
           next: () => this._accessToken.set(null)

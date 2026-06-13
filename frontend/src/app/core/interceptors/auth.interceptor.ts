@@ -29,7 +29,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             return next(retried);
           }),
           catchError(() => {
-            auth.logout();
+            auth.logout().subscribe();
             return throwError(() => error);
           })
         );

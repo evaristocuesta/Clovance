@@ -11,7 +11,7 @@ public sealed class LogoutEndpoint : IApiEndPoint
             HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
-            var result = await handler.HandleAsync(new LogoutCommand(), cancellationToken);
+            var result = await handler.HandleAsync(new LogoutCommand(), CancellationToken.None);
             if (result.IsFailure)
             {
                 return result.ToProblemResult(httpContext);
