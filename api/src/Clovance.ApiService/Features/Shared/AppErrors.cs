@@ -82,6 +82,12 @@ public static class AppErrors
 
         public static Error UserCreationFailed(string details) =>
             CreateConflict(ErrorCodes.Auth.UserCreationFailed, $"Failed to create user: {details}");
+
+        public static Error SetupAlreadyBeenCompleted() =>
+            CreateConflict(ErrorCodes.Auth.SetupAlreadyBeenCompleted, "Setup has already been completed.");
+        
+        public static Error SetupIsNotCompleted() =>
+            CreateConflict(ErrorCodes.Auth.SetupIsNotCompleted, "Setup is not completed.");
     }
 
     private static Error CreateUnauthorized(string code, string description) =>

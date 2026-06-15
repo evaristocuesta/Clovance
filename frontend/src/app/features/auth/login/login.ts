@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
@@ -41,9 +41,8 @@ export class Login {
             await firstValueFrom(this.authService.login(field().value()));
             void this.router.navigateByUrl('/');
           } catch (err: HttpErrorResponse | any) {
-            const status = (err as { status?: number })?.status;
             const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
-            const key = status === 401 && errorCode ? errorCode : 'login.serverError';
+            const key = errorCode ? errorCode : 'login.serverError';
             this.errorMessage.set(this.translocoService.translate(key));
           }
         },
