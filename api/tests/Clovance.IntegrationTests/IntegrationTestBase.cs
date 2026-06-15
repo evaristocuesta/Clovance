@@ -4,6 +4,7 @@ using Clovance.ApiService.Features.Auth.CreateInvitation;
 using Clovance.ApiService.Features.Auth.GetUserById;
 using Clovance.ApiService.Features.Auth.GetUsers;
 using Clovance.ApiService.Features.Auth.Login;
+using Clovance.ApiService.Features.Auth.RegisterAdmin;
 using Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 using Clovance.ApiService.Infrastructure.Authentication;
 
@@ -77,6 +78,14 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         AuthenticateWithToken(token);
     }
 
+    public async Task CreateDefaultAdminUser()
+    {
+        var setupRequest = new SetupCommand(Email: AdminEmail, Password: AdminPassword);
+        var response = await Client.PostAsJsonAsync("/api/auth/setup", setupRequest);
+        response.EnsureSuccessStatusCode();
+        _fixture.AdminUserCreated = true;
+    }
+
     /// <summary>
     /// Creates a test user via the registration API.
     /// Returns the user's ID, email, and password for later authentication.
@@ -124,14 +133,13 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 
         try
         {
-            if (_fixture.AdminUserCreated)
+            if (!_fixture.AdminUserCreated)
             {
-                // Admin already set up in this Aspire instance, just login with new password
-                return await LoginUserAsync(AdminEmail, AdminPassword);
+                await CreateDefaultAdminUser();
             }
 
-            // TODO: Create the admin user
-            return default;
+            // Admin already set up in this Aspire instance, just login with new password
+            return await LoginUserAsync(AdminEmail, AdminPassword);
         }
         finally
         {

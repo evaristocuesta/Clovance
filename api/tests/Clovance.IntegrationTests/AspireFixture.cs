@@ -61,10 +61,6 @@ public class AspireFixture : IAsyncLifetime
 
         _jwtTokenService = new JwtTokenService(configuration);
 
-        using var scope = _app.Services.CreateScope();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
         // Wait for the service to be fully ready
         await Task.Delay(3000);
     }
