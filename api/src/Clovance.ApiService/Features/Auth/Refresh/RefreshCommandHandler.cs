@@ -62,7 +62,7 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var newAccessToken = _jwtTokenService.GenerateToken(userId, user.Email!, roles, user.MustCompleteOnboarding);
+        var newAccessToken = _jwtTokenService.GenerateToken(userId, user.Email!, roles);
         var newRefreshToken = _jwtTokenService.GenerateToken();
 
         await _dbContext

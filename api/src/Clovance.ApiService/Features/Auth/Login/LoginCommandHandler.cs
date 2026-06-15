@@ -49,8 +49,7 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
         var (token, expiresAt) = _jwtTokenService.GenerateToken(
             user.Id,
             user.Email ?? string.Empty,
-            roles,
-            user.MustCompleteOnboarding);
+            roles);
 
         var refreshToken = _jwtTokenService.GenerateToken();
 

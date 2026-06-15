@@ -43,6 +43,5 @@ public static class ErrorCodes
         public const string PasswordMissingLowercase = "auth.password.missing_lowercase";
         public const string PasswordMissingUppercase = "auth.password.missing_uppercase";
         public const string PasswordMissingNonAlphanumeric = "auth.password.missing_non_alphanumeric";
-        public const string MustCompleteOnBoarding = "auth.must_complete_onboarding";
     }
 }

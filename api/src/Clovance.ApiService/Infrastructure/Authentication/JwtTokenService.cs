@@ -9,16 +9,14 @@ namespace Clovance.ApiService.Infrastructure.Authentication;
 public interface IJwtTokenService
 {
     string GenerateToken();
-    (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles, bool mustCompleteOnboarding);
+    (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles);
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
     string HashToken(string token);
 }
 
 public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
 {
-    public static string MUST_COMPLETE_ONBOARDING = "must_complete_onboarding";
-
-    public (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles, bool mustCompleteOnboarding)
+    public (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles)
     {
         var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
             ?? throw new InvalidOperationException("Jwt options are not configured.");
@@ -28,8 +26,7 @@ public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenSer
             new(JwtRegisteredClaimNames.Sub, userId),
             new(JwtRegisteredClaimNames.Email, email),
             new(ClaimTypes.NameIdentifier, userId),
-            new(ClaimTypes.Email, email),
-            new(MUST_COMPLETE_ONBOARDING, mustCompleteOnboarding.ToString())
+            new(ClaimTypes.Email, email)
         };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));

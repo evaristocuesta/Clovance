@@ -50,8 +50,7 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
         {
             UserName = request.Email,
             Email = request.Email,
-            EmailConfirmed = true,
-            MustCompleteOnboarding = false
+            EmailConfirmed = true
         };
 
         var createResult = await _userManager.CreateAsync(user, request.Password);

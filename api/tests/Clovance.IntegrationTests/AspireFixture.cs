@@ -17,9 +17,9 @@ public class AspireFixture : IAsyncLifetime
     public IJwtTokenService JwtTokenService => _jwtTokenService;
 
     /// <summary>
-    /// Tracks whether the admin user has completed onboarding for THIS Aspire instance.
+    /// Tracks whether the admin user has been created for THIS Aspire instance.
     /// </summary>
-    public bool AdminOnboardingCompleted { get; set; } = false;
+    public bool AdminUserCreated { get; set; } = false;
 
     /// <summary>
     /// Lock for thread-safe admin setup for THIS Aspire instance.

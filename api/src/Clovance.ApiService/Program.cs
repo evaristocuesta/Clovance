@@ -60,7 +60,6 @@ app.UseHttpRequestTracing();
 
 app.UseExceptionHandler();
 app.UseAuthentication();
-app.UseOnboardingEnforcement();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
