@@ -82,9 +82,6 @@ public static class AppErrors
 
         public static Error UserCreationFailed(string details) =>
             CreateConflict(ErrorCodes.Auth.UserCreationFailed, $"Failed to create user: {details}");
-
-        public static Error MustCompleteOnBoarding() =>
-            CreateForbidden(ErrorCodes.Auth.MustCompleteOnBoarding, "User must complete onboarding.");
     }
 
     private static Error CreateUnauthorized(string code, string description) =>

@@ -12,7 +12,7 @@ public class DeleteUserEndpointTests : IntegrationTestBase
         // Arrange
         AuthenticateAsAdminUser();
         var user = await CreateTestUserAsync();
-        var (token, refreshToken) = await LoginUserAsync(AdminEmail, NewAdminPassword);
+        var (token, refreshToken) = await LoginUserAsync(AdminEmail, AdminPassword);
         AuthenticateWithToken(token);
 
         // Act

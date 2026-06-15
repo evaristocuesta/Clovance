@@ -15,7 +15,7 @@ public class RegisterWithInvitationEndpointTests : IntegrationTestBase
     {
         // Arrange
         await EnsureAdminReadyAsync();
-        var (token, refreshToken) = await LoginUserAsync(AdminEmail, NewAdminPassword);
+        var (token, refreshToken) = await LoginUserAsync(AdminEmail, AdminPassword);
         AuthenticateWithToken(token);
 
         var responseInvitation = await Client.PostAsJsonAsync(
@@ -55,7 +55,7 @@ public class RegisterWithInvitationEndpointTests : IntegrationTestBase
     {
         // Arrange
         await EnsureAdminReadyAsync();
-        var (token, refreshToken) = await LoginUserAsync(AdminEmail, NewAdminPassword);
+        var (token, refreshToken) = await LoginUserAsync(AdminEmail, AdminPassword);
         AuthenticateWithToken(token);
 
         var responseInvitation = await Client.PostAsJsonAsync(

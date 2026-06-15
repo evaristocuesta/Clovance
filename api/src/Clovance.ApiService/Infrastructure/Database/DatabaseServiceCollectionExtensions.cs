@@ -8,7 +8,6 @@ public static class DatabaseServiceCollectionExtensions
 {
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<IdentityAdminOptions>(configuration.GetSection(IdentityAdminOptions.SectionName));
         services.Configure<UserInvitationOptions>(configuration.GetSection(UserInvitationOptions.SectionName));
 
         var connectionString = configuration.GetConnectionString("Database");

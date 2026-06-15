@@ -11,7 +11,6 @@ public static class UserMappers
         return new(
             user.Id,
             user.Email!,
-            user.MustCompleteOnboarding,
             roles);
     }
 }

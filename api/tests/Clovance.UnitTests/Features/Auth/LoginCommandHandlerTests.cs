@@ -54,8 +54,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "test@example.com",
-            Email = "test@example.com",
-            MustCompleteOnboarding = false
+            Email = "test@example.com"
         };
 
         var roles = new List<string> { "User" };
@@ -68,7 +67,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
 
-        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<bool>())
+        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns((expectedToken, expectedExpiresAt));
 
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
@@ -136,40 +135,6 @@ public class LoginCommandHandlerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task HandleAsync_WithMustCompleteOnboarding_IncludesInToken()
-    {
-        var command = new LoginCommand("test@example.com", "Password123!");
-
-        var user = new ApplicationUser
-        {
-            Id = Guid.NewGuid().ToString(),
-            UserName = "test@example.com",
-            Email = "test@example.com",
-            MustCompleteOnboarding = true
-        };
-        var roles = new List<string> { "User" };
-
-        _userManager.FindByEmailAsync(command.Email).Returns(user);
-        _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
-        _userManager.GetRolesAsync(user).Returns(roles);
-
-        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), true)
-            .Returns(("token", DateTimeOffset.UtcNow.AddMinutes(60)));
-
-        _jwtTokenService.GenerateToken().Returns("refresh-token");
-        _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashed-refresh-token");
-
-        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
-
-        Assert.True(result.IsSuccess);
-        _jwtTokenService.Received(1).GenerateToken(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<IEnumerable<string>>(),
-            true);
-    }
-
-    [Fact]
     public async Task HandleAsync_WithValidCredentials_SavesRefreshTokenToDatabase()
     {
         // Arrange
@@ -178,8 +143,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "test@example.com",
-            Email = "test@example.com",
-            MustCompleteOnboarding = false
+            Email = "test@example.com"
         };
         var roles = new List<string> { "User" };
         var expectedRefreshToken = "refresh-token-abc123";
@@ -190,7 +154,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
 
-        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<bool>())
+        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", expectedExpiresAt));
 
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
@@ -216,8 +180,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "test@example.com",
-            Email = "test@example.com",
-            MustCompleteOnboarding = false
+            Email = "test@example.com"
         };
         var roles = new List<string> { "User" };
         var expectedRefreshToken = "refresh-token-xyz789";
@@ -226,7 +189,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
 
-        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<bool>())
+        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(60)));
 
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);

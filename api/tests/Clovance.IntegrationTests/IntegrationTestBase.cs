@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using Clovance.ApiService.Features.Auth;
-using Clovance.ApiService.Features.Auth.CompleteOnboarding;
 using Clovance.ApiService.Features.Auth.CreateInvitation;
 using Clovance.ApiService.Features.Auth.GetUserById;
 using Clovance.ApiService.Features.Auth.GetUsers;
@@ -17,8 +16,7 @@ namespace Clovance.IntegrationTests;
 public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 {
     protected const string AdminEmail = "admin@clovance.local";
-    protected const string OriginalAdminPassword = "Change.Me.1234";
-    protected const string NewAdminPassword = "NewAdmin.Password.123";
+    protected const string AdminPassword = "NewAdmin.Password.123";
 
     private readonly AspireFixture _fixture;
 
@@ -38,14 +36,12 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     protected string GenerateTestToken(
         string userId = "test-user-id",
         string email = "test@example.com",
-        bool mustCompleteOnboarding = false,
         IEnumerable<string>? roles = null)
     {
         var (token, _) = _jwtTokenService.GenerateToken(
             userId,
             email,
-            roles ?? [],
-            mustCompleteOnboarding);
+            roles ?? []);
 
         return token;
     }
@@ -59,39 +55,24 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     }
 
     /// <summary>
-    /// Authenticates with a token for a user who must complete onboarding.
-    /// </summary>
-    protected void AuthenticateAsOnboardingUser()
-    {
-        var token = GenerateTestToken(
-            userId: "onboarding-user-id",
-            email: "onboarding@example.com",
-            mustCompleteOnboarding: true,
-            roles: ["Admin"]);
-        AuthenticateWithToken(token);
-    }
-
-    /// <summary>
-    /// Authenticates with a token for a regular user (onboarding complete).
+    /// Authenticates with a token for a regular user.
     /// </summary>
     protected void AuthenticateAsRegularUser()
     {
         var token = GenerateTestToken(
             userId: "regular-user-id",
-            email: "regular@example.com",
-            mustCompleteOnboarding: false);
+            email: "regular@example.com");
         AuthenticateWithToken(token);
     }
 
     /// <summary>
-    /// Authenticates with a token for a admin user (onboarding complete).
+    /// Authenticates with a token for a admin user.
     /// </summary>
     protected void AuthenticateAsAdminUser()
     {
         var token = GenerateTestToken(
             userId: "admin-user-id",
             email: "admin@example.com",
-            mustCompleteOnboarding: false,
             roles: ["Admin"]);
         AuthenticateWithToken(token);
     }
@@ -103,7 +84,6 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     public async Task<(string UserID, string Email, string Password)> CreateTestUserAsync(
         string? email = null,
         string? password = null,
-        bool requiresOnboarding = false,
         IEnumerable<string>? roles = null)
     {
         email ??= $"test-{Guid.NewGuid()}@example.com";
@@ -135,47 +115,23 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     }
 
     /// <summary>
-    /// Ensures the admin user is ready (onboarding completed) and returns a valid token.
-    /// Thread-safe and caches the onboarding completion state per Aspire instance.
+    /// Ensures the admin user is created and returns a valid token.
+    /// Thread-safe and caches the admin user creation state per Aspire instance.
     /// </summary>
     protected async Task<(string Token, string RefreshToken)> EnsureAdminReadyAsync()
     {
         await _fixture.AdminLock.WaitAsync();
+
         try
         {
-            if (_fixture.AdminOnboardingCompleted)
+            if (_fixture.AdminUserCreated)
             {
                 // Admin already set up in this Aspire instance, just login with new password
-                return await LoginUserAsync(AdminEmail, NewAdminPassword);
+                return await LoginUserAsync(AdminEmail, AdminPassword);
             }
 
-            // Try login with original password (first time setup for this Aspire instance)
-            string adminToken;
-            try
-            {
-                var (Token, RefreshToken) = await LoginUserAsync(AdminEmail, OriginalAdminPassword);
-                adminToken = Token;
-            }
-            catch
-            {
-                // If original password fails, admin must already be set up
-                _fixture.AdminOnboardingCompleted = true;
-                return await LoginUserAsync(AdminEmail, NewAdminPassword);
-            }
-
-            // Complete onboarding
-            AuthenticateWithToken(adminToken);
-            var completeOnboardingRequest = new CompleteOnboardingCommand(
-                CurrentPassword: OriginalAdminPassword,
-                NewPassword: NewAdminPassword,
-                NewEmail: AdminEmail
-            );
-            var response = await Client.PutAsJsonAsync("/api/auth/complete-onboarding", completeOnboardingRequest);
-            response.EnsureSuccessStatusCode();
-
-            // Mark as completed for this Aspire instance and login with new password
-            _fixture.AdminOnboardingCompleted = true;
-            return await LoginUserAsync(AdminEmail, NewAdminPassword);
+            // TODO: Create the admin user
+            return default;
         }
         finally
         {

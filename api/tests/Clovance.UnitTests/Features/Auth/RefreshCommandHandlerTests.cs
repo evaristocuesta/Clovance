@@ -78,7 +78,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
             })));
 
         _jwtTokenService
-            .GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<bool>())
+            .GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("newAccessToken", DateTime.UtcNow.AddMinutes(30)));
 
         _jwtTokenService

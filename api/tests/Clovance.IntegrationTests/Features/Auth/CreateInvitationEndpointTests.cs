@@ -15,7 +15,7 @@ public class CreateInvitationEndpointTests : IntegrationTestBase
         // Arrange
         AuthenticateAsAdminUser();
         var adminUser = await GetAdminUserAsync();
-        AuthenticateWithToken(GenerateTestToken(adminUser.Id, adminUser.Email, adminUser.MustCompleteOnboarding, adminUser.Roles));
+        AuthenticateWithToken(GenerateTestToken(adminUser.Id, adminUser.Email, adminUser.Roles));
         var email = $"test-{Guid.NewGuid()}@example.com";
 
         // Get an authenticated admin token
@@ -49,7 +49,7 @@ public class CreateInvitationEndpointTests : IntegrationTestBase
     [Fact]
     public async Task CreateInvitationEndpoint_ReturnsBadRequest_ForInvalidRequest()
     {
-        // Arrange - authenticate with user that has not completed onboarding
+        // Arrange - authenticate with admin user
         AuthenticateAsAdminUser();
 
         // Act - call the create invitation endpoint with invalid data
