@@ -4,11 +4,17 @@ namespace Clovance.ApiService.Infrastructure.Database;
 
 public static class IdentitySeederExtensions
 {
+    private const string AdminRole = "Admin";
+
     public static async Task SeedIdentityAsync(this IApplicationBuilder app)
     {
         using var scope = app.ApplicationServices.CreateScope();
 
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        if (!await roleManager.RoleExistsAsync(AdminRole))
+        {
+            await roleManager.CreateAsync(new IdentityRole(AdminRole));
+        }
     }
 }

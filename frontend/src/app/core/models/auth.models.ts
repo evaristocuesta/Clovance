@@ -9,6 +9,12 @@ export interface LoginResponse {
   token_type: string;
 }
 
+export interface SetupRequest {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export interface RefreshResult {
   token: string;
   expiresAt: Date;

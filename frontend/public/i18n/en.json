@@ -18,14 +18,34 @@
         "signInButton": "Sign in",
         "emailRequired": "Email is required",
         "emailInvalid": "Please enter a valid email address",
-        "passwordRequired": "Password is required"
+        "passwordRequired": "Password is required",
+        "serverError": "An error occurred while trying to log in. Please try again later."
     }, 
     "auth": {
         "invalid_credentials": "Invalid email or password"
     }, 
     "setup": {
+        "title": "Set up your account",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "passwordRequired": "Password is required",
+        "passwordMinLength": "Password must be at least 12 characters",
+        "passwordMissingDigit": "Password must include at least one number",
+        "passwordMissingLowercase": "Password must include at least one lowercase letter",
+        "passwordMissingUppercase": "Password must include at least one uppercase letter",
+        "passwordMissingNonAlphanumeric": "Password must include at least one special character",
+        "confirmPasswordLabel": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "confirmPasswordRequired": "Confirm password is required",
+        "passwordMismatch": "Passwords do not match",
+        "serverError": "An error occurred while trying to complete the setup. Please try again later.",
         "auth.setup.is_not_completed": "Setup is not completed. Please complete the setup to continue.",
-        "auth.setup.already_been_completed": "Setup has already been completed. Please log in to continue."
+        "auth.setup.already_been_completed": "Setup has already been completed. Please log in to continue.",
+        "createAccount": "Create account"
     },
     "mainLayout": {
         "sidebar": {
