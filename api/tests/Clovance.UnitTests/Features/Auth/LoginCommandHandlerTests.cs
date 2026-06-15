@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Clovance.UnitTests.Features.Auth;
 
@@ -66,6 +67,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
         _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns((expectedToken, expectedExpiresAt));
@@ -101,11 +103,32 @@ public class LoginCommandHandlerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task HandleAsync_WithNonExistentUser_ReturnsInvalidCredentialsError()
+    public async Task HandleAsync_WithSetupNotCompleted_ReturnsSetupIsNotCompletedError()
     {
         var command = new LoginCommand("nonexistent@example.com", "Password123!");
 
         _userManager.FindByEmailAsync(command.Email).Returns((ApplicationUser?)null);
+
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsFailure);
+        Assert.NotNull(result.Error);
+        Assert.Equal(ErrorCodes.Auth.SetupIsNotCompleted, result.Error.Code);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithNonExistentUser_ReturnsInvalidCredentialsError()
+    {
+        var command = new LoginCommand("nonexistent@example.com", "Password123!");
+
+        var user = new ApplicationUser
+        {
+            UserName = "test@example.com",
+            Email = "test@example.com"
+        };
+
+        _userManager.FindByEmailAsync(command.Email).Returns((ApplicationUser?)null);
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -118,6 +141,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
     public async Task HandleAsync_WithInvalidPassword_ReturnsInvalidCredentialsError()
     {
         var command = new LoginCommand("test@example.com", "WrongPassword");
+
         var user = new ApplicationUser
         {
             UserName = "test@example.com",
@@ -126,6 +150,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(false);
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -139,12 +164,14 @@ public class LoginCommandHandlerTests : IAsyncLifetime
     {
         // Arrange
         var command = new LoginCommand("test@example.com", "Password123!");
+
         var user = new ApplicationUser
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "test@example.com",
             Email = "test@example.com"
         };
+
         var roles = new List<string> { "User" };
         var expectedRefreshToken = "refresh-token-abc123";
         var expectedHashedToken = "hashed-refresh-token";
@@ -153,6 +180,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
         _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", expectedExpiresAt));
@@ -176,18 +204,21 @@ public class LoginCommandHandlerTests : IAsyncLifetime
     {
         // Arrange
         var command = new LoginCommand("test@example.com", "Password123!");
+
         var user = new ApplicationUser
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "test@example.com",
             Email = "test@example.com"
         };
+
         var roles = new List<string> { "User" };
         var expectedRefreshToken = "refresh-token-xyz789";
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
         _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(60)));
