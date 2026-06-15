@@ -21,8 +21,12 @@ public static class ErrorCodes
         public const string UserDeletionFailed = "auth.user.deletion_failed";
         public const string UserAlreadyExists = "auth.user.already_exists";
         public const string UserCreationFailed = "auth.user.creation_failed";
+
         public const string UserIdRequired = "auth.user_id.required";
         public const string UserIdInvalid = "auth.user_id.invalid";
+
+        public const string SetupAlreadyBeenCompleted = "auth.setup.already_been_completed";
+        public const string SetupIsNotCompleted = "auth.setup.is_not_completed";
 
         public const string InvitationInvalidOrExpired = "auth.invitation.invalid_or_expired";
         public const string ActiveInvitationAlreadyExists = "auth.invitation.active_already_exists";

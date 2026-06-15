@@ -1,7 +1,10 @@
 ﻿using Aspire.Hosting;
 using Aspire.Hosting.Testing;
 using Clovance.ApiService.Infrastructure.Authentication;
+using Clovance.ApiService.Infrastructure.Database;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Clovance.IntegrationTests;
 
@@ -57,6 +60,10 @@ public class AspireFixture : IAsyncLifetime
             .Build();
 
         _jwtTokenService = new JwtTokenService(configuration);
+
+        using var scope = _app.Services.CreateScope();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         // Wait for the service to be fully ready
         await Task.Delay(3000);

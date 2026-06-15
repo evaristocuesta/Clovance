@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, RefreshResult, TokenPayload } from '../models/auth.models';
 
 @Injectable({
@@ -56,6 +56,14 @@ export class AuthService {
         tap({
           next: () => this._accessToken.set(null)
         })
+      );
+  }
+
+  setupCompleted(): Observable<boolean> {
+    return this.http
+      .get<{ isSetupCompleted: boolean }>('/api/auth/setup-completed')
+      .pipe(
+        map(response => response.isSetupCompleted)
       );
   }
 

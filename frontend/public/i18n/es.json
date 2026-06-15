@@ -23,6 +23,10 @@
     "auth": {
         "invalid_credentials": "Email o contraseña inválidos"
     },
+    "setup": {
+        "auth.setup.is_not_completed": "La configuración no está completa. Por favor, completa la configuración para continuar.",
+        "auth.setup.already_been_completed": "La configuración ya ha sido completada. Por favor, inicia sesión para continuar." 
+    },
     "mainLayout": {
         "sidebar": {
             "transactions": "Transacciones",

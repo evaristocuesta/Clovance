@@ -27,6 +27,13 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
 
     public async Task<Result<LoginResult>> HandleAsync(LoginCommand request, CancellationToken cancellationToken)
     {
+        var users = _userManager.Users.ToList();
+
+        if (!users.Any())
+        {
+            return Result<LoginResult>.Failure(AppErrors.Auth.SetupIsNotCompleted());
+        }
+
         var httpContext = _httpContextAccessor.HttpContext
             ?? throw new InvalidOperationException("HttpContext is not available.");
 

@@ -11,6 +11,7 @@ export const routes: Routes = [
         canActivate: [publicGuard],
         children: [
             { path: 'login', loadComponent: () => import('@features/auth/login/login').then(m => m.Login) },
+            { path: 'setup', loadComponent: () => import('@features/auth/setup/setup').then(m => m.Setup) },
             { path: '', redirectTo: 'login', pathMatch: 'full' }
         ]
     }, 
