@@ -18,14 +18,34 @@
         "signInButton": "Iniciar sesión",
         "emailRequired": "El email es obligatorio",
         "emailInvalid": "Por favor, introduce una dirección de email válida",
-        "passwordRequired": "La contraseña es obligatoria"
+        "passwordRequired": "La contraseña es obligatoria",
+        "serverError": "Ocurrió un error al intentar iniciar sesión. Por favor, inténtalo de nuevo más tarde."
     }, 
     "auth": {
         "invalid_credentials": "Email o contraseña inválidos"
     },
     "setup": {
+        "title": "Configura tu cuenta",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Introduce tu email",
+        "emailRequired": "El email es obligatorio",
+        "emailInvalid": "Por favor, introduce una dirección de email válida",
+        "passwordLabel": "Contraseña",
+        "passwordPlaceholder": "Introduce tu contraseña",
+        "passwordRequired": "La contraseña es obligatoria",
+        "passwordMinLength": "La contraseña debe tener al menos 12 caracteres",
+        "passwordMissingDigit": "La contraseña debe incluir al menos un número",
+        "passwordMissingLowercase": "La contraseña debe incluir al menos una letra minúscula",
+        "passwordMissingUppercase": "La contraseña debe incluir al menos una letra mayúscula",
+        "passwordMissingNonAlphanumeric": "La contraseña debe incluir al menos un carácter especial",
+        "confirmPasswordLabel": "Confirmar contraseña",
+        "confirmPasswordPlaceholder": "Confirma tu contraseña",
+        "confirmPasswordRequired": "La confirmación de la contraseña es obligatoria",
+        "passwordMismatch": "Las contraseñas no coinciden",
+        "serverError": "Ocurrió un error al intentar completar la configuración. Por favor, inténtalo de nuevo más tarde.",
         "auth.setup.is_not_completed": "La configuración no está completa. Por favor, completa la configuración para continuar.",
-        "auth.setup.already_been_completed": "La configuración ya ha sido completada. Por favor, inicia sesión para continuar." 
+        "auth.setup.already_been_completed": "La configuración ya ha sido completada. Por favor, inicia sesión para continuar.",
+        "createAccount": "Crear cuenta"
     },
     "mainLayout": {
         "sidebar": {

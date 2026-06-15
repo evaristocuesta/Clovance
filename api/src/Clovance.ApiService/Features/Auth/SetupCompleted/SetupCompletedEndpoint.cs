@@ -17,6 +17,7 @@ public class SetupCompletedEndpoint : IApiEndPoint
             {
                 return result.ToProblemResult(httpContext);
             }
+
             return Results.Ok(result.Value);
         })
         .Produces<SetupCompletedResult>(StatusCodes.Status200OK)
