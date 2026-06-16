@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Clovance.ApiService.Features.Auth.GetUserById;
 
-public sealed class GetUserByIdValidator : AbstractValidator<GetUserByIdRequest>
+public sealed class GetUserByIdValidator : AbstractValidator<GetUserByIdQuery>
 {
     public GetUserByIdValidator()
     {

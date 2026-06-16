@@ -26,3 +26,9 @@ export interface TokenPayload {
   role: string;
   exp: number;
 }
+
+export interface UserInfo {
+  id: string;
+  email: string;
+  roles: string[];
+}

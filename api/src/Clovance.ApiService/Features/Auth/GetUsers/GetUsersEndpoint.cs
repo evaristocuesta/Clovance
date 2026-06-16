@@ -7,11 +7,11 @@ public class GetUsersEndPoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("users", async (
-            IHandler<GetUsersRequest, Result<GetUsersResult>> handler,
+            IHandler<GetUsersQuery, Result<GetUsersResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
-            var result = await handler.HandleAsync(new GetUsersRequest(), cancellationToken);
+            var result = await handler.HandleAsync(new GetUsersQuery(), cancellationToken);
 
             if (result.IsFailure)
             {

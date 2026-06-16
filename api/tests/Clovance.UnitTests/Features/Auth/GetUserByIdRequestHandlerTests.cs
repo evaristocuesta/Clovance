@@ -9,7 +9,7 @@ namespace Clovance.UnitTests.Features.Auth;
 public class GetUserByIdRequestHandlerTests
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly GetUserByIdRequestHandler _handler;
+    private readonly GetUserByIdQueryHandler _handler;
 
     public GetUserByIdRequestHandlerTests()
     {
@@ -17,7 +17,7 @@ public class GetUserByIdRequestHandlerTests
             Substitute.For<IUserStore<ApplicationUser>>(),
             null, null, null, null, null, null, null, null);
 
-        _handler = new GetUserByIdRequestHandler(_userManager);
+        _handler = new GetUserByIdQueryHandler(_userManager);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class GetUserByIdRequestHandlerTests
         var user = new ApplicationUser { Id = "testuser", UserName = "testuser@example.com", Email = "testuser@example.com" };
         _userManager.Users.Returns(new[] { user }.AsQueryable());
         _userManager.GetRolesAsync(user).Returns(new List<string> { "Admin" });
-        var request = new GetUserByIdRequest(UserId: "testuser");
+        var request = new GetUserByIdQuery(UserId: "testuser");
 
         // Act
         var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);
@@ -44,7 +44,7 @@ public class GetUserByIdRequestHandlerTests
     {
         // Arrange
         _userManager.Users.Returns(Enumerable.Empty<ApplicationUser>().AsQueryable());
-        var request = new GetUserByIdRequest(UserId: "nonexistentuser");
+        var request = new GetUserByIdQuery(UserId: "nonexistentuser");
 
         // Act
         var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);

@@ -55,6 +55,7 @@
         },
         "userMenu": {
             "accountSettings": "Configuración cuenta",
+            "users": "Usuarios",
             "logout": "Cerrar sesión"
         }, 
         "topbar": {
