@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
-import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload } from '../models/auth.models';
+import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo } from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +11,7 @@ export class AuthService {
 
   // Access token lives only in memory — never in localStorage
   private _accessToken = signal<string | null>(null);
+  private _currentUser = signal<UserInfo | null>(null);
 
   readonly isAuthenticated = computed(() => {
     const token = this._accessToken();
@@ -32,6 +33,7 @@ export class AuthService {
         tap({
           next: response => {
             this._accessToken.set(response.access_token);
+            this.loadCurrentUser().subscribe(); // Load current user info after login
           }
         })
       );
@@ -44,7 +46,10 @@ export class AuthService {
       })
       .pipe(
         tap({
-          next: response => this._accessToken.set(response.token)
+          next: response => {
+            this._accessToken.set(response.token);
+            this.loadCurrentUser().subscribe(); // Load current user info after token refresh
+          }
         })
       );
   }
@@ -54,10 +59,14 @@ export class AuthService {
       .post<void>('/api/auth/logout', {}, { withCredentials: true })
       .pipe(
         tap({
-          next: () => this._accessToken.set(null)
+          next: () => {
+            this._accessToken.set(null);
+            this._currentUser.set(null);
+          }
         })
       );
   }
+
 
   setup(setupRequest: SetupRequest): Observable<void> {
     return this.http
@@ -73,8 +82,27 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return this._accessToken();
+    return this._accessToken.asReadonly()();
   }
+
+  getCurrentUser(): UserInfo | null {
+    return this._currentUser.asReadonly()();
+  }
+
+  loadCurrentUser(): Observable<UserInfo> {
+    return this.http
+      .get<UserInfo>('/api/auth/users/me')
+      .pipe(
+        tap({
+          next: user => this._currentUser.set(user)
+        })
+      );
+  }
+
+  readonly isAdmin = computed((): boolean => {
+    const user = this.getCurrentUser();
+    return user ? user.roles.includes('Admin') : false;
+  });
 
   private decodeToken(token: string): TokenPayload | null {
     try {

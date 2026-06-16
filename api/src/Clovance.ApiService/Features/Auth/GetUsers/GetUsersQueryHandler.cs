@@ -4,15 +4,15 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Clovance.ApiService.Features.Auth.GetUsers;
 
-public class GetUsersRequestHandler : IHandler<GetUsersRequest, Result<GetUsersResult>>
+public class GetUsersQueryHandler : IHandler<GetUsersQuery, Result<GetUsersResult>>
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    public GetUsersRequestHandler(UserManager<ApplicationUser> userManager)
+    public GetUsersQueryHandler(UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
     }
 
-    public async Task<Result<GetUsersResult>> HandleAsync(GetUsersRequest request, CancellationToken cancellationToken)
+    public async Task<Result<GetUsersResult>> HandleAsync(GetUsersQuery request, CancellationToken cancellationToken)
     {
         var users = _userManager.Users.ToList();
         var userDtos = new List<UserDto>();

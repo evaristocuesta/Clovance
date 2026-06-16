@@ -7,12 +7,12 @@ public class GetUserByIdEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("users/{id}", async (
-            IHandler<GetUserByIdRequest, Result<GetUserByIdResult>> handler,
+            IHandler<GetUserByIdQuery, Result<GetUserByIdResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken,
             string id) =>
         {
-            var result = await handler.HandleAsync(new GetUserByIdRequest(id), cancellationToken);
+            var result = await handler.HandleAsync(new GetUserByIdQuery(id), cancellationToken);
 
             if (result.IsFailure)
             {

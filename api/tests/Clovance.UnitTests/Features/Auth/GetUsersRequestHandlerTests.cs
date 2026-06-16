@@ -8,7 +8,7 @@ namespace Clovance.UnitTests.Features.Auth;
 public class GetUsersRequestHandlerTests
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly GetUsersRequestHandler _handler;
+    private readonly GetUsersQueryHandler _handler;
 
     public GetUsersRequestHandlerTests()
     {
@@ -16,7 +16,7 @@ public class GetUsersRequestHandlerTests
             Substitute.For<IUserStore<ApplicationUser>>(),
             null, null, null, null, null, null, null, null);
 
-        _handler = new GetUsersRequestHandler(_userManager);
+        _handler = new GetUsersQueryHandler(_userManager);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class GetUsersRequestHandlerTests
 
         _userManager.Users.Returns(users.AsQueryable());
 
-        var request = new GetUsersRequest();
+        var request = new GetUsersQuery();
 
         // Act
         var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);
@@ -47,7 +47,7 @@ public class GetUsersRequestHandlerTests
     {
         // Arrange
         _userManager.Users.Returns(Enumerable.Empty<ApplicationUser>().AsQueryable());
-        var request = new GetUsersRequest();
+        var request = new GetUsersQuery();
 
         // Act
         var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);

@@ -18,8 +18,9 @@ import { LogoFull } from "@shared/components/logo-full/logo-full";
 export class MainLayout implements AfterViewInit {
 
   private readonly translocoService = inject(TranslocoService);
-  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  readonly authService = inject(AuthService);
   
   constructor() {
     // Load saved language preference
