@@ -55,9 +55,9 @@
        id="language-dropdown">
     <ul class="py-1" role="none">
       <li>
-        <a href="#"
+        <button type="button"
            (click)="changeLanguage('es')"
-           class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
+           class="block py-2 px-4 w-full text-left cursor-pointer text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
            role="menuitem">
           <div class="inline-flex items-center">
             <svg aria-hidden="true"
@@ -70,12 +70,12 @@
             </svg>
             {{ t('language.spanish') }}
           </div>
-        </a>
+        </button>
       </li>
       <li>
-        <a href="#"
+        <button type="button"
            (click)="changeLanguage('en')"
-           class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:text-white dark:text-gray-300 dark:hover:bg-gray-600"
+           class="block py-2 px-4 w-full text-left cursor-pointer text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
            role="menuitem">
           <div class="inline-flex items-center">
             <svg aria-hidden="true"
@@ -101,7 +101,7 @@
             </svg>
             {{ t('language.english') }}
           </div>
-        </a>
+        </button>
       </li>
     </ul>
   </div>

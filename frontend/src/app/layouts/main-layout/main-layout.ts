@@ -5,10 +5,12 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { LanguageSelection } from '@shared/components/language-selection/language-selection';
 import { ThemeToggle } from '@shared/components/theme-toggle/theme-toggle';
 import { initFlowbite } from 'flowbite';
+import { Logo } from "@shared/components/logo/logo";
+import { LogoFull } from "@shared/components/logo-full/logo-full";
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, ThemeToggle, LanguageSelection, TranslocoDirective],
+  imports: [RouterOutlet, ThemeToggle, LanguageSelection, TranslocoDirective, Logo, LogoFull],
   templateUrl: './main-layout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './main-layout.css',

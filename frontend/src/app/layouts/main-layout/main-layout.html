@@ -24,22 +24,12 @@
                   d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                   clip-rule="evenodd"></path>
           </svg>
-          <span class="sr-only">{{ t('topbar.toggleSidebar') }}</span>
+          <span class="sr-only">{{ t('mainLayout.topbar.toggleSidebar') }}</span>
         </button>
-        <a href="/" class="flex items-center justify-between mr-4">
-          <img src="/images/clovance-logo.svg"
-               class="mr-3 h-10 dark:hidden"
-               alt="Clovance Logo" />
-          <img src="/images/clovance-logo-dark.svg"
-               class="mr-3 h-10 hidden dark:block"
-               alt="Clovance Logo" />
-          <img src="/images/clovance.svg"
-               class="mr-3 h-9 dark:hidden"
-               alt="Clovance" />
-          <img src="/images/clovance-dark.svg"
-               class="mr-3 h-9 hidden dark:block"
-               alt="Clovance" />
-        </a>
+        <div class="flex items-center justify-between mr-4">
+          <app-logo class="mr-3 h-10 w-auto block xs:hidden md:block text-black dark:text-white" />
+          <app-logo-full class="mb-1 h-8 sm:h-9 w-auto hidden xs:block text-black dark:text-white" />
+        </div>
       </div>
       <div class="flex items-center lg:order-2">
         <!-- Language selector -->
@@ -48,11 +38,11 @@
         <app-theme-toggle></app-theme-toggle>
 
         <button type="button"
-                class="p-2 text-sm text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
+                class="p-0 sm:p-2 text-sm text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
                 id="user-menu-button"
                 aria-expanded="false"
                 data-dropdown-toggle="dropdown">
-          <span class="sr-only">{{ t('topbar.openUserMenu') }}</span>
+          <span class="sr-only">{{ t('mainLayout.topbar.openUserMenu') }}</span>
           <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.948 8.948 0 0 0 12 21Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
           </svg>
@@ -105,8 +95,8 @@
           <button type="button"
                   class="flex items-center p-2 w-full cursor-pointer text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
             <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16h13M4 16l4-4m-4 4 4 4M20 8H7m13 0-4 4m4-4-4-4"/>
-          </svg>
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16h13M4 16l4-4m-4 4 4 4M20 8H7m13 0-4 4m4-4-4-4"/>
+            </svg>
             <span class="flex-1 ml-3 text-left whitespace-nowrap">{{ t('mainLayout.sidebar.transactions') }}</span>
           </button>
         </li>
