@@ -56,6 +56,10 @@
         "userMenu": {
             "accountSettings": "Account settings",
             "logout": "Logout"
+        },
+        "topbar": {
+            "toggleSidebar": "Toggle sidebar",
+            "openUserMenu": "Open user menu"
         }
     }
 }

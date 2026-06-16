@@ -7,10 +7,11 @@ import { SetupRequest } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { LogoFull } from "@shared/components/logo-full/logo-full";
 
 @Component({
   selector: 'app-setup',
-  imports: [CommonModule, TranslocoDirective, FormField, FormRoot],
+  imports: [CommonModule, TranslocoDirective, FormField, FormRoot, LogoFull],
   templateUrl: './setup.html',
   styleUrl: './setup.css',
 })
@@ -25,24 +26,23 @@ export class Setup {
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly translocoService = inject(TranslocoService);
-
+  
   setupForm = form(
     this.setupRequest,
     (schemaPath) => {
-      required(schemaPath.email, { message: this.translocoService.translate('setup.emailRequired') });
-      email(schemaPath.email, { message: this.translocoService.translate('setup.emailInvalid') });
+      required(schemaPath.email, { message: 'setup.emailRequired' });
+      email(schemaPath.email, { message: 'setup.emailInvalid' });
       required(schemaPath.password, {
-        message: this.translocoService.translate('setup.passwordRequired'),
+        message: 'setup.passwordRequired',
       });
-      minLength(schemaPath.password, 12, {message: this.translocoService.translate('setup.passwordMinLength')});
+      minLength(schemaPath.password, 12, {message: 'setup.passwordMinLength'});
       validate(schemaPath.password, ({ value }) => {
         const password = value();
 
         if (!/[0-9]/.test(password)) {
           return {
             kind: 'passwordMissingDigit',
-            message: this.translocoService.translate('setup.passwordMissingDigit'),
+            message: 'setup.passwordMissingDigit',
           };
         }
 
@@ -54,7 +54,7 @@ export class Setup {
         if (!/[a-z]/.test(password)) {
           return {
             kind: 'passwordMissingLowercase',
-            message: this.translocoService.translate('setup.passwordMissingLowercase'),
+            message: 'setup.passwordMissingLowercase',
           };
         }
 
@@ -66,7 +66,7 @@ export class Setup {
         if (!/[A-Z]/.test(password)) {
           return {
             kind: 'passwordMissingUppercase',
-            message: this.translocoService.translate('setup.passwordMissingUppercase'),
+            message: 'setup.passwordMissingUppercase',
           };
         }
 
@@ -78,14 +78,14 @@ export class Setup {
         if (!/[^a-zA-Z0-9]/.test(password)) {
           return {
             kind: 'passwordMissingNonAlphanumeric',
-            message: this.translocoService.translate('setup.passwordMissingNonAlphanumeric'),
+            message: 'setup.passwordMissingNonAlphanumeric',
           };
         }
 
         return null;
       });
       required(schemaPath.confirmPassword, {
-        message: this.translocoService.translate('setup.confirmPasswordRequired'),
+        message: 'setup.confirmPasswordRequired',
       });
       validate(schemaPath.confirmPassword, ({value, valueOf}) => {
         const confirmPassword = value();
@@ -94,7 +94,7 @@ export class Setup {
         if (confirmPassword !== password) {
           return {
             kind: 'passwordMismatch',
-            message: this.translocoService.translate('setup.passwordMismatch'),
+            message: 'setup.passwordMismatch',
           };
         }
 
@@ -112,7 +112,7 @@ export class Setup {
           } catch (err: HttpErrorResponse | any) {
             const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
             const key = errorCode ? errorCode : 'setup.serverError';
-            this.errorMessage.set(this.translocoService.translate(key));
+            this.errorMessage.set(key);
           }
         },
       },

@@ -56,6 +56,10 @@
         "userMenu": {
             "accountSettings": "Configuración cuenta",
             "logout": "Cerrar sesión"
+        }, 
+        "topbar": {
+            "toggleSidebar": "Alternar barra lateral",
+            "openUserMenu": "Abrir menú de usuario"
         }
     }
 }
