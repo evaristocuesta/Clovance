@@ -13,8 +13,7 @@ public class LogoutEndpointTests : IntegrationTestBase
     public async Task LogoutEndpoint_ReturnsNoContent()
     {
         // Arrange
-        await EnsureAdminReadyAsync();
-        var (token, refreshToken) = await LoginUserAsync(AdminEmail, AdminPassword);
+        var (token, refreshToken) = await EnsureAdminReadyAsync();
         AuthenticateWithToken(token);
 
         // Act
