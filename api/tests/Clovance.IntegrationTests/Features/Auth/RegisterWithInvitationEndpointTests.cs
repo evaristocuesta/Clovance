@@ -14,8 +14,7 @@ public class RegisterWithInvitationEndpointTests : IntegrationTestBase
     public async Task RegisterWithInvitationEndpoint_ReturnsCreated()
     {
         // Arrange
-        await EnsureAdminReadyAsync();
-        var (token, refreshToken) = await LoginUserAsync(AdminEmail, AdminPassword);
+        var (token, refreshToken) = await EnsureAdminReadyAsync();
         AuthenticateWithToken(token);
 
         var responseInvitation = await Client.PostAsJsonAsync(
@@ -54,8 +53,7 @@ public class RegisterWithInvitationEndpointTests : IntegrationTestBase
     public async Task RegisterWithInvitationEndpoint_ReturnsUnauthorizedForInvalidToken()
     {
         // Arrange
-        await EnsureAdminReadyAsync();
-        var (token, refreshToken) = await LoginUserAsync(AdminEmail, AdminPassword);
+        var (token, refreshToken) = await EnsureAdminReadyAsync();
         AuthenticateWithToken(token);
 
         var responseInvitation = await Client.PostAsJsonAsync(
