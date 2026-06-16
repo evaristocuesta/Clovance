@@ -13,13 +13,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const token = auth.getAccessToken();
 
+  const authCalls = ['/auth/login', '/auth/refresh', '/auth/register-with-invitation'];
+
   const authReq = token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('/auth/')) {
+      if (error.status === 401 && !authCalls.some(call => req.url.includes(call))) {
         // Expired token → try refresh and retry the original request
         return auth.refreshToken().pipe(
           switchMap(response => {
