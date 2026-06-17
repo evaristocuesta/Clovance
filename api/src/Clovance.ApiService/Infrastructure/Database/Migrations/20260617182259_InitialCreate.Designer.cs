@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Clovance.ApiService.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ClovanceDbContext))]
-    [Migration("20260615165813_InitialCreate")]
+    [Migration("20260617182259_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -227,6 +227,16 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");

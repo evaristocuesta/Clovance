@@ -48,6 +48,8 @@ public sealed class RegisterWithInvitationCommandHandler : IHandler<RegisterWith
 
         var user = new ApplicationUser
         {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             UserName = request.Email,
             Email = request.Email,
             EmailConfirmed = true
