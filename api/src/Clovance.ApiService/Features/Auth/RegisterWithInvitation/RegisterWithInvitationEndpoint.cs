@@ -6,7 +6,7 @@ public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapPost("/register-with-invitation", async (
+        app.MapPost("/users/register", async (
             RegisterWithInvitationCommand command,
             IHandler<RegisterWithInvitationCommand, Result<RegisterWithInvitationResult>> handler,
             HttpContext httpContext,

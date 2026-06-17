@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
-import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo, CreateInvitationCommand, CreateInvitationResult } from '../models/auth.models';
+import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo, CreateInvitationCommand, CreateInvitationResult, RegisterWithInvitationRequest, RegisterWithInvitationResult } from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root',
@@ -112,6 +112,11 @@ export class AuthService {
   sendInvitation(userInvitation: CreateInvitationCommand): Observable<CreateInvitationResult> {
     return this.http
       .post<CreateInvitationResult>('/api/auth/invitations', userInvitation);
+  }
+
+  registerWithInvitation(request: RegisterWithInvitationRequest): Observable<RegisterWithInvitationResult> {
+    return this.http
+      .post<RegisterWithInvitationResult>('/api/auth/users/register', request);
   }
 
   readonly isAdmin = computed((): boolean => {

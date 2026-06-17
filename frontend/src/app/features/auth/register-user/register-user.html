@@ -1,0 +1,69 @@
+<section class="bg-gray-50 dark:bg-gray-900" *transloco="let t">
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <div class="w-60 text-center mb-4">
+      <app-logo-full class="mr-1 text-black dark:text-white" />
+    </div>
+    <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+          {{ t('setup.title') }}
+        </h1>
+        <form [formRoot]="registerForm" class="space-y-4 md:space-y-6" novalidate>
+          <div>
+            <label for="firstName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('setup.firstNameLabel') }}</label>
+            <input type="text" id="firstName" [formField]="registerForm.firstName" autocomplete="given-name" placeholder="{{ t('setup.firstNamePlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="registerForm.firstName().invalid() && registerForm.firstName().touched()" [class.border-gray-300]="!registerForm.firstName().invalid() || !registerForm.firstName().touched()" [class.dark:border-red-500]="registerForm.firstName().invalid() && registerForm.firstName().touched()" [class.dark:border-gray-600]="!registerForm.firstName().invalid() || !registerForm.firstName().touched()">
+            @if (registerForm.firstName().touched() && registerForm.firstName().errors().length && registerForm.firstName().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(registerForm.firstName().errors()[0].message!) }}</p>
+            }
+          </div>
+          <div>
+            <label for="lastName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('setup.lastNameLabel') }}</label>
+            <input type="text" id="lastName" [formField]="registerForm.lastName" autocomplete="family-name" placeholder="{{ t('setup.lastNamePlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="registerForm.lastName().invalid() && registerForm.lastName().touched()" [class.border-gray-300]="!registerForm.lastName().invalid() || !registerForm.lastName().touched()" [class.dark:border-red-500]="registerForm.lastName().invalid() && registerForm.lastName().touched()" [class.dark:border-gray-600]="!registerForm.lastName().invalid() || !registerForm.lastName().touched()">
+            @if (registerForm.lastName().touched() && registerForm.lastName().errors().length && registerForm.lastName().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(registerForm.lastName().errors()[0].message!) }}</p>
+            }
+          </div>          
+          <div>
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('setup.emailLabel') }}</label>
+            <input type="email" id="email" [formField]="registerForm.email" autocomplete="email" placeholder="{{ t('setup.emailPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="registerForm.email().invalid() && registerForm.email().touched()" [class.border-gray-300]="!registerForm.email().invalid() || !registerForm.email().touched()" [class.dark:border-red-500]="registerForm.email().invalid() && registerForm.email().touched()" [class.dark:border-gray-600]="!registerForm.email().invalid() || !registerForm.email().touched()">
+            @if (registerForm.email().touched() && registerForm.email().errors().length && registerForm.email().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(registerForm.email().errors()[0].message!) }}</p>
+            }
+          </div>
+          <div>
+            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('setup.passwordLabel') }}</label>
+            <input type="password" id="password" [formField]="registerForm.password" autocomplete="current-password" placeholder="{{ t('setup.passwordPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="registerForm.password().invalid() && registerForm.password().touched()" [class.border-gray-300]="!registerForm.password().invalid() || !registerForm.password().touched()" [class.dark:border-red-500]="registerForm.password().invalid() && registerForm.password().touched()" [class.dark:border-gray-600]="!registerForm.password().invalid() || !registerForm.password().touched()">
+            @if (registerForm.password().touched() && registerForm.password().errors().length && registerForm.password().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(registerForm.password().errors()[0].message!) }}</p>
+            }
+          </div>
+          <div>
+            <label for="confirmPassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('setup.confirmPasswordLabel') }}</label>
+            <input type="password" id="confirmPassword" [formField]="registerForm.confirmPassword" autocomplete="current-password" placeholder="{{ t('setup.confirmPasswordPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="registerForm.confirmPassword().invalid() && registerForm.confirmPassword().touched()" [class.border-gray-300]="!registerForm.confirmPassword().invalid() || !registerForm.confirmPassword().touched()" [class.dark:border-red-500]="registerForm.confirmPassword().invalid() && registerForm.confirmPassword().touched()" [class.dark:border-gray-600]="!registerForm.confirmPassword().invalid() || !registerForm.confirmPassword().touched()">
+            @if (registerForm.confirmPassword().touched() && registerForm.confirmPassword().errors().length && registerForm.confirmPassword().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(registerForm.confirmPassword().errors()[0].message!) }}</p>
+            }
+          </div>
+          <div>
+            <label for="token" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('setup.tokenLabel') }}</label>
+            <input type="text" id="token" [formField]="registerForm.token" autocomplete="off" placeholder="{{ t('setup.tokenPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [class.border-red-500]="registerForm.token().invalid() && registerForm.token().touched()" [class.border-gray-300]="!registerForm.token().invalid() || !registerForm.token().touched()" [class.dark:border-red-500]="registerForm.token().invalid() && registerForm.token().touched()" [class.dark:border-gray-600]="!registerForm.token().invalid() || !registerForm.token().touched()">
+            @if (registerForm.token().touched() && registerForm.token().errors().length && registerForm.token().errors()[0].message) {
+              <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(registerForm.token().errors()[0].message!) }}</p>
+            }
+          </div>
+          <button type="submit" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" [disabled]="registerForm().submitting()">
+            @if (registerForm().submitting()) {
+              {{ t('setup.createAccount') }}...
+            } @else {
+              {{ t('setup.createAccount') }}
+            }
+          </button>
+          @if (errorMessage()) {
+            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(errorMessage()) }}</p>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
