@@ -48,3 +48,17 @@ export interface CreateInvitationResult {
   expiresAt: Date;
   token: string;
 }
+
+export interface RegisterWithInvitationRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  token: string;
+}
+
+export interface RegisterWithInvitationResult {
+  id: string;
+  email: string;
+}

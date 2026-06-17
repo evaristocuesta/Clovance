@@ -65,7 +65,10 @@
         "confirmPasswordRequired": "La confirmación de la contraseña es obligatoria",
         "passwordMismatch": "Las contraseñas no coinciden",
         "serverError": "Ocurrió un error al intentar completar la configuración. Por favor, inténtalo de nuevo más tarde.",
-        "createAccount": "Crear cuenta"
+        "createAccount": "Crear cuenta", 
+        "tokenRequired": "El token es obligatorio", 
+        "tokenLabel": "Token",
+        "tokenPlaceholder": "Introduce tu token"
     },
     "mainLayout": {
         "sidebar": {

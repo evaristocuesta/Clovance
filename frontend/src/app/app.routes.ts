@@ -12,6 +12,7 @@ export const routes: Routes = [
         children: [
             { path: 'login', loadComponent: () => import('@features/auth/login/login').then(m => m.Login) },
             { path: 'setup', loadComponent: () => import('@features/auth/setup/setup').then(m => m.Setup) },
+            { path: 'register', loadComponent: () => import('@features/auth/register-user/register-user').then(m => m.RegisterUser) },
             { path: '', redirectTo: 'login', pathMatch: 'full' }
         ]
     }, 

@@ -13,7 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const token = auth.getAccessToken();
 
-  const authCalls = ['/auth/login', '/auth/refresh', '/auth/register-with-invitation'];
+  const authCalls = ['/auth/login', '/auth/refresh', '/auth/users/register'];
 
   const authReq = token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
