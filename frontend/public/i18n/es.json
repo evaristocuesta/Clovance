@@ -22,10 +22,31 @@
         "serverError": "Ocurrió un error al intentar iniciar sesión. Por favor, inténtalo de nuevo más tarde."
     }, 
     "auth": {
-        "invalid_credentials": "Email o contraseña inválidos"
+        "invalid_credentials": "Email o contraseña inválidos",
+        "setup": {
+            "is_not_completed": "La configuración no está completa. Por favor, completa la configuración para continuar.",
+            "already_been_completed": "La configuración ya ha sido completada. Por favor, inicia sesión para continuar."
+        },
+        "user": {
+            "not_authenticated": "Usuario no autenticado",
+            "already_exists": "El usuario ya existe",
+            "not_found": "Usuario no encontrado"
+        }, 
+        "invitation": {
+            "invalid_or_expired": "Invitación inválida o expirada",
+            "active_already_exists": "Ya existe una invitación activa para este email"
+        }
     },
     "setup": {
         "title": "Configura tu cuenta",
+        "firstNameLabel": "Nombre",
+        "firstNamePlaceholder": "Introduce tu nombre",
+        "firstNameRequired": "El nombre es obligatorio",
+        "firstNameMaxLength": "El nombre no debe exceder los 100 caracteres",
+        "lastNameLabel": "Apellido",
+        "lastNamePlaceholder": "Introduce tu apellido",
+        "lastNameRequired": "El apellido es obligatorio",
+        "lastNameMaxLength": "El apellido no debe exceder los 100 caracteres",
         "emailLabel": "Email",
         "emailPlaceholder": "Introduce tu email",
         "emailRequired": "El email es obligatorio",
@@ -43,8 +64,6 @@
         "confirmPasswordRequired": "La confirmación de la contraseña es obligatoria",
         "passwordMismatch": "Las contraseñas no coinciden",
         "serverError": "Ocurrió un error al intentar completar la configuración. Por favor, inténtalo de nuevo más tarde.",
-        "auth.setup.is_not_completed": "La configuración no está completa. Por favor, completa la configuración para continuar.",
-        "auth.setup.already_been_completed": "La configuración ya ha sido completada. Por favor, inicia sesión para continuar.",
         "createAccount": "Crear cuenta"
     },
     "mainLayout": {
@@ -62,5 +81,28 @@
             "toggleSidebar": "Alternar barra lateral",
             "openUserMenu": "Abrir menú de usuario"
         }
+    }, 
+    "users": {
+        "title": "Usuarios",
+        "noFound": "No se encontraron usuarios",
+        "noFoundDescription": "No hay usuarios disponibles en este momento.",
+        "email": "Email",
+        "firstName": "Nombre",
+        "lastName": "Apellido", 
+        "delete": "Eliminar", 
+        "inviteUser": "Invitar usuario",
+        "actions": "Acciones",
+        "showing": "Mostrando",
+        "users": "usuarios",
+        "emailRequired": "El email es obligatorio",
+        "emailInvalid": "Por favor, introduce una dirección de email válida", 
+        "sendInvitation": "Enviar invitación",
+        "invitationSent": "Invitación enviada",
+        "isAdmin": "Es administrador", 
+        "yes": "Sí",
+        "no": "No",
+        "token": "Token",
+        "expiresAt": "Expira el",
+        "close": "Cerrar"
     }
 }

@@ -10,6 +10,8 @@ public static class UserMappers
     {
         return new(
             user.Id,
+            user.FirstName,
+            user.LastName,
             user.Email!,
             roles);
     }

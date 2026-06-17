@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
-import { email, form, FormField, FormRoot, minLength, required, validate } from '@angular/forms/signals';
+import { email, form, FormField, FormRoot, maxLength, minLength, required, validate } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { SetupRequest } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
@@ -19,6 +19,8 @@ export class Setup {
   errorMessage = signal('');
   
   setupRequest = signal<SetupRequest>({
+    firstName: '',
+    lastName: '',
     email: '', 
     password: '',
     confirmPassword: ''
@@ -30,6 +32,10 @@ export class Setup {
   setupForm = form(
     this.setupRequest,
     (schemaPath) => {
+      maxLength(schemaPath.firstName, 100, { message: 'setup.firstNameMaxLength' }); 
+      required(schemaPath.firstName, { message: 'setup.firstNameRequired' });
+      maxLength(schemaPath.lastName, 100, { message: 'setup.lastNameMaxLength' });
+      required(schemaPath.lastName, { message: 'setup.lastNameRequired' });
       required(schemaPath.email, { message: 'setup.emailRequired' });
       email(schemaPath.email, { message: 'setup.emailInvalid' });
       required(schemaPath.password, {

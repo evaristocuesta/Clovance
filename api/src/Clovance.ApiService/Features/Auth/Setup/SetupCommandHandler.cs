@@ -26,7 +26,9 @@ public sealed class SetupCommandHandler : IHandler<SetupCommand, Result>
         {
             UserName = command.Email,
             Email = command.Email,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
         };
 
         var createResult = await _userManager.CreateAsync(user, command.Password);

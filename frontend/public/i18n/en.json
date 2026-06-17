@@ -22,10 +22,31 @@
         "serverError": "An error occurred while trying to log in. Please try again later."
     }, 
     "auth": {
-        "invalid_credentials": "Invalid email or password"
+        "invalid_credentials": "Invalid email or password",
+        "setup": {
+            "is_not_completed": "La configuración no está completa. Por favor, completa la configuración para continuar.",
+            "already_been_completed": "La configuración ya ha sido completada. Por favor, inicia sesión para continuar."
+        },
+        "user": {
+            "not_authenticated": "Usuario no autenticado",
+            "already_exists": "El usuario ya existe",
+            "not_found": "Usuario no encontrado"
+        }, 
+        "invitation": {
+            "invalid_or_expired": "Invitación inválida o expirada",
+            "active_already_exists": "Ya existe una invitación activa para este email"
+        }
     }, 
     "setup": {
         "title": "Set up your account",
+        "firstNameLabel": "First Name",
+        "firstNamePlaceholder": "Enter your first name",
+        "firstNameRequired": "First name is required",
+        "firstNameMaxLength": "First name must not exceed 100 characters",
+        "lastNameLabel": "Last Name",
+        "lastNamePlaceholder": "Enter your last name",
+        "lastNameRequired": "Last name is required",
+        "lastNameMaxLength": "Last name must not exceed 100 characters",
         "emailLabel": "Email",
         "emailPlaceholder": "Enter your email",
         "emailRequired": "Email is required",
@@ -62,5 +83,28 @@
             "toggleSidebar": "Toggle sidebar",
             "openUserMenu": "Open user menu"
         }
+    }, 
+    "users": {
+        "title": "Users",
+        "noFound": "No users found",
+        "noFoundDescription": "There are no users available at the moment.",
+        "email": "Email", 
+        "firstName": "First Name",
+        "lastName": "Last Name", 
+        "delete": "Delete",
+        "inviteUser": "Invite User", 
+        "actions": "Actions",
+        "showing": "Showing",
+        "users": "users", 
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address", 
+        "sendInvitation": "Send Invitation",
+        "invitationSent": "Invitation Sent", 
+        "isAdmin": "Is Admin", 
+        "yes": "Yes",
+        "no": "No",
+        "token": "Token",
+        "expiresAt": "Expires At",
+        "close": "Close"
     }
 }

@@ -10,6 +10,8 @@ export interface LoginResponse {
 }
 
 export interface SetupRequest {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -29,6 +31,20 @@ export interface TokenPayload {
 
 export interface UserInfo {
   id: string;
+  firstName: string;
+  lastName: string;
   email: string;
   roles: string[];
+}
+
+export interface CreateInvitationCommand {
+  email: string;
+  isAdmin: boolean;
+}
+
+export interface CreateInvitationResult {
+  id: string;
+  email: string;
+  expiresAt: Date;
+  token: string;
 }
