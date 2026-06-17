@@ -30,7 +30,8 @@
         "user": {
             "not_authenticated": "Usuario no autenticado",
             "already_exists": "El usuario ya existe",
-            "not_found": "Usuario no encontrado"
+            "not_found": "Usuario no encontrado", 
+            "deletion_failed": "No se pudo eliminar el usuario"
         }, 
         "invitation": {
             "invalid_or_expired": "Invitación inválida o expirada",
