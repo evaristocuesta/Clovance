@@ -34,15 +34,7 @@ export class Users implements OnInit {
   });
 
   ngOnInit(): void {
-    this.authService.getUsers().subscribe({
-      next: (users) => {
-        this.users.set(users);
-      },
-      error: (error) => {
-        console.error('Error loading users:', error);
-        this.users.set([]); // Clear users on error
-      }
-    });
+    this.loadUsers();
   }
 
   sendInvitationForm = form(
@@ -71,9 +63,27 @@ export class Users implements OnInit {
     }
   );
 
+  private loadUsers() {
+    this.authService.getUsers().subscribe({
+      next: (users) => {
+        this.users.set(users);
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.users.set([]);
+      }
+    });
+  }
+
   deleteUser(id: string) {
-    // Implement the delete functionality here
-    console.log('Delete user with ID:', id);
+    this.authService.deleteUser(id).subscribe({
+      next: () => {
+        this.loadUsers();
+      },
+      error: (error) => {
+        console.error('Error deleting user:', error);
+      }
+    });
   }
 
   openInviteUserModal() {
