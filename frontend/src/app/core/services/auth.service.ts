@@ -104,6 +104,11 @@ export class AuthService {
       .pipe(map(response => response.users));
   }
 
+  deleteUser(id: string): Observable<void> {
+    return this.http
+      .delete<void>(`/api/auth/users/${id}`);
+  }
+
   sendInvitation(userInvitation: CreateInvitationCommand): Observable<CreateInvitationResult> {
     return this.http
       .post<CreateInvitationResult>('/api/auth/invitations', userInvitation);
