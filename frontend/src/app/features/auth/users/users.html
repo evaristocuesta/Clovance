@@ -32,7 +32,7 @@
                                 <td class="px-4 py-5">{{ user.lastName }}</td>
                                 <td class="px-4 py-5">
                                     @if (user.roles.includes("Admin")){
-                                        <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">{{ t('users.yes') }}</span>
+                                        <span class="bg-primary-100 text-primary-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">{{ t('users.yes') }}</span>
                                     } @else {
                                         <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ t('users.no') }}</span>
                                     }
@@ -96,7 +96,7 @@
                         <div class="grid gap-4 mb-4">
                             <div>
                                 <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('users.email') }}</label>
-                                <input type="email" id="email" [formField]="sendInvitationForm.email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type email">
+                                <input type="email" id="email" [formField]="sendInvitationForm.email" autocomplete="email" placeholder="{{ t('login.emailPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" [class.border-red-500]="sendInvitationForm.email().invalid() && sendInvitationForm.email().touched()" [class.border-gray-300]="!sendInvitationForm.email().invalid() || !sendInvitationForm.email().touched()" [class.dark:border-red-500]="sendInvitationForm.email().invalid() && sendInvitationForm.email().touched()" [class.dark:border-gray-600]="!sendInvitationForm.email().invalid() || !sendInvitationForm.email().touched()">
                                 @if (sendInvitationForm.email().touched() && sendInvitationForm.email().errors().length && sendInvitationForm.email().errors()[0].message) {
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(sendInvitationForm.email().errors()[0].message!) }}</p>
                                 }
