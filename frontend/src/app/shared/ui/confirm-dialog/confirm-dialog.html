@@ -1,0 +1,75 @@
+@if (dialog.isOpen()) {
+
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    (click)="onBackdropClick()"
+    animate.enter="fade-in"
+    animate.leave="fade-out">
+
+    <div
+      #modalPanel
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'confirm-dialog-title'"
+      class="w-full max-w-md rounded-lg bg-white shadow-lg dark:bg-gray-800"
+      (click)="stopPropagation($event)"
+      animate.enter="zoom-in"
+      animate.leave="zoom-out">
+
+      <div class="border-b p-4">
+
+        <h3
+          id="confirm-dialog-title"
+          class="text-lg font-semibold text-gray-900 dark:text-white">
+
+          {{ dialog.options()?.title }}
+
+        </h3>
+
+      </div>
+
+      <div class="p-4">
+
+        <p class="text-gray-600 dark:text-gray-400">
+          {{ dialog.options()?.message }}
+        </p>
+
+      </div>
+
+      <div class="flex justify-end gap-2 border-t p-4">
+
+        <button
+          type="button"
+          (click)="dialog.cancel()"
+          class="flex items-center justify-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+          <app-icon
+            name="close"
+            class="w-6 h-6 mr-1">
+          </app-icon>
+          {{ dialog.options()?.cancelText }}
+        </button>
+
+        <button
+          type="button"
+          (click)="dialog.accept()"
+          [class.bg-red-600]="dialog.options()?.danger"
+          [class.hover:bg-red-700]="dialog.options()?.danger"
+          [class.bg-primary-600]="!dialog.options()?.danger"
+          [class.hover:bg-primary-700]="!dialog.options()?.danger"
+          class="flex items-center justify-center cursor-pointer rounded-lg px-4 py-2 text-sm font-medium text-white focus:ring-4 focus:ring-primary-300 focus:outline-none dark:focus:ring-primary-800">
+          @if (confirmIcon) {
+            <app-icon
+              [name]="confirmIcon"
+              class="w-5 h-5 mr-1 -mt-0.5">
+            </app-icon>
+          }
+          {{ dialog.options()?.confirmText }}
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}

@@ -1,21 +1,25 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { UserInfo, CreateInvitationCommand, CreateInvitationResult } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { email, form, FormRoot, required, FormField } from "@angular/forms/signals";
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
+import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.service';
+import { Icon } from "@shared/ui/icon/icon";
 
 @Component({
   selector: 'app-users',
-  imports: [TranslocoModule, FormRoot, FormField, DatePipe],
+  imports: [TranslocoModule, FormRoot, FormField, DatePipe, Icon],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
 export class Users implements OnInit {
   
   readonly authService = inject(AuthService);
+  readonly confirmDialog =  inject(ConfirmDialogService);
+  readonly translocoService = inject(TranslocoService);
   errorMessage = signal('');
   isInviteModalOpen = signal(false);
   isResultModalOpen = signal(false);
@@ -75,7 +79,20 @@ export class Users implements OnInit {
     });
   }
 
-  deleteUser(id: string) {
+  async deleteUser(id: string) {
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.translocoService.translate('users.confirmDeleteTitle'),
+      message: this.translocoService.translate('users.confirmDeleteMessage'),
+      confirmText: this.translocoService.translate('users.delete'),
+      confirmIcon: 'trash-bin',
+      cancelText: this.translocoService.translate('users.cancel'),
+      danger: true
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     this.authService.deleteUser(id).subscribe({
       next: () => {
         this.loadUsers();
