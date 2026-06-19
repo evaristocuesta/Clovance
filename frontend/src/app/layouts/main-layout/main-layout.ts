@@ -7,10 +7,12 @@ import { ThemeToggle } from '@shared/components/theme-toggle/theme-toggle';
 import { initFlowbite } from 'flowbite';
 import { Logo } from "@shared/components/logo/logo";
 import { LogoFull } from "@shared/components/logo-full/logo-full";
+import { AccountSettings } from "@features/auth/account-settings/account-settings";
+import { Icon } from "@shared/ui/icon/icon";
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, ThemeToggle, LanguageSelection, TranslocoDirective, Logo, LogoFull, RouterLink],
+  imports: [RouterOutlet, ThemeToggle, LanguageSelection, TranslocoDirective, Logo, LogoFull, RouterLink, Icon],
   templateUrl: './main-layout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './main-layout.css',
