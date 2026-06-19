@@ -1,5 +1,6 @@
 export type IconName =
   | 'close'
+  | 'check'
   | 'trash-bin'
   | 'user-add'
   | 'user-settings'

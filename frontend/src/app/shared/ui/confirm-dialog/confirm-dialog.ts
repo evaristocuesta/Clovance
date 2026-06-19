@@ -44,7 +44,7 @@ export class ConfirmDialog {
   }
 
   protected get confirmIcon(): IconName | null {
-    return this.dialog.options()?.confirmIcon ?? null;
+    return this.dialog.options()?.confirmIcon ?? 'check';
   }
 
   @HostListener('document:keydown.escape')
