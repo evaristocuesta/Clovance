@@ -1,10 +1,11 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ThemeService } from '@core/services/theme.service';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { Icon } from "@shared/ui/icon/icon";
 
 @Component({
   selector: 'app-theme-toggle',
-  imports: [TranslocoDirective],
+  imports: [TranslocoDirective, Icon],
   templateUrl: './theme-toggle.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './theme-toggle.css',
