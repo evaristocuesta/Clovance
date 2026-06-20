@@ -1,10 +1,11 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
 import Dropdown from 'flowbite/lib/esm/components/dropdown';
+import { Icon } from "@shared/ui/icon/icon";
 
 @Component({
   selector: 'app-language-selection',
-  imports: [TranslocoDirective],
+  imports: [TranslocoDirective, Icon],
   templateUrl: './language-selection.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './language-selection.css',

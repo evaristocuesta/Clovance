@@ -41,10 +41,10 @@
         <button
           type="button"
           (click)="dialog.cancel()"
-          class="flex items-center justify-center cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+          class="inline-flex items-center justify-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
           <app-icon
             name="close"
-            class="w-5 h-5 mr-1 -mt-0.25">
+            class="w-6 h-6">
           </app-icon>
           {{ dialog.options()?.cancelText }}
         </button>
@@ -56,11 +56,11 @@
           [class.hover:bg-red-700]="dialog.options()?.danger"
           [class.bg-primary-600]="!dialog.options()?.danger"
           [class.hover:bg-primary-700]="!dialog.options()?.danger"
-          class="flex items-center justify-center cursor-pointer rounded-lg px-4 py-2 text-sm font-medium text-white focus:ring-4 focus:ring-primary-300 focus:outline-none dark:focus:ring-primary-800">
+          class="inline-flex items-center justify-center gap-2 cursor-pointer rounded-lg px-4 py-2 text-sm font-medium text-white focus:ring-4 focus:ring-primary-300 focus:outline-none dark:focus:ring-primary-800">
           @if (confirmIcon) {
             <app-icon
               [name]="confirmIcon"
-              class="w-5 h-5 mr-1 -mt-0.5">
+              class="w-6 h-6">
             </app-icon>
           }
           {{ dialog.options()?.confirmText }}
