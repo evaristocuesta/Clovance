@@ -1,0 +1,60 @@
+<div id="inviteUserModal" 
+    tabindex="-1" 
+    class="relative p-4 w-full max-w-2xl z-70" *transloco="let t">
+    <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    {{ t('users.inviteUser') }}
+                </h3>
+                <button 
+                    type="button" 
+                    (click)="close()"
+                    class="text-gray-400 cursor-pointer bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="inviteUserModal">
+                    <app-icon
+                        name="close"
+                        class="w-5 h-5">
+                    </app-icon>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form [formRoot]="sendInvitationForm" class="space-y-4 md:space-y-6" novalidate>
+                <div class="grid gap-4 mb-4">
+                    <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('users.email') }}</label>
+                        <input type="email" id="email" [formField]="sendInvitationForm.email" autocomplete="email" placeholder="{{ t('login.emailPlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" [class.border-red-500]="sendInvitationForm.email().invalid() && sendInvitationForm.email().touched()" [class.border-gray-300]="!sendInvitationForm.email().invalid() || !sendInvitationForm.email().touched()" [class.dark:border-red-500]="sendInvitationForm.email().invalid() && sendInvitationForm.email().touched()" [class.dark:border-gray-600]="!sendInvitationForm.email().invalid() || !sendInvitationForm.email().touched()">
+                        @if (sendInvitationForm.email().touched() && sendInvitationForm.email().errors().length && sendInvitationForm.email().errors()[0].message) {
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(sendInvitationForm.email().errors()[0].message!) }}</p>
+                        }
+                    </div>
+                    <div class="flex items-start sm:items-center">
+                        <input type="checkbox" id="isAdmin" [formField]="sendInvitationForm.isAdmin" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="isAdmin" class="ms-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('users.isAdmin') }}</label>
+                    </div>
+                </div>
+                <div class="flex p-4 items-end justify-end space-x-4">
+                    <button 
+                        type="submit" 
+                        class="text-white inline-flex items-center cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                        [disabled]="sendInvitationForm().submitting()">
+                        <app-icon
+                            name="user-add"
+                            class="w-6 h-6 mr-1">
+                        </app-icon>
+                        @if (sendInvitationForm().submitting()) {
+                            {{ t('users.sendInvitation') }}...
+                        } @else {
+                            {{ t('users.sendInvitation') }}
+                        }
+                    </button>
+                </div>
+                @if (errorMessage()) {
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(errorMessage()) }}</p>
+                }
+            </form>
+        </div>
+    </div>
+</div>
