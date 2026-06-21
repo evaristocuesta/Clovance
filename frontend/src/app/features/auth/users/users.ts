@@ -1,17 +1,16 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { UserInfo, CreateInvitationCommand, CreateInvitationResult } from '@core/models/auth.models';
+import { CreateInvitationResult, UserInfo } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { email, form, FormRoot, required, FormField } from "@angular/forms/signals";
-import { firstValueFrom } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
 import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.service';
 import { Icon } from "@shared/ui/icon/icon";
+import { Dialog } from '@angular/cdk/dialog';
+import { InviteUser } from '../invite-user/invite-user';
+import { ShowUserInvitation } from '../show-user-invitation/show-user-invitation';
 
 @Component({
   selector: 'app-users',
-  imports: [TranslocoModule, FormRoot, FormField, DatePipe, Icon],
+  imports: [TranslocoModule, Icon],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
@@ -20,52 +19,13 @@ export class Users implements OnInit {
   readonly authService = inject(AuthService);
   readonly confirmDialog =  inject(ConfirmDialogService);
   readonly translocoService = inject(TranslocoService);
-  errorMessage = signal('');
-  isInviteModalOpen = signal(false);
-  isResultModalOpen = signal(false);
+  readonly dialog = inject(Dialog);
+
   users = signal<UserInfo[]>([]);
-
-  userInvitationCommand = signal<CreateInvitationCommand>({
-    email: '',
-    isAdmin: false
-  });
-
-  userInvitationResult = signal<CreateInvitationResult>({
-    id: '',
-    email: '',
-    expiresAt: new Date(),
-    token: ''
-  });
 
   ngOnInit(): void {
     this.loadUsers();
   }
-
-  sendInvitationForm = form(
-    this.userInvitationCommand,
-    (schemaPath) => {
-      required(schemaPath.email, { message: 'users.emailRequired' });
-      email(schemaPath.email, { message: 'users.emailInvalid' });
-    },
-    {
-      submission: {
-        action: async (field) => {  
-          this.errorMessage.set('');
-          
-          try {
-            var result = await firstValueFrom(this.authService.sendInvitation(field().value()));
-            this.userInvitationResult.set(result);
-            this.closeInviteUserModal();
-            this.openResultModal();
-          } catch (err: HttpErrorResponse | any) {
-            const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
-            const key = errorCode ? errorCode : 'login.serverError';
-            this.errorMessage.set(key);
-          }
-        },
-      },
-    }
-  );
 
   private loadUsers() {
     this.authService.getUsers().subscribe({
@@ -104,24 +64,23 @@ export class Users implements OnInit {
   }
 
   openInviteUserModal() {
-    this.sendInvitationForm().reset({
-      email: '',
-      isAdmin: false
+    const dialogRef = this.dialog.open<CreateInvitationResult>(InviteUser, {
+      width: '640px',
+      height: 'auto',
     });
-    this.errorMessage.set('');
-    this.isInviteModalOpen.set(true);
+
+    dialogRef.closed.subscribe((result) => {
+      if (result) {
+        this.openResultModal(result);
+      }
+    });
   }
 
-  closeInviteUserModal() {
-    this.sendInvitationForm().reset();
-    this.isInviteModalOpen.set(false);
-  }
-
-  openResultModal() {
-    this.isResultModalOpen.set(true);
-  }
-
-  closeResultModal() {
-    this.isResultModalOpen.set(false);
+  openResultModal(result: CreateInvitationResult) {
+    this.dialog.open<ShowUserInvitation, CreateInvitationResult, void>(ShowUserInvitation, {
+      width: '640px',
+      height: 'auto',
+      data: result
+    });
   }
 }
