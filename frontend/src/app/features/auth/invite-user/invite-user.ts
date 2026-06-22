@@ -5,7 +5,7 @@ import { CreateInvitationCommand, CreateInvitationResult } from '@core/models/au
 import { AuthService } from '@core/services/auth.service';
 import { Icon } from "@shared/ui/icon/icon";
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { DialogRef } from '@angular/cdk/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
