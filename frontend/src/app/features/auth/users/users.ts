@@ -2,11 +2,11 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CreateInvitationResult, UserInfo } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.service';
 import { Icon } from "@shared/ui/icon/icon";
 import { Dialog } from '@angular/cdk/dialog';
 import { InviteUser } from '../invite-user/invite-user';
 import { ShowUserInvitation } from '../show-user-invitation/show-user-invitation';
+import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-users',
@@ -17,7 +17,6 @@ import { ShowUserInvitation } from '../show-user-invitation/show-user-invitation
 export class Users implements OnInit {
   
   readonly authService = inject(AuthService);
-  readonly confirmDialog =  inject(ConfirmDialogService);
   readonly translocoService = inject(TranslocoService);
   readonly dialog = inject(Dialog);
 
@@ -40,26 +39,32 @@ export class Users implements OnInit {
   }
 
   async deleteUser(id: string) {
-    const confirmed = await this.confirmDialog.confirm({
-      title: this.translocoService.translate('users.confirmDeleteTitle'),
-      message: this.translocoService.translate('users.confirmDeleteMessage'),
-      confirmText: this.translocoService.translate('users.delete'),
-      confirmIcon: 'trash-bin',
-      cancelText: this.translocoService.translate('users.cancel'),
-      danger: true
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '640px',
+      height: 'auto',
+      data: {
+        title: this.translocoService.translate('users.confirmDeleteTitle'),
+        message: this.translocoService.translate('users.confirmDeleteMessage'),
+        confirmText: this.translocoService.translate('users.delete'),
+        confirmIcon: 'trash-bin',
+        cancelText: this.translocoService.translate('users.cancel'),
+        danger: true
+      } 
     });
 
-    if (!confirmed) {
-      return;
-    }
-
-    this.authService.deleteUser(id).subscribe({
-      next: () => {
-        this.loadUsers();
-      },
-      error: (error) => {
-        console.error('Error deleting user:', error);
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
       }
+
+      this.authService.deleteUser(id).subscribe({
+        next: () => {
+          this.loadUsers();
+        },
+        error: (error) => {
+          console.error('Error deleting user:', error);
+        }
+      });
     });
   }
 
