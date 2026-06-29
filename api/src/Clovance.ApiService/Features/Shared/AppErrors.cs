@@ -59,6 +59,9 @@ public static class AppErrors
         public static Error UserDeletionFailed() =>
             CreateConflict(ErrorCodes.Auth.UserDeletionFailed, "Failed to delete user.");
 
+        public static Error UserUpdateFailed() =>
+            CreateConflict(ErrorCodes.Auth.UserUpdateFailed, "Failed to update user.");
+
         public static Error InvitationInvalidOrExpired() =>
             CreateUnauthorized(ErrorCodes.Auth.InvitationInvalidOrExpired, "Invalid or expired invitation.");
 

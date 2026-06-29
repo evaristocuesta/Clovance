@@ -18,6 +18,7 @@ public static class ErrorCodes
         public const string InvalidCredentials = "auth.invalid_credentials";
         public const string UserNotAuthenticated = "auth.user.not_authenticated";
         public const string UserNotFound = "auth.user.not_found";
+        public const string UserUpdateFailed = "auth.user.update_failed";
         public const string UserDeletionFailed = "auth.user.deletion_failed";
         public const string UserAlreadyExists = "auth.user.already_exists";
         public const string UserCreationFailed = "auth.user.creation_failed";
@@ -37,6 +38,7 @@ public static class ErrorCodes
         public const string UsernameChangeFailed = "auth.username.change_failed";
 
         public const string CurrentPasswordRequired = "auth.current_password.required";
+        public const string NewPasswordRequired = "auth.new_password.required";
         public const string EmailRequired = "auth.email.required";
         public const string EmailInvalid = "auth.email.invalid";
         public const string InvitationTokenRequired = "auth.invitation_token.required";
@@ -47,5 +49,17 @@ public static class ErrorCodes
         public const string PasswordMissingLowercase = "auth.password.missing_lowercase";
         public const string PasswordMissingUppercase = "auth.password.missing_uppercase";
         public const string PasswordMissingNonAlphanumeric = "auth.password.missing_non_alphanumeric";
+
+        public static class FirstName
+        {
+            public const string Required = "auth.first_name.required";
+            public const string MaxLength = "auth.first_name.max_length";
+        }
+
+        public static class LastName
+        {
+            public const string Required = "auth.last_name.required";
+            public const string MaxLength = "auth.last_name.max_length";
+        }
     }
 }
