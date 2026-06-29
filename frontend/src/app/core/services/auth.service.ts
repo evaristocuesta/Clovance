@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
-import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo, CreateInvitationCommand, CreateInvitationResult, RegisterWithInvitationRequest, RegisterWithInvitationResult } from '../models/auth.models';
+import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo, CreateInvitationCommand, CreateInvitationResult, RegisterWithInvitationRequest, RegisterWithInvitationResult, UpdateUserRequest, ChangePasswordRequest, UpdateUserResult } from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root',
@@ -117,6 +117,24 @@ export class AuthService {
   registerWithInvitation(request: RegisterWithInvitationRequest): Observable<RegisterWithInvitationResult> {
     return this.http
       .post<RegisterWithInvitationResult>('/api/auth/users/register', request);
+  }
+
+  updateUser(request: UpdateUserRequest): Observable<UpdateUserResult> {
+    return this.http
+      .put<UpdateUserResult>('/api/auth/users', request)
+      .pipe(
+        tap({
+          next: (result) => {
+            this._accessToken.set(result.token);
+            this.loadCurrentUser().subscribe(); // Reload current user info after update
+          }
+        })
+      );
+  }
+
+  changePassword(changePasswordRequest: ChangePasswordRequest): Observable<void> {
+    return this.http
+      .put<void>('/api/auth/users/password', changePasswordRequest);
   }
 
   readonly isAdmin = computed((): boolean => {

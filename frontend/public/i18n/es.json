@@ -36,6 +36,9 @@
         "invitation": {
             "invalid_or_expired": "Invitación inválida o expirada",
             "active_already_exists": "Ya existe una invitación activa para este email"
+        }, 
+        "password": {
+            "change_failed": "No se pudo cambiar la contraseña"
         }
     },
     "setup": {
@@ -44,10 +47,10 @@
         "firstNamePlaceholder": "Introduce tu nombre",
         "firstNameRequired": "El nombre es obligatorio",
         "firstNameMaxLength": "El nombre no debe exceder los 100 caracteres",
-        "lastNameLabel": "Apellido",
-        "lastNamePlaceholder": "Introduce tu apellido",
-        "lastNameRequired": "El apellido es obligatorio",
-        "lastNameMaxLength": "El apellido no debe exceder los 100 caracteres",
+        "lastNameLabel": "Apellidos",
+        "lastNamePlaceholder": "Introduce tus apellidos",
+        "lastNameRequired": "Los apellidos son obligatorios",
+        "lastNameMaxLength": "Los apellidos no deben exceder los 100 caracteres",
         "emailLabel": "Email",
         "emailPlaceholder": "Introduce tu email",
         "emailRequired": "El email es obligatorio",
@@ -69,6 +72,45 @@
         "tokenRequired": "El token es obligatorio", 
         "tokenLabel": "Token",
         "tokenPlaceholder": "Introduce tu token"
+    },
+    "updateUser": {
+        "title": "Actualiza tu cuenta",
+        "firstNameLabel": "Nombre",
+        "firstNamePlaceholder": "Introduce tu nombre",
+        "firstNameRequired": "El nombre es obligatorio",
+        "firstNameMaxLength": "El nombre no debe exceder los 100 caracteres",
+        "lastNameLabel": "Apellidos",
+        "lastNamePlaceholder": "Introduce tus apellidos",
+        "lastNameRequired": "Los apellidos son obligatorios",
+        "lastNameMaxLength": "Los apellidos no deben exceder los 100 caracteres",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Introduce tu email",
+        "emailRequired": "El email es obligatorio",
+        "emailInvalid": "Por favor, introduce una dirección de email válida",
+        "serverError": "Ocurrió un error al intentar actualizar tu cuenta. Por favor, inténtalo de nuevo más tarde.",
+        "auth.updateUser.is_not_completed": "La actualización no está completa. Por favor, completa la actualización para continuar.",
+        "auth.updateUser.already_been_completed": "La actualización ya se ha completado. Por favor, inicia sesión para continuar.",
+        "updateAccount": "Actualizar cuenta"
+    },
+    "changePassword": {
+        "title": "Cambia tu contraseña",
+        "currentPasswordLabel": "Contraseña actual",
+        "currentPasswordPlaceholder": "Introduce tu contraseña actual",
+        "currentPasswordRequired": "La contraseña actual es obligatoria",
+        "newPasswordLabel": "Nueva contraseña",
+        "newPasswordPlaceholder": "Introduce tu nueva contraseña",
+        "newPasswordRequired": "La nueva contraseña es obligatoria",
+        "newPasswordMinLength": "La nueva contraseña debe tener al menos 12 caracteres",
+        "newPasswordMissingDigit": "La nueva contraseña debe incluir al menos un número",
+        "newPasswordMissingLowercase": "La nueva contraseña debe incluir al menos una letra minúscula",
+        "newPasswordMissingUppercase": "La nueva contraseña debe incluir al menos una letra mayúscula",
+        "newPasswordMissingNonAlphanumeric": "La nueva contraseña debe incluir al menos un carácter especial",
+        "confirmNewPasswordLabel": "Confirmar nueva contraseña",
+        "confirmNewPasswordPlaceholder": "Confirma tu nueva contraseña",
+        "confirmNewPasswordRequired": "La confirmación de la nueva contraseña es obligatoria",
+        "passwordMismatch": "Las nuevas contraseñas no coinciden",
+        "serverError": "Ocurrió un error al intentar cambiar tu contraseña. Por favor, inténtalo de nuevo más tarde.",
+        "changePassword": "Cambiar contraseña"
     },
     "mainLayout": {
         "sidebar": {
@@ -92,7 +134,7 @@
         "noFoundDescription": "No hay usuarios disponibles en este momento.",
         "email": "Email",
         "firstName": "Nombre",
-        "lastName": "Apellido", 
+        "lastName": "Apellidos", 
         "delete": "Eliminar", 
         "inviteUser": "Invitar usuario",
         "actions": "Acciones",

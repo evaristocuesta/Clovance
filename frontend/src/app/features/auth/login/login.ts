@@ -1,7 +1,7 @@
-import { Component, inject, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
-import { TranslocoService, TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { LoginRequest } from '@core/models/auth.models';
 import { form, required, email, FormField, FormRoot } from '@angular/forms/signals';

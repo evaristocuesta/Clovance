@@ -62,3 +62,18 @@ export interface RegisterWithInvitationResult {
   id: string;
   email: string;
 }
+
+export interface UpdateUserRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface UpdateUserResult {
+  token: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}

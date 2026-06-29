@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { email, form, FormField, FormRoot, maxLength, minLength, required, validate } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { RegisterWithInvitationRequest } from '@core/models/auth.models';
@@ -13,6 +13,7 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-register-user',
   imports: [CommonModule, TranslocoDirective, FormField, FormRoot, LogoFull],
   templateUrl: './register-user.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './register-user.css',
 })
 export class RegisterUser {

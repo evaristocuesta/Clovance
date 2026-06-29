@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { email, form, FormField, FormRoot, maxLength, minLength, required, validate } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { SetupRequest } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
-import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { LogoFull } from "@shared/components/logo-full/logo-full";
 
@@ -13,6 +13,7 @@ import { LogoFull } from "@shared/components/logo-full/logo-full";
   selector: 'app-setup',
   imports: [CommonModule, TranslocoDirective, FormField, FormRoot, LogoFull],
   templateUrl: './setup.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './setup.css',
 })
 export class Setup {

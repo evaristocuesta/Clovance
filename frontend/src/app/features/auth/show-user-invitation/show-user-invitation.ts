@@ -1,6 +1,6 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CreateInvitationResult } from '@core/models/auth.models';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Icon } from "@shared/ui/icon/icon";
@@ -9,6 +9,7 @@ import { Icon } from "@shared/ui/icon/icon";
   selector: 'app-show-user-invitation',
   imports: [Icon, TranslocoModule, DatePipe],
   templateUrl: './show-user-invitation.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './show-user-invitation.css',
 })
 export class ShowUserInvitation {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CreateInvitationResult, UserInfo } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -12,6 +12,7 @@ import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
   selector: 'app-users',
   imports: [TranslocoModule, Icon],
   templateUrl: './users.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './users.css',
 })
 export class Users implements OnInit {

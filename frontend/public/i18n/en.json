@@ -36,6 +36,9 @@
         "invitation": {
             "invalid_or_expired": "Invitación inválida o expirada",
             "active_already_exists": "Ya existe una invitación activa para este email"
+        }, 
+        "password": {
+            "change_failed": "Failed to change password"
         }
     }, 
     "setup": {
@@ -71,6 +74,45 @@
         "tokenRequired": "Token is required", 
         "tokenLabel": "Token",
         "tokenPlaceholder": "Enter your token"
+    },
+    "updateUser": {
+        "title": "Update your account",
+        "firstNameLabel": "First Name",
+        "firstNamePlaceholder": "Enter your first name",
+        "firstNameRequired": "First name is required",
+        "firstNameMaxLength": "First name must not exceed 100 characters",
+        "lastNameLabel": "Last Name",
+        "lastNamePlaceholder": "Enter your last name",
+        "lastNameRequired": "Last name is required",
+        "lastNameMaxLength": "Last name must not exceed 100 characters",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "serverError": "An error occurred while trying to update your account. Please try again later.",
+        "auth.updateUser.is_not_completed": "Update is not completed. Please complete the update to continue.",
+        "auth.updateUser.already_been_completed": "Update has already been completed. Please log in to continue.",
+        "updateAccount": "Update account"
+    },
+    "changePassword": {
+        "title": "Change your password",
+        "currentPasswordLabel": "Current Password",
+        "currentPasswordPlaceholder": "Enter your current password",
+        "currentPasswordRequired": "Current password is required",
+        "newPasswordLabel": "New Password",
+        "newPasswordPlaceholder": "Enter your new password",
+        "newPasswordRequired": "New password is required",
+        "newPasswordMinLength": "New password must be at least 12 characters",
+        "newPasswordMissingDigit": "New password must include at least one number",
+        "newPasswordMissingLowercase": "New password must include at least one lowercase letter",
+        "newPasswordMissingUppercase": "New password must include at least one uppercase letter",
+        "newPasswordMissingNonAlphanumeric": "New password must include at least one special character",
+        "confirmNewPasswordLabel": "Confirm New Password",
+        "confirmNewPasswordPlaceholder": "Confirm your new password",
+        "confirmNewPasswordRequired": "Confirm new password is required",
+        "passwordMismatch": "Passwords do not match",
+        "serverError": "An error occurred while trying to change your password. Please try again later.",
+        "changePassword": "Change Password"
     },
     "mainLayout": {
         "sidebar": {
