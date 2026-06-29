@@ -13,6 +13,7 @@ public sealed class LoginEndpoint : IApiEndPoint
             CancellationToken cancellationToken) =>
         {
             var result = await handler.HandleAsync(command, cancellationToken);
+            
             if (result.IsFailure)
             {
                 return result.ToProblemResult(httpContext);
