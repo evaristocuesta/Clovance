@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { email, form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { CreateInvitationCommand, CreateInvitationResult } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
@@ -12,6 +12,7 @@ import { TranslocoModule } from '@jsverse/transloco';
   selector: 'app-invite-user',
   imports: [Icon, FormRoot, FormField, TranslocoModule],
   templateUrl: './invite-user.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './invite-user.css',
 })
 export class InviteUser {
