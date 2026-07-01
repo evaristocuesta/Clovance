@@ -158,7 +158,10 @@
         "title": "Resumen"
     },
     "accounts": {
-        "title": "Cuentas"
+        "title": "Cuentas", 
+        "account": "Cuenta",
+        "edit": "Modificar",
+        "delete": "Eliminar"
     },
     "transactions": {
         "title": "Transacciones"

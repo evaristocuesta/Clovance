@@ -160,7 +160,10 @@
         "title": "Summary"
     },
     "accounts": {
-        "title": "Accounts"
+        "title": "Accounts",
+        "account": "Account",
+        "edit": "Edit",
+        "delete": "Delete"
     },
     "transactions": {
         "title": "Transactions"
