@@ -1,0 +1,49 @@
+<article class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800" *transloco="let t">
+	<div class="absolute inset-y-0 left-0 w-1 bg-primary-600"></div>
+
+	<div class="flex flex-col gap-5 pl-2 xs:flex-row sm:items-center sm:justify-between sm:gap-6">
+		<div class="flex min-w-0 items-center gap-4 sm:min-w-[10rem] sm:grid-cols-2 md:min-w-[10rem]">
+			<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-100 text-lg font-bold text-primary-700 ring-8 ring-primary-50 transition-colors group-hover:bg-primary-600 group-hover:text-white dark:bg-primary-900/50 dark:text-primary-300 dark:ring-gray-800">
+				{{ accountInitial() }}
+			</div>
+
+			<div class="min-w-0">
+				<p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+					{{ t('accounts.account') }}
+				</p>
+				<h3 class="mt-1 truncate text-lg font-semibold text-gray-900 dark:text-white">
+					{{ account().name }}
+				</h3>
+				<div class="mt-2 flex flex-wrap items-center gap-2">
+					<span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+						{{ currencyLabel() }}
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 gap-3 sm:min-w-[15rem] sm:grid-cols-2 md:min-w-[15rem]">
+			<button
+				type="button"
+				(click)="onEdit()"
+				class="inline-flex items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                <app-icon
+                    name="edit"
+                    class="w-6 h-6">
+                </app-icon>
+				{{ t('accounts.edit') }}
+			</button>
+
+			<button
+				type="button"
+				(click)="onDelete()"
+				class="inline-flex items-center justify-center gap-2 leading-none text-white cursor-pointer bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
+                <app-icon
+                    name="trash-bin"
+                    class="w-6 h-6">
+                </app-icon>
+				{{ t('accounts.delete') }}
+			</button>
+		</div>
+	</div>
+</article>

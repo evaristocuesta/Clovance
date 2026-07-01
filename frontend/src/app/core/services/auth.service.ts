@@ -1,11 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo, CreateInvitationCommand, CreateInvitationResult, RegisterWithInvitationRequest, RegisterWithInvitationResult, UpdateUserRequest, ChangePasswordRequest, UpdateUserResult } from '../models/auth.models';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AuthService {
   private http   = inject(HttpClient);
 

@@ -15,4 +15,5 @@ export type IconName =
   | 'flag-es'
   | 'flag-en'
   | 'bars'
+  | 'edit'
 ;

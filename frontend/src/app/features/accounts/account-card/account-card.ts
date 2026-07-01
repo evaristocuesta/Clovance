@@ -1,0 +1,34 @@
+import { Component, computed, input, output } from '@angular/core';
+import { Account } from '../models/account.model';
+import { TranslocoDirective } from "@jsverse/transloco";
+import { Icon } from "@shared/ui/icon/icon";
+
+@Component({
+  selector: 'app-account-card',
+  imports: [TranslocoDirective, Icon],
+  templateUrl: './account-card.html',
+  styleUrl: './account-card.css',
+})
+export class AccountCard {
+  readonly account = input.required<Account>();
+
+  readonly editAccount = output<string>();
+
+  readonly deleteAccount = output<string>();
+
+  protected accountInitial = computed(() => {
+    const name = this.account().name.trim();
+
+    return name ? name.charAt(0).toUpperCase() : 'A';
+  });
+
+  protected currencyLabel = computed(() => this.account().currency.toUpperCase());
+
+  protected onEdit(): void {
+    this.editAccount.emit(this.account().id);
+  }
+
+  protected onDelete(): void {
+    this.deleteAccount.emit(this.account().id);
+  }
+}
