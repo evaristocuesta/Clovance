@@ -153,5 +153,14 @@
         "confirmDeleteTitle": "Eliminar usuario",
         "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.",
         "cancel": "Cancelar"
+    }, 
+    "summary": {
+        "title": "Resumen"
+    },
+    "accounts": {
+        "title": "Cuentas"
+    },
+    "transactions": {
+        "title": "Transacciones"
     }
 }

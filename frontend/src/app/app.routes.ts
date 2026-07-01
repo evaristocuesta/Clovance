@@ -22,10 +22,12 @@ export const routes: Routes = [
         component: MainLayout, 
         canActivate: [authGuard],
         children: [
-            { path: 'hello', loadComponent: () => import('@features/hello/hello').then(m => m.Hello) }, 
+            { path: 'accounts', loadComponent: () => import('@features/accounts/accounts').then(m => m.Accounts) }, 
+            { path: 'transactions', loadComponent: () => import('@features/transactions/transactions').then(m => m.Transactions) }, 
+            { path: 'summary', loadComponent: () => import('@features/summary/summary').then(m => m.Summary) }, 
             { path: 'users', loadComponent: () => import('@features/auth/users/users').then(m => m.Users) }, 
             { path: 'account-settings', loadComponent: () => import('@features/auth/account-settings/account-settings').then(m => m.AccountSettings) },
-            { path: '', redirectTo: 'hello', pathMatch: 'full'}
+            { path: '', redirectTo: 'accounts', pathMatch: 'full'}
         ]
         
     }, 
