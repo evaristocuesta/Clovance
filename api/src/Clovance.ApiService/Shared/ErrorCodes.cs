@@ -62,4 +62,17 @@ public static class ErrorCodes
             public const string MaxLength = "auth.last_name.max_length";
         }
     }
+
+    public static class Accounts
+    {
+        public const string AccountRequired = "accounts.account.required";
+        public const string AccountIdRequired = "accounts.account.id_required";
+        public const string AccountNotFound = "accounts.account.not_found";
+        public const string AccountCreationFailed = "accounts.account.creation_failed";
+        public const string AccountUpdateFailed = "accounts.account.update_failed";
+        public const string AccountDeletionFailed = "accounts.account.deletion_failed";
+        public const string AccountNameRequired = "accounts.account.name.required";
+        public const string AccountNameMaxLength = "accounts.account.name.max_length";
+        public const string AccountCurrencyInvalid = "accounts.account.currency.invalid";
+    }
 }
