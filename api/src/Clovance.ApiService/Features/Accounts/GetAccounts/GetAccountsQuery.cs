@@ -2,6 +2,6 @@
 
 public sealed record GetAccountsQuery();
 
-public sealed record GetAccountsQueryResult(IEnumerable<AccountDto> Accounts);
+public sealed record GetAccountsResult(IEnumerable<AccountDto> Accounts);
 
 
