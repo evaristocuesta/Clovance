@@ -18,6 +18,11 @@ public sealed class AccountName : ValueObject
             throw new ArgumentException("Account name is required.", nameof(value));
         }
 
+        if (value.Length > 200)
+        {
+            throw new ArgumentException("Account name cannot exceed 200 characters.", nameof(value));
+        }
+
         return new AccountName(value.Trim());
     }
 

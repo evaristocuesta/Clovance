@@ -20,14 +20,9 @@ public sealed class Currency : ValueObject
 
         var normalizedCode = code.Trim().ToUpperInvariant();
 
-        if (normalizedCode.Length != 3)
+        if (!CurrencyValidator.IsValid(normalizedCode))
         {
-            throw new ArgumentException("Currency code must contain 3 letters.", nameof(code));
-        }
-
-        if (!normalizedCode.All(char.IsLetter))
-        {
-            throw new ArgumentException("Currency code must contain only letters.", nameof(code));
+            throw new ArgumentException($"Currency code '{normalizedCode}' is not valid.", nameof(code));
         }
 
         return new Currency(normalizedCode);
