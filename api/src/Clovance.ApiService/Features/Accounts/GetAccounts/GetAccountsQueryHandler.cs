@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Accounts.GetAccounts;
 
-public class GetAccountsQueryHandler : IHandler<GetAccountsQuery, GetAccountsQueryResult>
+public class GetAccountsQueryHandler : IHandler<GetAccountsQuery, Result<GetAccountsResult>>
 {
     private readonly ClovanceDbContext _dbContext;
 
@@ -13,12 +13,12 @@ public class GetAccountsQueryHandler : IHandler<GetAccountsQuery, GetAccountsQue
         _dbContext = dbContext;
     }
 
-    public async Task<GetAccountsQueryResult> HandleAsync(GetAccountsQuery command, CancellationToken cancellationToken)
+    public async Task<Result<GetAccountsResult>> HandleAsync(GetAccountsQuery command, CancellationToken cancellationToken)
     {
         var accounts = await _dbContext.Accounts
             .Select(a => a.ToDto())
             .ToListAsync(cancellationToken);
 
-        return new GetAccountsQueryResult(accounts);
+        return Result<GetAccountsResult>.Success(new GetAccountsResult(accounts));
     }
 }

@@ -6,10 +6,12 @@ public class GetAccountsEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapGet("/accounts", async (GetAccountsQueryHandler handler, CancellationToken cancellationToken) =>
+        app.MapGet("/", async (
+            IHandler<GetAccountsQuery, Result<GetAccountsResult>> handler, 
+            CancellationToken cancellationToken) =>
         {
             var result = await handler.HandleAsync(new GetAccountsQuery(), cancellationToken);
-            return Results.Ok(result.Accounts);
+            return Results.Ok(result.Value.Accounts);
         })
         .Produces<List<AccountDto>>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
