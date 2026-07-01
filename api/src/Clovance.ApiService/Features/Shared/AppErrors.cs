@@ -93,6 +93,15 @@ public static class AppErrors
             CreateConflict(ErrorCodes.Auth.SetupIsNotCompleted, "Setup is not completed.");
     }
 
+    public static class Accounts
+    {
+        public static Error AccountNotFound() =>
+            CreateNotFound(ErrorCodes.Accounts.AccountNotFound, "Account not found.");
+
+        public static Error AccountNameRequired() =>
+            CreateBadRequest(ErrorCodes.Accounts.AccountNameRequired, "Account name is required.");
+    }
+
     private static Error CreateUnauthorized(string code, string description) =>
         new(code, description, StatusCodes.Status401Unauthorized);
 
