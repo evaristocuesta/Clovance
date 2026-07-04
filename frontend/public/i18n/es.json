@@ -161,7 +161,9 @@
         "title": "Cuentas", 
         "account": "Cuenta",
         "edit": "Modificar",
-        "delete": "Eliminar"
+        "delete": "Eliminar", 
+        "emptyTitle": "No se encontraron cuentas", 
+        "loading": "Cargando cuentas..."
     },
     "transactions": {
         "title": "Transacciones"

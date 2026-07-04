@@ -163,7 +163,9 @@
         "title": "Accounts",
         "account": "Account",
         "edit": "Edit",
-        "delete": "Delete"
+        "delete": "Delete", 
+        "emptyTitle": "No accounts found", 
+        "loading": "Loading accounts..."
     },
     "transactions": {
         "title": "Transactions"
