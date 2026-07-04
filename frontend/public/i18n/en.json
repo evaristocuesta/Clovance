@@ -165,7 +165,8 @@
         "edit": "Edit",
         "delete": "Delete", 
         "emptyTitle": "No accounts found", 
-        "loading": "Loading accounts..."
+        "loading": "Loading accounts...", 
+        "add": "Add"
     },
     "transactions": {
         "title": "Transactions"

@@ -16,4 +16,6 @@ export type IconName =
   | 'flag-en'
   | 'bars'
   | 'edit'
+  | 'plus'
+  | 'circle-plus'
 ;

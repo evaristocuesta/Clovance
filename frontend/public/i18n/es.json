@@ -163,7 +163,8 @@
         "edit": "Modificar",
         "delete": "Eliminar", 
         "emptyTitle": "No se encontraron cuentas", 
-        "loading": "Cargando cuentas..."
+        "loading": "Cargando cuentas...", 
+        "add": "Añadir"
     },
     "transactions": {
         "title": "Transacciones"
