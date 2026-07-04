@@ -7,6 +7,6 @@ public class GetCurrenciesQueryHandler : IHandler<GetCurrenciesQuery, GetCurrenc
 {
     public Task<GetCurrenciesResult> HandleAsync(GetCurrenciesQuery command, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new GetCurrenciesResult(Currencies.Values));
+        return Task.FromResult(new GetCurrenciesResult(Currencies.Values.Values));
     }
 }
