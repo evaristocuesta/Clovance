@@ -15,12 +15,16 @@ export class AccountService {
         return this.http.get<Account>(`/api/accounts/${accountId}`);
     }
 
+    getCurrencies() : Observable<string[]> {
+        return this.http.get<string[]>('/api/accounts/currencies');
+    }
+
     createAccount(account: Account) : Observable<Account> {
         return this.http.post<Account>('/api/accounts', account);
     }
 
-    updateAccount(accountId: string, account: Account) : Observable<Account> {
-        return this.http.put<Account>(`/api/accounts/${accountId}`, account);
+    updateAccount(account: Account) : Observable<Account> {
+        return this.http.put<Account>(`/api/accounts/${account.id}`, account);
     }
 
     deleteAccount(accountId: string) : Observable<void> {
