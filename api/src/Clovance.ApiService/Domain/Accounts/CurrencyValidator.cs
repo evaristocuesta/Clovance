@@ -9,6 +9,6 @@ public static class CurrencyValidator
         if (string.IsNullOrWhiteSpace(currency))
             return false;
 
-        return Currencies.Values.Contains(currency);
+        return Currencies.Values.Keys.Contains(currency, StringComparer.OrdinalIgnoreCase);
     }
 }
