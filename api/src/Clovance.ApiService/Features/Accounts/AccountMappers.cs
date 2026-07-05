@@ -10,7 +10,8 @@ public static class AccountMappers
         return new(
             account.Id.Value,
             account.Name.Value,
-            account.Currency.Code);
+            account.Currency.Code, 
+            account.IsDeleted);
     }
 
     public static Account ToDomain(

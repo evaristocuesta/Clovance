@@ -8,17 +8,17 @@ public class UpdateAccountValidator : AbstractValidator<UpdateAccountCommand>
 {
     public UpdateAccountValidator()
     {
-        RuleFor(x => x.Account.Id)
+        RuleFor(x => x.Id)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Accounts.AccountIdRequired);
 
-        RuleFor(x => x.Account.Name)
+        RuleFor(x => x.Name)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Accounts.AccountNameRequired)
             .MaximumLength(200)
             .WithErrorCode(ErrorCodes.Accounts.AccountNameMaxLength);
 
-        RuleFor(x => x.Account.Currency)
+        RuleFor(x => x.Currency)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Accounts.AccountCurrencyInvalid)
             .Must(CurrencyValidator.IsValid)
