@@ -1,42 +1,102 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { TranslocoModule } from '@jsverse/transloco';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AccountCard } from '../account-card/account-card';
 import { AccountService } from '../services/account.service';
 import { Icon } from "@shared/ui/icon/icon";
-import { Dialog } from '@angular/cdk/dialog';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { AccountForm } from '../account-form/account-form';
+import { filter, map, startWith, switchMap, take, tap } from 'rxjs';
+import { Account } from '../models/account.model';
+import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-accounts-list',
-  imports: [AsyncPipe, TranslocoModule, AccountCard, Icon],
+  imports: [TranslocoModule, AccountCard, Icon],
   templateUrl: './accounts-list.html',
   styleUrl: './accounts-list.css',
 })
 export class AccountsList {
   private readonly accountService = inject(AccountService);
+  readonly translocoService = inject(TranslocoService);
   readonly dialog = inject(Dialog);
+  private readonly refreshTick = signal(0);
 
-  protected readonly accounts$ = this.accountService.getAccounts();
+  readonly currencies = toSignal(this.accountService.getCurrencies(), { initialValue: [] });
 
-  protected editAccount(accountId: string): void {
-    console.log('Edit account', accountId);
+  readonly currencySymbolMap = computed(() =>
+    Object.fromEntries(this.currencies().map((c) => [c.code.toUpperCase(), c.symbol]))
+  );
+
+  protected readonly accounts = toSignal(
+    toObservable(this.refreshTick).pipe(
+      switchMap(() => this.accountService.getAccounts().pipe(
+        map((accounts) => [...accounts].sort((a, b) => a.name.localeCompare(b.name))),
+      )),
+      startWith(null as Account[] | null),
+    ),
+  );
+
+  private refreshAccounts(): void {
+    this.refreshTick.update((value) => value + 1);
   }
 
-  protected deleteAccount(accountId: string): void {
-    console.log('Delete account', accountId);
+  private refreshOnDialogSuccess(dialogRef: DialogRef<boolean>): void {
+    dialogRef.closed
+      .pipe(
+        take(1),
+        filter((result): result is true => result === true),
+        tap(() => this.refreshAccounts()),
+      )
+      .subscribe();
+  }
+
+  protected onEdit(accountId: string): void {
+    const dialogRef = this.dialog.open<boolean>(AccountForm, {
+      width: '640px',
+      height: 'auto',
+      data: { id: accountId }
+    });
+
+    this.refreshOnDialogSuccess(dialogRef);
+  }
+
+  protected onDelete(accountId: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+          width: '640px',
+          height: 'auto',
+          data: {
+            title: this.translocoService.translate('accounts.confirmDeleteTitle'),
+            message: this.translocoService.translate('accounts.confirmDeleteMessage'),
+            confirmText: this.translocoService.translate('accounts.delete'),
+            confirmIcon: 'trash-bin',
+            cancelText: this.translocoService.translate('accounts.cancel'),
+            danger: true
+          } 
+        });
+    
+        dialogRef.closed.subscribe((confirmed) => {
+          if (!confirmed) {
+            return;
+          }
+    
+          this.accountService.deleteAccount(accountId).subscribe({
+            next: () => {
+              this.refreshAccounts();
+            },
+            error: (error) => {
+              console.error('Error deleting account:', error);
+            }
+          });
+        });
   }
 
   onAdd(): void {
-    const dialogRef = this.dialog.open<void>(AccountForm, {
+    const dialogRef = this.dialog.open<boolean>(AccountForm, {
       width: '640px',
       height: 'auto',
     });
 
-    dialogRef.closed.subscribe((result) => {
-      if (result) {
-        
-      }
-    });
+    this.refreshOnDialogSuccess(dialogRef);
   }
 }

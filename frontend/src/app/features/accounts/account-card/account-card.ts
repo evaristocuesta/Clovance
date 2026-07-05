@@ -11,6 +11,7 @@ import { Icon } from "@shared/ui/icon/icon";
 })
 export class AccountCard {
   readonly account = input.required<Account>();
+  readonly currencySymbolMap = input.required<Record<string, string>>();
 
   readonly editAccount = output<string>();
 
@@ -22,7 +23,10 @@ export class AccountCard {
     return name ? name.charAt(0).toUpperCase() : 'A';
   });
 
-  protected currencyLabel = computed(() => this.account().currency.toUpperCase());
+  protected currencyLabel = computed(() => 
+    this.currencySymbolMap()[this.account().currency.toUpperCase()] ?
+    `${this.account().currency.toUpperCase()} (${this.currencySymbolMap()[this.account().currency.toUpperCase()]})` 
+    : this.account().currency.toUpperCase());
 
   protected onEdit(): void {
     this.editAccount.emit(this.account().id);
