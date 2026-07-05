@@ -62,12 +62,15 @@ export class AccountsList {
   }
 
   protected onDelete(accountId: string): void {
+
+    const name = this.accounts()?.find((account) => account.id === accountId)?.name || '';
+
     const dialogRef = this.dialog.open(ConfirmDialog, {
           width: '640px',
           height: 'auto',
           data: {
             title: this.translocoService.translate('accounts.confirmDeleteTitle'),
-            message: this.translocoService.translate('accounts.confirmDeleteMessage'),
+            message: this.translocoService.translate('accounts.confirmDeleteMessage', { name }),
             confirmText: this.translocoService.translate('accounts.delete'),
             confirmIcon: 'trash-bin',
             cancelText: this.translocoService.translate('accounts.cancel'),
