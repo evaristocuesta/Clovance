@@ -14,11 +14,9 @@ public class UpdateAccountEndpoint : IApiEndPoint
             Guid id) =>
         {
             var command = new UpdateAccountCommand(
-                new AccountDto(
-                    Id: id,
-                    Name: request.Name,
-                    Currency: request.Currency
-                )
+                Id: id,
+                Name: request.Name,
+                Currency: request.Currency
             );
 
             var result = await handler.HandleAsync(command, cancellationToken);

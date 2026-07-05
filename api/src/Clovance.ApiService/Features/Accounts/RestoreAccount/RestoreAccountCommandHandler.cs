@@ -4,14 +4,14 @@ using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Clovance.ApiService.Features.Accounts.UpdateAccount;
+namespace Clovance.ApiService.Features.Accounts.RestoreAccount;
 
-public class UpdateAccountCommandHandler : IHandler<UpdateAccountCommand, Result<UpdateAccountResult>>
+public class RestoreAccountCommandHandler : IHandler<RestoreAccountCommand, Result>
 {
     private readonly ClovanceDbContext _context;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public UpdateAccountCommandHandler(
+    public RestoreAccountCommandHandler(
         ClovanceDbContext context, 
         IHttpContextAccessor contextAccessor)
     {
@@ -19,7 +19,7 @@ public class UpdateAccountCommandHandler : IHandler<UpdateAccountCommand, Result
         _contextAccessor = contextAccessor;
     }
 
-    public async Task<Result<UpdateAccountResult>> HandleAsync(UpdateAccountCommand command, CancellationToken cancellationToken)
+    public async Task<Result> HandleAsync(RestoreAccountCommand command, CancellationToken cancellationToken)
     {
         var account = await _context
             .Accounts
@@ -27,17 +27,14 @@ public class UpdateAccountCommandHandler : IHandler<UpdateAccountCommand, Result
 
         if (account is null)
         {
-            return Result<UpdateAccountResult>.Failure(AppErrors.Accounts.AccountNotFound());
+            return Result.Failure(AppErrors.Accounts.AccountNotFound());
         }
 
         var email = _contextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? "system";
 
-        account.Rename(command.Name, email);
-        account.ChangeCurrency(command.Currency, email);
-
-        _context.Accounts.Update(account);
+        account.Restore(email);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result<UpdateAccountResult>.Success(new UpdateAccountResult(account.ToDto()));
+        return Result.Success();
     }
 }

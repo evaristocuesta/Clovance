@@ -38,7 +38,5 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
 
         builder.Property(x => x.DeletedBy)
             .HasMaxLength(100);
-
-        builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }
