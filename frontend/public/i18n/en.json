@@ -179,7 +179,11 @@
         "closeModal": "Close modal", 
         "confirmDeleteTitle": "Delete Account",
         "confirmDeleteMessage": "Are you sure you want to delete the account {{name}}?",
-        "cancel": "Cancel"
+        "cancel": "Cancel", 
+        "restore": "Restore", 
+        "confirmRestoreTitle": "Restore Account",
+        "confirmRestoreMessage": "Are you sure you want to restore the account {{name}}?",
+        "deleted": "Deleted"
     },
     "transactions": {
         "title": "Transactions"

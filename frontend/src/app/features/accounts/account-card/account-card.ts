@@ -12,10 +12,9 @@ import { Icon } from "@shared/ui/icon/icon";
 export class AccountCard {
   readonly account = input.required<Account>();
   readonly currencySymbolMap = input.required<Record<string, string>>();
-
   readonly editAccount = output<string>();
-
   readonly deleteAccount = output<string>();
+  readonly restoreAccount = output<string>();
 
   protected accountInitial = computed(() => {
     const name = this.account().name.trim();
@@ -34,5 +33,9 @@ export class AccountCard {
 
   protected onDelete(): void {
     this.deleteAccount.emit(this.account().id);
+  }
+
+  protected onRestore(): void {
+    this.restoreAccount.emit(this.account().id);
   }
 }

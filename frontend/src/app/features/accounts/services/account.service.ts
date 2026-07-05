@@ -38,4 +38,8 @@ export class AccountService {
     deleteAccount(accountId: string) : Observable<void> {
         return this.http.delete<void>(`/api/accounts/${accountId}`);
     }
+
+    restoreAccount(accountId: string) : Observable<void> {
+        return this.http.put<void>(`/api/accounts/${accountId}/restore`, {});
+    }
 }

@@ -31,7 +31,7 @@ export class AccountsList {
   protected readonly accounts = toSignal(
     toObservable(this.refreshTick).pipe(
       switchMap(() => this.accountService.getAccounts().pipe(
-        map((accounts) => [...accounts].sort((a, b) => a.name.localeCompare(b.name))),
+        map((accounts) => [...accounts].sort((a, b) => a.isDeleted === b.isDeleted ? a.name.localeCompare(b.name) : a.isDeleted ? 1 : -1)),
       )),
       startWith(null as Account[] | null),
     ),
@@ -94,7 +94,40 @@ export class AccountsList {
         });
   }
 
-  onAdd(): void {
+  protected onRestore(accountId: string): void {
+
+    const name = this.accounts()?.find((account) => account.id === accountId)?.name || '';
+
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+          width: '640px',
+          height: 'auto',
+          data: {
+            title: this.translocoService.translate('accounts.confirmRestoreTitle'),
+            message: this.translocoService.translate('accounts.confirmRestoreMessage', { name }),
+            confirmText: this.translocoService.translate('accounts.restore'),
+            confirmIcon: 'plus',
+            cancelText: this.translocoService.translate('accounts.cancel'),
+            danger: false
+          } 
+        });
+    
+        dialogRef.closed.subscribe((confirmed) => {
+          if (!confirmed) {
+            return;
+          }
+    
+          this.accountService.restoreAccount(accountId).subscribe({
+            next: () => {
+              this.refreshAccounts();
+            },
+            error: (error) => {
+              console.error('Error restoring account:', error);
+            }
+          });
+        });
+  }
+
+  protected onAdd(): void {
     const dialogRef = this.dialog.open<boolean>(AccountForm, {
       width: '640px',
       height: 'auto',
