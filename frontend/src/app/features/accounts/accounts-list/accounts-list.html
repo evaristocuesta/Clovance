@@ -22,15 +22,16 @@
 			</div>
 
 			<div class="p-3 sm:p-4 md:p-3 lg:p-6">
-				@if (accounts$ | async; as accounts) {
+				@if (accounts(); as accounts) {
 					@if (accounts.length) {
 						<div class="grid gap-4">
 							@for (account of accounts; track account.id) {
 								<app-account-card
 									class="block w-full"
 									[account]="account"
-									(editAccount)="editAccount($event)"
-									(deleteAccount)="deleteAccount($event)"
+									[currencySymbolMap]="currencySymbolMap()"
+									(editAccount)="onEdit($event)"
+									(deleteAccount)="onDelete($event)"
 								/>
 							}
 						</div>

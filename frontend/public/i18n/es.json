@@ -164,7 +164,20 @@
         "delete": "Eliminar", 
         "emptyTitle": "No se encontraron cuentas", 
         "loading": "Cargando cuentas...", 
-        "add": "Añadir"
+        "add": "Añadir", 
+        "addAccount": "Añadir cuenta",
+        "updateAccount": "Modificar cuenta",
+        "nameLabel": "Nombre", 
+        "namePlaceholder": "Introduce el nombre de la cuenta",
+        "nameRequired": "El nombre es obligatorio",
+        "currencyLabel": "Moneda",
+        "currencyPlaceholder": "Selecciona una moneda",
+        "currencyRequired": "La moneda es obligatoria",
+        "currencyLength": "El código de moneda debe tener 3 caracteres",
+        "closeModal": "Cerrar modal", 
+        "confirmDeleteTitle": "Eliminar cuenta",
+        "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar esta cuenta?",
+        "cancel": "Cancelar"
     },
     "transactions": {
         "title": "Transacciones"
