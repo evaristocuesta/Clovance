@@ -23,27 +23,52 @@
 		</div>
 
 		<div class="grid w-full grid-cols-1 gap-2 sm:w-44 sm:shrink-0 lg:min-w-[15rem] lg:w-auto lg:grid-cols-2">
-			<button
-				type="button"
-				(click)="onEdit()"
-				class="inline-flex w-full items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                <app-icon
-                    name="edit"
-                    class="w-6 h-6">
-                </app-icon>
-				{{ t('accounts.edit') }}
-			</button>
-
-			<button
-				type="button"
-				(click)="onDelete()"
-				class="inline-flex w-full items-center justify-center gap-2 leading-none text-white cursor-pointer bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
-                <app-icon
-                    name="trash-bin"
-                    class="w-6 h-6">
-                </app-icon>
-				{{ t('accounts.delete') }}
-			</button>
+			@if (!account().isDeleted) {
+				<button
+					type="button"
+					(click)="onEdit()"
+					class="inline-flex w-full items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+					<app-icon
+						name="edit"
+						class="w-6 h-6">
+					</app-icon>
+					{{ t('accounts.edit') }}
+				</button>
+			} @else {
+				<button
+					type="button"
+					disabled
+					class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-700 dark:border-gray-600">
+					<app-icon
+						name="close"
+						class="w-6 h-6">
+					</app-icon>
+					{{ t('accounts.deleted') }}
+				</button>
+			}
+			@if (!account().isDeleted) {
+				<button
+					type="button"
+					(click)="onDelete()"
+					class="inline-flex w-full items-center justify-center gap-2 leading-none text-white cursor-pointer bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
+					<app-icon
+						name="trash-bin"
+						class="w-6 h-6">
+					</app-icon>
+					{{ t('accounts.delete') }}
+				</button>
+			} @else {
+				<button
+					type="button"
+					(click)="onRestore()"
+					class="inline-flex w-full items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+					<app-icon
+						name="plus"
+						class="w-6 h-6">
+					</app-icon>
+					{{ t('accounts.restore') }}
+				</button>
+			} 
 		</div>
 	</div>
 </article>

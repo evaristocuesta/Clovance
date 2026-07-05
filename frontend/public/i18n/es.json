@@ -177,7 +177,11 @@
         "closeModal": "Cerrar modal", 
         "confirmDeleteTitle": "Eliminar cuenta",
         "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar la cuenta {{name}}?",
-        "cancel": "Cancelar"
+        "cancel": "Cancelar", 
+        "restore": "Restaurar",
+        "confirmRestoreTitle": "Restaurar cuenta",
+        "confirmRestoreMessage": "¿Estás seguro de que deseas restaurar la cuenta {{name}}?",
+        "deleted": "Eliminada"
     },
     "transactions": {
         "title": "Transacciones"

@@ -4,7 +4,7 @@ import { ConfirmDialog } from "@shared/ui/confirm-dialog/confirm-dialog";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ConfirmDialog],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './app.css',
