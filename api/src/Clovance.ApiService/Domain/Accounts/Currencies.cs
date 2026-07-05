@@ -5,7 +5,7 @@ namespace Clovance.ApiService.Domain.Accounts;
 public sealed record CurrencyInfo(
     string Code,
     string Symbol,
-    string EnglishName);
+    string Name);
 
 
 public class Currencies
@@ -13,6 +13,10 @@ public class Currencies
     public static readonly IReadOnlyDictionary<string, CurrencyInfo> Values =
     CultureInfo.GetCultures(CultureTypes.SpecificCultures)
         .Select(c => new RegionInfo(c.Name))
+        .Where(r =>
+            r.ISOCurrencySymbol.Length == 3 &&
+            r.ISOCurrencySymbol.All(char.IsLetter) &&
+            !string.IsNullOrWhiteSpace(r.CurrencyEnglishName))
         .GroupBy(r => r.ISOCurrencySymbol, StringComparer.OrdinalIgnoreCase)
         .Select(g =>
         {
