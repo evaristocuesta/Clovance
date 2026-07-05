@@ -40,12 +40,14 @@ export class Users implements OnInit {
   }
 
   async deleteUser(id: string) {
+    var name = this.users()?.find((user) => user.id === id)?.email || '';
+
     const dialogRef = this.dialog.open(ConfirmDialog, {
       width: '640px',
       height: 'auto',
       data: {
         title: this.translocoService.translate('users.confirmDeleteTitle'),
-        message: this.translocoService.translate('users.confirmDeleteMessage'),
+        message: this.translocoService.translate('users.confirmDeleteMessage', { name }),
         confirmText: this.translocoService.translate('users.delete'),
         confirmIcon: 'trash-bin',
         cancelText: this.translocoService.translate('users.cancel'),

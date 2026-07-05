@@ -151,7 +151,7 @@
         "expiresAt": "Expira el",
         "close": "Cerrar",
         "confirmDeleteTitle": "Eliminar usuario",
-        "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.",
+        "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar el usuario {{name}}? Esta acción no se puede deshacer.",
         "cancel": "Cancelar"
     }, 
     "summary": {
@@ -176,7 +176,7 @@
         "currencyLength": "El código de moneda debe tener 3 caracteres",
         "closeModal": "Cerrar modal", 
         "confirmDeleteTitle": "Eliminar cuenta",
-        "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar esta cuenta?",
+        "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar la cuenta {{name}}?",
         "cancel": "Cancelar"
     },
     "transactions": {
