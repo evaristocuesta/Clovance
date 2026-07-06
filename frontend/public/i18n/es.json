@@ -130,6 +130,8 @@
     }, 
     "users": {
         "title": "Usuarios",
+        "emptyTitle": "No se encontraron usuarios",
+        "loading": "Cargando usuarios...",
         "noFound": "No se encontraron usuarios",
         "noFoundDescription": "No hay usuarios disponibles en este momento.",
         "email": "Email",
@@ -152,7 +154,9 @@
         "close": "Cerrar",
         "confirmDeleteTitle": "Eliminar usuario",
         "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar el usuario {{name}}? Esta acción no se puede deshacer.",
-        "cancel": "Cancelar"
+        "cancel": "Cancelar", 
+        "admin": "Administrador",
+        "user": "Usuario"
     }, 
     "summary": {
         "title": "Resumen"

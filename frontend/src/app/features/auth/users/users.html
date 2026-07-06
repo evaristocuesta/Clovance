@@ -1,69 +1,52 @@
-<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5" *transloco="let t">
-    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-        <!-- Start coding here -->
-        <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-            <div class="flex p-4 items-end justify-end space-x-4">
-                <button 
-                    type="button" 
-                    (click)="openInviteUserModal()"
-                    class="inline-flex items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                    <app-icon
-                        name="user-add"
-                        class="w-6 h-6">
-                    </app-icon>
-                    {{ t('users.inviteUser') }}
-                </button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-4 py-3">{{ t('users.email') }}</th>
-                            <th scope="col" class="px-4 py-3">{{ t('users.firstName') }}</th>
-                            <th scope="col" class="px-4 py-3">{{ t('users.lastName') }}</th>
-                            <th scope="col" class="px-4 py-3">{{ t('users.isAdmin') }}</th>
-                            <th scope="col" class="px-4 py-3">{{ t('users.actions') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (user of users(); track user.id) {
-                            <tr class="border-b dark:border-gray-700">
-                                <th scope="row" class="px-4 py-5 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ user.email }}</th>
-                                <td class="px-4 py-5">{{ user.firstName }}</td>
-                                <td class="px-4 py-5">{{ user.lastName }}</td>
-                                <td class="px-4 py-5">
-                                    @if (user.roles.includes("Admin")){
-                                        <span class="bg-primary-100 text-primary-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">{{ t('users.yes') }}</span>
-                                    } @else {
-                                        <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ t('users.no') }}</span>
-                                    }
-                                </td>
-                                <td class="px-4 py-3 flex items-center justify-end">
-                                    @if (user.email !== authService.getCurrentUser()?.email) {
-                                        <button 
-                                            type="button" 
-                                            (click)="deleteUser(user.id)"
-                                            class="inline-flex items-center justify-center gap-2 leading-none text-white cursor-pointer bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
-                                            <app-icon
-                                                name="trash-bin"
-                                                class="w-6 h-6">
-                                            </app-icon>
-                                            <span>{{ t('users.delete') }}</span>
-                                        </button>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
-                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-                    {{ t('users.showing') }}
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ users().length }}</span>
-                    {{ t('users.users') }}
-                </span>
-            </nav>
-        </div>
-    </div>
+<section class="bg-gray-50 p-3 sm:p-5 dark:bg-gray-900" *transloco="let t">
+	<div class="mx-auto w-full max-w-screen-xl px-2 sm:px-4 md:px-2 lg:px-12">
+		<div class="overflow-hidden rounded-2xl bg-white shadow-md dark:bg-gray-800">
+			<div class="border-b border-gray-200 px-4 py-5 dark:border-gray-700 sm:px-6">
+				<div class="flex gap-2 flex-row items-center justify-between">
+					<div>
+						<h1 class="text-md font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+							{{ t('users.title') }}
+                        </h1>
+					</div>
+                    <button 
+                        type="button" 
+                        (click)="openInviteUserModal()"
+                        class="inline-flex items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                        <app-icon
+                            name="user-add"
+                            class="w-6 h-6">
+                        </app-icon>
+                        {{ t('users.inviteUser') }}
+                    </button>
+				</div>
+			</div>
+
+			<div class="p-3 sm:p-4 md:p-3 lg:p-6">
+				@if (users(); as users) {
+					@if (users.length) {
+						<div class="grid gap-4">
+							@for (user of users; track user.id) {
+								<app-user-card
+									class="block w-full"
+									[user]="user"
+                                    [isOwner]="user.email === authService.getCurrentUser()?.email"
+									(deleteUser)="deleteUser($event)"
+								/>
+							}
+						</div>
+					} @else {
+						<div class="flex min-h-40 w-full md:w-auto md:min-w-90 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-900/40">
+							<h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+								{{ t('users.emptyTitle') }}
+							</h2>
+						</div>
+					}
+				} @else {
+					<div class="flex min-h-40 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 px-6 py-10 text-sm font-medium text-gray-500 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-400">
+						{{ t('users.loading') }}
+					</div>
+				}
+			</div>
+		</div>
+	</div>
 </section>
