@@ -132,6 +132,8 @@
     }, 
     "users": {
         "title": "Users",
+        "emptyTitle": "No users found",
+        "loading": "Loading users...",
         "noFound": "No users found",
         "noFoundDescription": "There are no users available at the moment.",
         "email": "Email", 
@@ -154,7 +156,9 @@
         "close": "Close", 
         "confirmDeleteTitle": "Delete User",
         "confirmDeleteMessage": "Are you sure you want to delete the user {{name}}? This action cannot be undone.",
-        "cancel": "Cancel"
+        "cancel": "Cancel", 
+        "admin": "Admin",
+        "user": "User"
     }, 
     "summary": {
         "title": "Summary"

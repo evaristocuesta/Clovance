@@ -7,10 +7,11 @@ import { Dialog } from '@angular/cdk/dialog';
 import { InviteUser } from '../invite-user/invite-user';
 import { ShowUserInvitation } from '../show-user-invitation/show-user-invitation';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
+import { UserCard } from "../user-card/user-card";
 
 @Component({
   selector: 'app-users',
-  imports: [TranslocoModule, Icon],
+  imports: [TranslocoModule, Icon, UserCard],
   templateUrl: './users.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './users.css',
