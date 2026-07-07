@@ -31,7 +31,7 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
             .HasMaxLength(250)
             .IsRequired();
 
-        builder.Property(x => x.TransactionDate)
+        builder.Property(x => x.Date)
             .HasConversion(date => date.Value, value => TransactionDate.Create(value))
             .IsRequired();
 
@@ -45,7 +45,7 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
         builder.Property(x => x.ModifiedBy)
             .HasMaxLength(100);
 
-        builder.HasIndex(x => new { x.AccountId, x.TransactionDate });
+        builder.HasIndex(x => new { x.AccountId, x.Date });
 
         builder.HasIndex(x => x.Description)
             .HasMethod("gin")

@@ -124,6 +124,9 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -136,9 +139,6 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<DateTimeOffset>("TransactionDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Description");
@@ -146,7 +146,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Description"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Description"), new[] { "gin_trgm_ops" });
 
-                    b.HasIndex("AccountId", "TransactionDate");
+                    b.HasIndex("AccountId", "Date");
 
                     b.ToTable("transactions", (string)null);
                 });
