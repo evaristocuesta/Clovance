@@ -4,7 +4,7 @@ public sealed record RegisterWithInvitationCommand(
     string Email,
     string Password,
     string Token,
-    string FirstName = "",
-    string LastName = "");
+    string FirstName,
+    string LastName);
 
 public sealed record RegisterWithInvitationResult(string UserId, string Email);

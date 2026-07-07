@@ -13,11 +13,13 @@ public sealed class SetupValidator : AbstractValidator<SetupCommand>
             .WithErrorCode(ErrorCodes.Auth.EmailRequired)
             .EmailAddress()
             .WithErrorCode(ErrorCodes.Auth.EmailInvalid);
+
         RuleFor(x => x.FirstName)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Auth.FirstName.Required)
             .MaximumLength(100)
             .WithErrorCode(ErrorCodes.Auth.FirstName.MaxLength);
+
         RuleFor(x => x.LastName)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Auth.LastName.Required)
