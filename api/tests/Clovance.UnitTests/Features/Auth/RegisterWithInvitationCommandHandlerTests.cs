@@ -47,7 +47,9 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "newuser@example.com",
             "Password123!",
-            "valid-token");
+            "valid-token", 
+            "FirstName",
+            "LastName");
 
         var tokenHash = "hashed-token";
 
@@ -92,7 +94,9 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "user@example.com",
             "Password123!",
-            "invalid-token");
+            "invalid-token", 
+            "FirstName",
+            "LastName");
 
         _tokenService.HashToken(command.Token.Trim()).Returns("wrong-hash");
 
@@ -109,7 +113,9 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "user@example.com",
             "Password123!",
-            "valid-token");
+            "valid-token",
+            "FirstName",
+            "LastName");
 
         var tokenHash = "hashed-token";
 
@@ -139,7 +145,9 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "user@example.com",
             "Password123!",
-            "valid-token");
+            "valid-token",
+            "FirstName",
+            "LastName");
 
         var tokenHash = "hashed-token";
 
@@ -171,7 +179,9 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "existing@example.com",
             "Password123!",
-            "valid-token");
+            "valid-token",
+            "FirstName",
+            "LastName");
 
         var tokenHash = "hashed-token";
 
@@ -208,7 +218,9 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "newuser@example.com",
             "weak",
-            "valid-token");
+            "valid-token",
+            "FirstName",
+            "LastName");
 
         var tokenHash = "hashed-token";
 

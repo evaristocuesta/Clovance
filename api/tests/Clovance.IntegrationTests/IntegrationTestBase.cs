@@ -18,6 +18,8 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 {
     protected const string AdminEmail = "admin@clovance.local";
     protected const string AdminPassword = "NewAdmin.Password.123";
+    protected const string AdminFirstName = "FirsName";
+    protected const string AdminLastName = "LastName";
 
     private readonly AspireFixture _fixture;
 
@@ -80,7 +82,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 
     public async Task CreateDefaultAdminUser()
     {
-        var setupRequest = new SetupCommand(Email: AdminEmail, Password: AdminPassword);
+        var setupRequest = new SetupCommand(Email: AdminEmail, Password: AdminPassword, FirstName: AdminFirstName, LastName: AdminLastName);
         var response = await Client.PostAsJsonAsync("/api/auth/setup", setupRequest);
         response.EnsureSuccessStatusCode();
         _fixture.AdminUserCreated = true;
@@ -115,8 +117,8 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         Client.DefaultRequestHeaders.Authorization = null;
 
         // Register with the invitation
-        var registerRequest = new RegisterWithInvitationCommand(Email: email, Password: password, Token: invitation!.Token);
-        var registerResponse = await Client.PostAsJsonAsync("/api/auth/register-with-invitation", registerRequest);
+        var registerRequest = new RegisterWithInvitationCommand(Email: email, Password: password, Token: invitation!.Token, FirstName: "FirstName", LastName: "LastName");
+        var registerResponse = await Client.PostAsJsonAsync("/api/auth/users/register", registerRequest);
         registerResponse.EnsureSuccessStatusCode();
         var registerResult = await registerResponse.Content.ReadFromJsonAsync<RegisterWithInvitationResult>();
 

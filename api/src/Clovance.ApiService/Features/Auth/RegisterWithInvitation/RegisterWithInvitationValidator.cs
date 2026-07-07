@@ -20,5 +20,17 @@ public sealed class RegisterWithInvitationValidator : AbstractValidator<Register
 
         RuleFor(x => x.Password)
             .ApplyPasswordPolicy();
+
+        RuleFor(x => x.FirstName)
+            .NotEmpty()
+            .WithErrorCode(ErrorCodes.Auth.FirstName.Required)
+            .MaximumLength(100)
+            .WithErrorCode(ErrorCodes.Auth.FirstName.MaxLength);
+
+        RuleFor(x => x.LastName)
+            .NotEmpty()
+            .WithErrorCode(ErrorCodes.Auth.LastName.Required)
+            .MaximumLength(100)
+            .WithErrorCode(ErrorCodes.Auth.LastName.MaxLength);
     }
 }
