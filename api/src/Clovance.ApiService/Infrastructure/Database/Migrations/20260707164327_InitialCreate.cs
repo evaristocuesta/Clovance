@@ -121,7 +121,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                     Amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     AccountId = table.Column<Guid>(type: "uuid", nullable: false),
                     Description = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    TransactionDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -298,9 +298,9 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_transactions_AccountId_TransactionDate",
+                name: "IX_transactions_AccountId_Date",
                 table: "transactions",
-                columns: new[] { "AccountId", "TransactionDate" });
+                columns: new[] { "AccountId", "Date" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_transactions_Description",

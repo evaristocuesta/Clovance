@@ -4,14 +4,14 @@ namespace Clovance.ApiService.Domain.Transactions;
 
 public sealed class TransactionDate : ValueObject
 {
-    private TransactionDate(DateTimeOffset value)
+    private TransactionDate(DateOnly value)
     {
         Value = value;
     }
 
-    public DateTimeOffset Value { get; }
+    public DateOnly Value { get; }
 
-    public static TransactionDate Create(DateTimeOffset value)
+    public static TransactionDate Create(DateOnly value)
     {
         return new TransactionDate(value);
     }

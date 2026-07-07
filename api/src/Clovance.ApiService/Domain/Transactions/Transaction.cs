@@ -25,7 +25,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
         Amount = amount;
         Description = description;
         AccountId = accountId;
-        TransactionDate = transactionDate;
+        Date = transactionDate;
         MarkAsCreated(createdBy);
     }
 
@@ -35,16 +35,16 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     public TransactionDescription Description { get; private set; } = null!;
 
-    public TransactionDate TransactionDate { get; private set; } = null!;
+    public TransactionDate Date { get; private set; } = null!;
 
     public static Transaction Create(
       TransactionAmount amount,
       TransactionDescription description,
       AccountId accountId,
-      TransactionDate transactionDate,
+      TransactionDate date,
       string createdBy)
     {
-        return new Transaction(amount, description, accountId, transactionDate, createdBy);
+        return new Transaction(amount, description, accountId, date, createdBy);
     }
 
     public void ChangeAmount(TransactionAmount amount, string modifiedBy)
@@ -53,9 +53,9 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
         MarkAsModified(modifiedBy);
     }
 
-    public void ChangeDate(TransactionDate transactionDate, string modifiedBy)
+    public void ChangeDate(TransactionDate date, string modifiedBy)
     {
-        TransactionDate = transactionDate;
+        Date = date;
         MarkAsModified(modifiedBy);
     }
 

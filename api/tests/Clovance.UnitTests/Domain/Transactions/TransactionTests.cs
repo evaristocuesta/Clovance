@@ -14,7 +14,7 @@ public class TransactionTests
             TransactionAmount.Create(-20.50m),
             TransactionDescription.Create("Dinner"),
             accountId,
-            TransactionDate.Create(DateTimeOffset.UtcNow),
+            TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
             "creator");
 
         Assert.NotEqual(default, transaction.Id);
@@ -30,7 +30,7 @@ public class TransactionTests
             TransactionAmount.Create(10m),
             TransactionDescription.Create("Salary"),
             default,
-            TransactionDate.Create(DateTimeOffset.UtcNow),
+            TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
             "creator");
 
         Assert.Throws<ArgumentException>(action);
@@ -43,7 +43,7 @@ public class TransactionTests
             TransactionAmount.Create(10m),
             TransactionDescription.Create("Old"),
             AccountId.New(),
-            TransactionDate.Create(DateTimeOffset.UtcNow),
+            TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
             "creator");
 
         transaction.ChangeDescription(TransactionDescription.Create("New"), "editor");
