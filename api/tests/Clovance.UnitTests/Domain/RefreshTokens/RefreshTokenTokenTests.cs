@@ -8,7 +8,7 @@ public class RefreshTokenTokenTests
     public void Create_WithValidValue_ShouldReturnRefreshTokenToken()
     {
         // Arrange
-        var value = Guid.NewGuid().ToString();
+        var value = Guid.CreateVersion7().ToString();
 
         // Act
         var refreshTokenToken = RefreshTokenToken.Create(value);

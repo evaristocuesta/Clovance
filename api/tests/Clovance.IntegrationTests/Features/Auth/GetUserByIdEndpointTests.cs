@@ -26,7 +26,7 @@ public class GetUserByIdEndpointTests : IntegrationTestBase
     {
         // Arrange
         AuthenticateAsAdminUser();
-        var nonExistentUserId = Guid.NewGuid();
+        var nonExistentUserId = Guid.CreateVersion7();
 
         // Act
         var response = await Client.GetAsync($"/api/auth/users/{nonExistentUserId}", TestContext.Current.CancellationToken);
@@ -36,27 +36,13 @@ public class GetUserByIdEndpointTests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task GetUserByIdEndpoint_ReturnsBadRequestForInvalidUserId()
-    {
-        // Arrange
-        AuthenticateAsAdminUser();
-        var invalidUserId = "invalid-user-id";
-
-        // Act
-        var response = await Client.GetAsync($"/api/auth/users/{invalidUserId}", TestContext.Current.CancellationToken);
-
-        // Assert
-        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    [Fact]
     public async Task GetUserByIdEndpoint_ReturnsUnauthorizedForUnauthenticatedUser()
     {
         // Arrange
         AuthenticateWithToken(string.Empty); // Clear any existing authentication
 
         // Act
-        var response = await Client.GetAsync($"/api/auth/users/{Guid.NewGuid()}", TestContext.Current.CancellationToken);
+        var response = await Client.GetAsync($"/api/auth/users/{Guid.CreateVersion7()}", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);

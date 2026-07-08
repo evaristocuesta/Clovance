@@ -24,10 +24,10 @@ public class GetUserByIdRequestHandlerTests
     public async Task HandleAsync_ShouldReturnUser_WhenUserExists()
     {
         // Arrange
-        var user = new ApplicationUser { Id = "testuser", UserName = "testuser@example.com", Email = "testuser@example.com" };
+        var user = new ApplicationUser { Id = Guid.CreateVersion7(), UserName = "testuser@example.com", Email = "testuser@example.com" };
         _userManager.Users.Returns(new[] { user }.AsQueryable());
         _userManager.GetRolesAsync(user).Returns(new List<string> { "Admin" });
-        var request = new GetUserByIdQuery(UserId: "testuser");
+        var request = new GetUserByIdQuery(UserId: user.Id);
 
         // Act
         var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);
@@ -44,7 +44,7 @@ public class GetUserByIdRequestHandlerTests
     {
         // Arrange
         _userManager.Users.Returns(Enumerable.Empty<ApplicationUser>().AsQueryable());
-        var request = new GetUserByIdQuery(UserId: "nonexistentuser");
+        var request = new GetUserByIdQuery(UserId: Guid.CreateVersion7());
 
         // Act
         var result = await _handler.HandleAsync(request, TestContext.Current.CancellationToken);

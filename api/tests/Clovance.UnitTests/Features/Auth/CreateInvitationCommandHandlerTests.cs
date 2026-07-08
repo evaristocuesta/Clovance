@@ -61,17 +61,17 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     public async Task HandleAsync_WithValidData_CreatesInvitation()
     {
         var command = new CreateInvitationCommand("newuser@example.com");
-        var adminUserId = "admin-123";
+        var adminUserId = Guid.CreateVersion7();
         var rawToken = "raw-token-123";
         var tokenHash = "hashed-token-123";
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, adminUserId)
+            new Claim(ClaimTypes.NameIdentifier, adminUserId.ToString())
         }));
 
         _httpContext.User.Returns(claimsPrincipal);
-        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId);
+        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId.ToString());
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns((ApplicationUser?)null);
         _tokenService.GenerateToken().Returns(rawToken);
         _tokenService.HashToken(rawToken).Returns(tokenHash);
@@ -84,6 +84,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
 
         var savedInvitation = await _dbContext.UserInvitations
             .FirstOrDefaultAsync(i => i.Email.Value == command.Email, TestContext.Current.CancellationToken);
+
         Assert.NotNull(savedInvitation);
         Assert.Equal(tokenHash, savedInvitation.TokenHash.Value);
         Assert.Equal(adminUserId, savedInvitation.CreatedBy);
@@ -108,20 +109,20 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     public async Task HandleAsync_WithExistingUser_ReturnsUserAlreadyExistsError()
     {
         var command = new CreateInvitationCommand("existing@example.com");
-        var adminUserId = "admin-123";
+        var adminUserId = Guid.NewGuid();
         var existingUser = new ApplicationUser
         {
-            Id = "existing-user",
+            Id = Guid.NewGuid(),
             Email = "existing@example.com"
         };
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, adminUserId)
+            new Claim(ClaimTypes.NameIdentifier, adminUserId.ToString())
         }));
 
         _httpContext.User.Returns(claimsPrincipal);
-        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId);
+        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId.ToString());
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns(existingUser);
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
@@ -135,7 +136,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     public async Task HandleAsync_WithActiveInvitation_ReturnsActiveInvitationAlreadyExistsError()
     {
         var command = new CreateInvitationCommand("invited@example.com");
-        var adminUserId = "admin-123";
+        var adminUserId = Guid.CreateVersion7();
 
         var activeInvitation = UserInvitation.Create(
             email: "invited@example.com",
@@ -150,11 +151,11 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, adminUserId)
+            new Claim(ClaimTypes.NameIdentifier, adminUserId.ToString())
         }));
 
         _httpContext.User.Returns(claimsPrincipal);
-        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId);
+        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId.ToString());
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns((ApplicationUser?)null);
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
@@ -168,7 +169,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     public async Task HandleAsync_WithExpiredInvitation_CreatesNewInvitation()
     {
         var command = new CreateInvitationCommand("user@example.com");
-        var adminUserId = "admin-123";
+        var adminUserId = Guid.CreateVersion7();
 
         var expiredInvitation = UserInvitation.Create(
             email: "user@example.com",
@@ -187,11 +188,11 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, adminUserId)
+            new Claim(ClaimTypes.NameIdentifier, adminUserId.ToString())
         }));
 
         _httpContext.User.Returns(claimsPrincipal);
-        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId);
+        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId.ToString());
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns((ApplicationUser?)null);
         _tokenService.GenerateToken().Returns(rawToken);
         _tokenService.HashToken(rawToken).Returns(tokenHash);
@@ -210,7 +211,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     public async Task HandleAsync_SetsCorrectExpirationTime()
     {
         var command = new CreateInvitationCommand("newuser@example.com");
-        var adminUserId = "admin-123";
+        var adminUserId = Guid.CreateVersion7();
         var rawToken = "raw-token-123";
         var tokenHash = "hashed-token-123";
         var expirationHours = 72;
@@ -219,11 +220,11 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, adminUserId)
+            new Claim(ClaimTypes.NameIdentifier, adminUserId.ToString())
         }));
 
         _httpContext.User.Returns(claimsPrincipal);
-        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId);
+        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId.ToString());
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns((ApplicationUser?)null);
         _tokenService.GenerateToken().Returns(rawToken);
         _tokenService.HashToken(rawToken).Returns(tokenHash);

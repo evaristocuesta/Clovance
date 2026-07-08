@@ -74,11 +74,11 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
             .GetPrincipalFromExpiredToken(Arg.Any<string>())
             .Returns(new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Entity.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Entity.Id.ToString())
             })));
 
         _jwtTokenService
-            .GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
+            .GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("newAccessToken", DateTime.UtcNow.AddMinutes(30)));
 
         _jwtTokenService

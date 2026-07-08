@@ -8,7 +8,7 @@ public class RefreshTokenUserIdTests
     public void Create_WithValidValue_ShouldReturnRefreshTokenUserId()
     {
         // Arrange
-        var value = Guid.NewGuid().ToString();
+        var value = Guid.CreateVersion7();
 
         // Act
         var refreshTokenUserId = RefreshTokenUserId.Create(value);
@@ -18,40 +18,10 @@ public class RefreshTokenUserIdTests
     }
 
     [Fact]
-    public void Create_WithNullValue_ShouldThrowArgumentException()
-    {
-        // Arrange
-        string value = null!;
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => RefreshTokenUserId.Create(value));
-    }
-
-    [Fact]
-    public void Create_WithEmptyValue_ShouldThrowArgumentException()
-    {
-        // Arrange
-        var value = string.Empty;
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => RefreshTokenUserId.Create(value));
-    }
-
-    [Fact]
-    public void Create_WithInvalidGuid_ShouldThrowArgumentException()
-    {
-        // Arrange
-        var value = "invalid-guid";
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => RefreshTokenUserId.Create(value));
-    }
-
-    [Fact]
     public void Create_WithEmptyGuid_ShouldThrowArgumentException()
     {
         // Arrange
-        var value = Guid.Empty.ToString();
+        var value = Guid.Empty;
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => RefreshTokenUserId.Create(value));

@@ -41,16 +41,16 @@ public class LogoutCommandHandlerTests : IAsyncLifetime
     public async Task HandleAsync_ReturnsSuccess()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         await _dbContext.Users.AddAsync(new ApplicationUser
         {
-            Id = userId.ToString(),
+            Id = userId,
             Email = "user@example.com"
         }, TestContext.Current.CancellationToken);
 
         await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(userId.ToString(), "hashedToken", DateTimeOffset.UtcNow.AddDays(7)),
+            RefreshToken.Create(userId, "hashedToken", DateTimeOffset.UtcNow.AddDays(7)),
             TestContext.Current.CancellationToken);
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
