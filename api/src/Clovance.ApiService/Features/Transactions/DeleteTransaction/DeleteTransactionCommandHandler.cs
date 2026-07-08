@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Features.Shared;
+﻿using Clovance.ApiService.Domain.Transactions;
+using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 
 namespace Clovance.ApiService.Features.Transactions.DeleteTransaction;
@@ -16,7 +17,7 @@ public class DeleteTransactionCommandHandler : IHandler<DeleteTransactionCommand
     {
         var transaction = await _context
             .Transactions
-            .FindAsync(command.Id, cancellationToken);
+            .FindAsync(TransactionId.Create(command.Id), cancellationToken);
 
         if (transaction is null)
         {
