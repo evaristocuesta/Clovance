@@ -102,6 +102,12 @@ public static class AppErrors
             CreateBadRequest(ErrorCodes.Accounts.AccountNameRequired, "Account name is required.");
     }
 
+    public static class Transactions
+    {
+        public static Error TransactionNotFound() =>
+            CreateNotFound(ErrorCodes.Transactions.TransactionNotFound, "Transaction not found.");
+    }
+
     private static Error CreateUnauthorized(string code, string description) =>
         new(code, description, StatusCodes.Status401Unauthorized);
 

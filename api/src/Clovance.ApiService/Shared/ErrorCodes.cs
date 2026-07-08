@@ -75,4 +75,20 @@ public static class ErrorCodes
         public const string AccountNameMaxLength = "accounts.account.name.max_length";
         public const string AccountCurrencyInvalid = "accounts.account.currency.invalid";
     }
+
+    public static class Transactions
+    {
+        public const string TransactionIdRequired = "transactions.transaction.id_required";
+        public const string TransactionNotFound = "transactions.transaction.not_found";
+        public const string DescriptionRequired = "transactions.transaction.description.required";
+        public const string DescriptionMaxLength = "transactions.transaction.description.max_length";
+        public const string AmountRequired = "transactions.transaction.amount.required";
+        public const string AmountInvalid = "transactions.transaction.amount.invalid";
+        public const string DateRequired = "transactions.transaction.date.required";
+        public const string FilterRequired = "transactions.filter.required";
+        public const string MonthInvalidRange = "transactions.month.invalid_range";
+        public const string YearMonthMustComeTogether = "transactions.year_month.must_come_together";
+        public const string PageSizeInvalidRange = "transactions.page_size.invalid_range";
+        public const string CursorMustComeTogether = "transactions.cursor.must_come_together";
+    }
 }
