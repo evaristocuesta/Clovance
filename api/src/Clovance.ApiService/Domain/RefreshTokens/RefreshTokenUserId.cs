@@ -4,23 +4,18 @@ namespace Clovance.ApiService.Domain.RefreshTokens;
 
 public class RefreshTokenUserId : ValueObject
 {
-    private RefreshTokenUserId(string value)
+    private RefreshTokenUserId(Guid value)
     {
         Value = value;
     }
 
-    public string Value { get; }
+    public Guid Value { get; }
 
-    public static RefreshTokenUserId Create(string value)
+    public static RefreshTokenUserId Create(Guid value)
     {
-        if (string.IsNullOrEmpty(value))
+        if (value == Guid.Empty)
         {
             throw new ArgumentException("User ID is required.", nameof(value));
-        }
-
-        if (!Guid.TryParse(value, out var guid) || guid == Guid.Empty)
-        {
-            throw new ArgumentException("User ID is not valid.", nameof(value));
         }
 
         return new RefreshTokenUserId(value);

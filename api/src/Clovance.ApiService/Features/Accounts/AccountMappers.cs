@@ -16,7 +16,7 @@ public static class AccountMappers
 
     public static Account ToDomain(
         this AccountDto accountDto, 
-        string createdBy)
+        Guid createdBy)
     {
         return Account.Create(
             AccountName.Create(accountDto.Name), 

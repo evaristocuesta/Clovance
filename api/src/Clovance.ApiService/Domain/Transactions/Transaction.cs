@@ -14,7 +14,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
       TransactionDescription description,
       AccountId accountId,
       TransactionDate transactionDate,
-      string createdBy)
+      Guid createdBy)
     {
         if (accountId == default)
         {
@@ -42,30 +42,45 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
       TransactionDescription description,
       AccountId accountId,
       TransactionDate date,
-      string createdBy)
+      Guid createdBy)
     {
         return new Transaction(amount, description, accountId, date, createdBy);
     }
 
-    public void ChangeAmount(TransactionAmount amount, string modifiedBy)
+    public static Transaction Create(
+        decimal amount,
+        string description, 
+        Guid accountId,
+        DateOnly date,
+        Guid createdBy)
+    {
+        return Create(
+            TransactionAmount.Create(amount),
+            TransactionDescription.Create(description),
+            AccountId.Create(accountId),
+            TransactionDate.Create(date),
+            createdBy);
+    }
+
+    public void ChangeAmount(TransactionAmount amount, Guid modifiedBy)
     {
         Amount = amount;
         MarkAsModified(modifiedBy);
     }
 
-    public void ChangeDate(TransactionDate date, string modifiedBy)
+    public void ChangeDate(TransactionDate date, Guid modifiedBy)
     {
         Date = date;
         MarkAsModified(modifiedBy);
     }
 
-    public void ChangeDescription(TransactionDescription description, string modifiedBy)
+    public void ChangeDescription(TransactionDescription description, Guid modifiedBy)
     {
         Description = description;
         MarkAsModified(modifiedBy);
     }
 
-    public void MoveToAccount(AccountId accountId, string modifiedBy)
+    public void MoveToAccount(AccountId accountId, Guid modifiedBy)
     {
         if (accountId == default)
         {

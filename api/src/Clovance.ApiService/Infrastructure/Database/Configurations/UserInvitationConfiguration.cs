@@ -8,8 +8,6 @@ public sealed class UserInvitationConfiguration : IEntityTypeConfiguration<UserI
 {
     public void Configure(EntityTypeBuilder<UserInvitation> builder)
     {
-        builder.ToTable("user_invitations");
-
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)

@@ -9,23 +9,23 @@ namespace Clovance.ApiService.Infrastructure.Authentication;
 public interface IJwtTokenService
 {
     string GenerateToken();
-    (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles);
+    (string Token, DateTimeOffset ExpiresAt) GenerateToken(Guid userId, string email, IEnumerable<string> roles);
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
     string HashToken(string token);
 }
 
 public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
 {
-    public (string Token, DateTimeOffset ExpiresAt) GenerateToken(string userId, string email, IEnumerable<string> roles)
+    public (string Token, DateTimeOffset ExpiresAt) GenerateToken(Guid userId, string email, IEnumerable<string> roles)
     {
         var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
             ?? throw new InvalidOperationException("Jwt options are not configured.");
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, userId),
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new(JwtRegisteredClaimNames.Email, email),
-            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
             new(ClaimTypes.Email, email)
         };
 

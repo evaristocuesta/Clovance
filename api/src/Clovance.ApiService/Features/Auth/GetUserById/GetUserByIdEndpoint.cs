@@ -10,7 +10,7 @@ public class GetUserByIdEndpoint : IApiEndPoint
             IHandler<GetUserByIdQuery, Result<GetUserByIdResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken,
-            string id) =>
+            Guid id) =>
         {
             var result = await handler.HandleAsync(new GetUserByIdQuery(id), cancellationToken);
 

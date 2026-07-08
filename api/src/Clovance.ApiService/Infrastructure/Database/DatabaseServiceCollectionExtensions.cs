@@ -14,7 +14,14 @@ public static class DatabaseServiceCollectionExtensions
 
         services.AddDbContext<ClovanceDbContext>(options =>
         {
-            options.UseNpgsql(connectionString);
+            options
+                .UseNpgsql(
+                    connectionString, 
+                    npgsqlOptions =>
+                    {
+                        npgsqlOptions.MigrationsHistoryTable("ef_migrations_history");
+                    })
+                .UseSnakeCaseNamingConvention();
         });
 
         services
@@ -27,7 +34,7 @@ public static class DatabaseServiceCollectionExtensions
               options.Password.RequireUppercase = true;
               options.Password.RequireLowercase = true;
           })
-          .AddRoles<IdentityRole>()
+          .AddRoles<IdentityRole<Guid>>()
           .AddSignInManager()
           .AddEntityFrameworkStores<ClovanceDbContext>()
           .AddDefaultTokenProviders();

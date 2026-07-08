@@ -9,8 +9,6 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
 {
     public void Configure(EntityTypeBuilder<Transaction> builder)
     {
-        builder.ToTable("transactions");
-
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)

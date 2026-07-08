@@ -13,7 +13,7 @@ public sealed class UserInvitation : AuditableEntityBase<UserInvitationId>
       bool isAdmin,
       string tokenHash,
       DateTimeOffset expiresAt,
-      string createdBy)
+      Guid createdBy)
     {
         Id = UserInvitationId.New();
         Email = UserInvitationEmail.Create(email);
@@ -33,7 +33,7 @@ public sealed class UserInvitation : AuditableEntityBase<UserInvitationId>
 
     public DateTimeOffset? ConsumedAt { get; private set; }
 
-    public string? ConsumedBy { get; private set; }
+    public Guid? ConsumedBy { get; private set; }
 
     public bool IsConsumed => ConsumedAt is not null;
 
@@ -42,12 +42,12 @@ public sealed class UserInvitation : AuditableEntityBase<UserInvitationId>
       bool isAdmin,
       string tokenHash,
       DateTimeOffset expiresAt,
-      string createdBy)
+      Guid createdBy)
     {
         return new UserInvitation(email, isAdmin, tokenHash, expiresAt, createdBy);
     }
 
-    public void Consume(string consumedBy)
+    public void Consume(Guid consumedBy)
     {
         if (IsConsumed)
         {

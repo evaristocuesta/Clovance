@@ -9,6 +9,6 @@ public class GetAccountByIdValidator : AbstractValidator<GetAccountByIdQuery>
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(ErrorCodes.Accounts.AccountIdRequired);
+            .WithErrorCode(ErrorCodes.Accounts.AccountIdRequired);
     }
 }

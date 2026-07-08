@@ -2,7 +2,7 @@
 
 namespace Clovance.ApiService.Domain.Transactions;
 
-public sealed class TransactionDate : ValueObject
+public sealed class TransactionDate : ValueObject, IComparable<TransactionDate>
 {
     private TransactionDate(DateOnly value)
     {
@@ -16,6 +16,12 @@ public sealed class TransactionDate : ValueObject
         return new TransactionDate(value);
     }
 
+    public int CompareTo(TransactionDate? other)
+    {
+        if (other is null) return 1;
+        return Value.CompareTo(other.Value);
+    }
+
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Value;
@@ -24,5 +30,29 @@ public sealed class TransactionDate : ValueObject
     public override string ToString()
     {
         return Value.ToString("O");
+    }
+
+    public static bool operator <(TransactionDate? left, TransactionDate? right)
+    {
+        if (left is null) return right is not null;
+        return left.CompareTo(right) < 0;
+    }
+
+    public static bool operator >(TransactionDate? left, TransactionDate? right)
+    {
+        if (left is null) return false;
+        return left.CompareTo(right) > 0;
+    }
+
+    public static bool operator <=(TransactionDate? left, TransactionDate? right)
+    {
+        if (left is null) return true;
+        return left.CompareTo(right) <= 0;
+    }
+
+    public static bool operator >=(TransactionDate? left, TransactionDate? right)
+    {
+        if (left is null) return right is null;
+        return left.CompareTo(right) >= 0;
     }
 }

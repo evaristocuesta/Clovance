@@ -5,15 +5,15 @@ public abstract class AuditableEntityBase<TId> : EntityBase<TId>
 {
     public DateTimeOffset CreatedAt { get; protected set; }
 
-    public string CreatedBy { get; protected set; } = string.Empty;
+    public Guid? CreatedBy { get; protected set; } = default;
 
     public DateTimeOffset? ModifiedAt { get; protected set; }
 
-    public string? ModifiedBy { get; protected set; }
+    public Guid? ModifiedBy { get; protected set; } = default;
 
-    protected void MarkAsCreated(string createdBy, DateTimeOffset? createdAt = null)
+    protected void MarkAsCreated(Guid createdBy, DateTimeOffset? createdAt = null)
     {
-        if (string.IsNullOrWhiteSpace(createdBy))
+        if (createdBy.Equals(default(Guid)))
         {
             throw new ArgumentException("Creator is required.", nameof(createdBy));
         }
@@ -22,9 +22,9 @@ public abstract class AuditableEntityBase<TId> : EntityBase<TId>
         CreatedAt = createdAt ?? DateTimeOffset.UtcNow;
     }
 
-    protected void MarkAsModified(string modifiedBy, DateTimeOffset? modifiedAt = null)
+    protected void MarkAsModified(Guid modifiedBy, DateTimeOffset? modifiedAt = null)
     {
-        if (string.IsNullOrWhiteSpace(modifiedBy))
+        if (modifiedBy.Equals(default(Guid)))
         {
             throw new ArgumentException("Modifier is required.", nameof(modifiedBy));
         }

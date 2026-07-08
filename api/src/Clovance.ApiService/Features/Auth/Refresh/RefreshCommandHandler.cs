@@ -54,7 +54,7 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
         storedToken.MarkAsUsed();
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        var user = await _userManager.FindByIdAsync(userId!);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
 
         if (user is null)
         {
@@ -69,7 +69,7 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
             .RefreshTokens
             .AddAsync(
                 RefreshToken.Create(
-                    userId!,
+                    userId,
                     _jwtTokenService.HashToken(newRefreshToken),
                     DateTime.UtcNow.AddDays(7)),
                 cancellationToken);

@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Domain.UserInvitations;
+﻿using System.Security.Claims;
+using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
@@ -33,12 +34,12 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 
     public async Task<Result<CreateInvitationResult>> HandleAsync(CreateInvitationCommand request, CancellationToken cancellationToken)
     {
-        var httpContext = _httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException("HttpContext is not available.");
+        var userId = Guid.TryParse(
+            _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId) ?
+                parsedUserId :
+                Guid.Empty;
 
-        var adminUserId = _userManager.GetUserId(httpContext.User);
-
-        if (string.IsNullOrWhiteSpace(adminUserId))
+        if (userId == Guid.Empty)
         {
             return Result<CreateInvitationResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
@@ -65,7 +66,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         var tokenHash = _tokenService.HashToken(rawToken);
         var expiresAt = DateTimeOffset.UtcNow.AddHours(Math.Max(1, _invitationOptions.Value.ExpirationHours));
 
-        var invitation = UserInvitation.Create(email.Value, request.IsAdmin, tokenHash, expiresAt, adminUserId);
+        var invitation = UserInvitation.Create(email.Value, request.IsAdmin, tokenHash, expiresAt, userId);
 
         await _dbContext.UserInvitations.AddAsync(invitation, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

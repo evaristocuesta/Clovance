@@ -9,9 +9,7 @@ public sealed class GetUserByIdValidator : AbstractValidator<GetUserByIdQuery>
     {
         RuleFor(x => x.UserId)
             .NotEmpty()
-            .WithErrorCode(ErrorCodes.Auth.UserIdRequired)
-            .Must(id => Guid.TryParse(id, out _))
-            .WithErrorCode(ErrorCodes.Auth.UserIdInvalid);
+            .WithErrorCode(ErrorCodes.Auth.UserIdRequired);
 
     }
 }
