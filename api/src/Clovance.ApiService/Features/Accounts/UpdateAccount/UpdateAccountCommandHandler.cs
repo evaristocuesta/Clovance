@@ -24,7 +24,7 @@ public class UpdateAccountCommandHandler : IHandler<UpdateAccountCommand, Result
     {
         var account = await _context
             .Accounts
-            .FirstOrDefaultAsync(a => a.Id == AccountId.Create(command.Id), cancellationToken);
+            .FindAsync(AccountId.Create(command.Id), cancellationToken);
 
         if (account is null)
         {
