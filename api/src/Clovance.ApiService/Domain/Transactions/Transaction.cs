@@ -64,18 +64,33 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     public void ChangeAmount(TransactionAmount amount, Guid modifiedBy)
     {
+        if (amount == Amount)
+        {
+            return;
+        }
+
         Amount = amount;
         MarkAsModified(modifiedBy);
     }
 
     public void ChangeDate(TransactionDate date, Guid modifiedBy)
     {
+        if (date == Date)
+        {
+            return;
+        }
+
         Date = date;
         MarkAsModified(modifiedBy);
     }
 
     public void ChangeDescription(TransactionDescription description, Guid modifiedBy)
     {
+        if (description == Description)
+        {
+            return;
+        }
+
         Description = description;
         MarkAsModified(modifiedBy);
     }
@@ -85,6 +100,11 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
         if (accountId == default)
         {
             throw new ArgumentException("Account id cannot be empty.", nameof(accountId));
+        }
+
+        if (accountId == AccountId)
+        {
+            return;
         }
 
         AccountId = accountId;

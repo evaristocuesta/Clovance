@@ -82,7 +82,7 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         Assert.Equal(createdUserId, result.Value.UserId);
         Assert.Equal(command.Email, result.Value.Email);
 
-        var updatedInvitation = await _dbContext.UserInvitations.FindAsync(new object[] { invitation.Id }, TestContext.Current.CancellationToken);
+        var updatedInvitation = await _dbContext.UserInvitations.FindAsync([invitation.Id], TestContext.Current.CancellationToken);
         Assert.NotNull(updatedInvitation);
         Assert.NotNull(updatedInvitation.ConsumedAt);
         Assert.Equal(result.Value.UserId, updatedInvitation.ConsumedBy);

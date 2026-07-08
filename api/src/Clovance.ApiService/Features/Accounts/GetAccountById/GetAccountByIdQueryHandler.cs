@@ -16,7 +16,9 @@ public class GetAccountByIdQueryHandler : IHandler<GetAccountByIdQuery, Result<G
 
     public async Task<Result<GetAccountByIdResult>> HandleAsync(GetAccountByIdQuery command, CancellationToken cancellationToken)
     {
-        var account = await _dbContext.Accounts
+        var account = await _dbContext
+            .Accounts
+            .AsNoTracking()
             .Where(a => a.Id == AccountId.Create(command.Id))
             .Select(a => a.ToDto())
             .FirstOrDefaultAsync(cancellationToken);

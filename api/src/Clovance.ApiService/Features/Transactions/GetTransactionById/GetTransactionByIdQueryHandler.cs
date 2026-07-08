@@ -16,11 +16,12 @@ public class GetTransactionByIdQueryHandler : IHandler<GetTransactionByIdQuery, 
 
     public async Task<Result<GetTransactionByIdResult>> HandleAsync(GetTransactionByIdQuery command, CancellationToken cancellationToken)
     {
-        var transaction = await _dbContext.Transactions
+        var transaction = await _dbContext
+            .Transactions
+            .AsNoTracking()
             .Where(t => t.Id == TransactionId.Create(command.Id))
             .Select(t => t.ToDto())
             .FirstOrDefaultAsync(cancellationToken);
-;
 
         if (transaction is null)
         {
