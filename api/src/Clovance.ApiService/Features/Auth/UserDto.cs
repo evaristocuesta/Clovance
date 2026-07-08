@@ -1,7 +1,7 @@
 ﻿namespace Clovance.ApiService.Features.Auth;
 
 public sealed record UserDto(
-    string Id,
+    Guid Id,
     string FirstName,
     string LastName,
     string Email,

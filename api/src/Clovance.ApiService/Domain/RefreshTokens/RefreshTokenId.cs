@@ -4,7 +4,7 @@ public readonly record struct RefreshTokenId(Guid Value)
 {
     public static RefreshTokenId New()
     {
-        return new RefreshTokenId(Guid.NewGuid());
+        return new RefreshTokenId(Guid.CreateVersion7());
     }
 
     public static RefreshTokenId Create(Guid value)

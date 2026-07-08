@@ -6,5 +6,5 @@ public interface ISoftDeletable
 
     DateTimeOffset? DeletedAt { get; }
 
-    string? DeletedBy { get; }
+    Guid? DeletedBy { get; }
 }

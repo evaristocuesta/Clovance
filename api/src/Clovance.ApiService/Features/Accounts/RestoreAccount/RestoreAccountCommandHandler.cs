@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.Accounts;
+using Clovance.ApiService.Features.Accounts.CreateAccount;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +31,17 @@ public class RestoreAccountCommandHandler : IHandler<RestoreAccountCommand, Resu
             return Result.Failure(AppErrors.Accounts.AccountNotFound());
         }
 
-        var email = _contextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? "system";
+        var userId = Guid.TryParse(
+            _contextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId) ?
+                parsedUserId :
+                Guid.Empty;
 
-        account.Restore(email);
+        if (userId == Guid.Empty)
+        {
+            return Result.Failure(AppErrors.Auth.UserNotAuthenticated());
+        }
+
+        account.Restore(userId);
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

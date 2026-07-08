@@ -4,7 +4,7 @@ public readonly record struct AccountId(Guid Value)
 {
     public static AccountId New()
     {
-        return new AccountId(Guid.NewGuid());
+        return new AccountId(Guid.CreateVersion7());
     }
 
     public static AccountId Create(Guid value)

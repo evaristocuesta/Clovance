@@ -7,7 +7,7 @@ public class RefreshToken : EntityBase<RefreshTokenId>
     private RefreshToken()
     {
     }
-    private RefreshToken(RefreshTokenId id, string userId, string token, DateTimeOffset expiresAt, bool isUsed)
+    private RefreshToken(RefreshTokenId id, Guid userId, string token, DateTimeOffset expiresAt, bool isUsed)
     {
         Id = id;
         UserId = RefreshTokenUserId.Create(userId);
@@ -27,7 +27,7 @@ public class RefreshToken : EntityBase<RefreshTokenId>
 
     public bool IsUsed { get; private set; }
 
-    public static RefreshToken Create(string userId, string token, DateTimeOffset expiresAt)
+    public static RefreshToken Create(Guid userId, string token, DateTimeOffset expiresAt)
     {
         return new RefreshToken(RefreshTokenId.New(), userId, token, expiresAt, false);
     }

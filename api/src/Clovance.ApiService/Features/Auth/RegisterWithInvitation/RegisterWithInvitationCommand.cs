@@ -7,4 +7,4 @@ public sealed record RegisterWithInvitationCommand(
     string FirstName,
     string LastName);
 
-public sealed record RegisterWithInvitationResult(string UserId, string Email);
+public sealed record RegisterWithInvitationResult(Guid UserId, string Email);

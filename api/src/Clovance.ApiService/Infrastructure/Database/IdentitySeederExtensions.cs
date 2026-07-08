@@ -10,11 +10,11 @@ public static class IdentitySeederExtensions
     {
         using var scope = app.ApplicationServices.CreateScope();
 
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
         if (!await roleManager.RoleExistsAsync(AdminRole))
         {
-            await roleManager.CreateAsync(new IdentityRole(AdminRole));
+            await roleManager.CreateAsync(new IdentityRole<Guid>(AdminRole));
         }
     }
 }

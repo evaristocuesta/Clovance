@@ -4,7 +4,7 @@ public readonly record struct UserInvitationId(Guid Value)
 {
     public static UserInvitationId New()
     {
-        return new UserInvitationId(Guid.NewGuid());
+        return new UserInvitationId(Guid.CreateVersion7());
     }
     public static UserInvitationId Create(Guid value)
     {

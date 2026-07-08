@@ -7,16 +7,16 @@ public abstract class SoftDeletableAuditableEntityBase<TId> : AuditableEntityBas
 
     public DateTimeOffset? DeletedAt { get; protected set; }
 
-    public string? DeletedBy { get; protected set; }
+    public Guid? DeletedBy { get; protected set; }
 
-    public void SoftDelete(string deletedBy, DateTimeOffset? deletedAt = null)
+    public void SoftDelete(Guid deletedBy, DateTimeOffset? deletedAt = null)
     {
         if (IsDeleted)
         {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(deletedBy))
+        if (deletedBy.Equals(default(Guid)))
         {
             throw new ArgumentException("Deleted by is required.", nameof(deletedBy));
         }
@@ -27,11 +27,16 @@ public abstract class SoftDeletableAuditableEntityBase<TId> : AuditableEntityBas
         MarkAsModified(deletedBy, DeletedAt);
     }
 
-    public void Restore(string modifiedBy)
+    public void Restore(Guid modifiedBy)
     {
         if (!IsDeleted)
         {
             return;
+        }
+
+        if (modifiedBy.Equals(default(Guid)))
+        {
+            throw new ArgumentException("Modifier is required.", nameof(modifiedBy));
         }
 
         IsDeleted = false;

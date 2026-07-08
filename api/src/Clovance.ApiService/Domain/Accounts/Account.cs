@@ -8,7 +8,7 @@ public sealed class Account : SoftDeletableAuditableEntityBase<AccountId>
     {
     }
 
-    private Account(AccountName name, Currency currency, string createdBy)
+    private Account(AccountName name, Currency currency, Guid createdBy)
     {
         Id = AccountId.New();
         Name = name;
@@ -20,17 +20,17 @@ public sealed class Account : SoftDeletableAuditableEntityBase<AccountId>
 
     public Currency Currency { get; private set; } = null!;
 
-    public static Account Create(AccountName name, Currency currency, string createdBy)
+    public static Account Create(AccountName name, Currency currency, Guid createdBy)
     {
         return new Account(name, currency, createdBy);
     }
 
-    public static Account Create(string name, string currency, string createdBy)
+    public static Account Create(string name, string currency, Guid createdBy)
     {
         return new Account(AccountName.Create(name), Currency.Create(currency), createdBy);
     }
 
-    public void Rename(AccountName name, string modifiedBy)
+    public void Rename(AccountName name, Guid modifiedBy)
     {
         if (Name.Equals(name))
         {
@@ -41,12 +41,12 @@ public sealed class Account : SoftDeletableAuditableEntityBase<AccountId>
         MarkAsModified(modifiedBy);
     }
 
-    public void Rename(string name, string modifiedBy)
+    public void Rename(string name, Guid modifiedBy)
     {
         Rename(AccountName.Create(name), modifiedBy);
     }
 
-    public void ChangeCurrency(Currency currency, string modifiedBy)
+    public void ChangeCurrency(Currency currency, Guid modifiedBy)
     {
         if (Currency.Equals(currency))
         {
@@ -57,7 +57,7 @@ public sealed class Account : SoftDeletableAuditableEntityBase<AccountId>
         MarkAsModified(modifiedBy);
     }
 
-    public void ChangeCurrency(string currency, string modifiedBy)
+    public void ChangeCurrency(string currency, Guid modifiedBy)
     {
         ChangeCurrency(Currency.Create(currency), modifiedBy);
     }
