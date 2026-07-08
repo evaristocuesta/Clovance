@@ -30,7 +30,7 @@ public class CreateTransactionCommandHandler : IHandler<CreateTransactionCommand
             return Result<CreateTransactionResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
 
-        var account = await _context.Accounts.FindAsync(new object[] { command.AccountId }, cancellationToken);
+        var account = await _context.Accounts.FindAsync(command.AccountId, cancellationToken);
 
         if (account is null)
         {

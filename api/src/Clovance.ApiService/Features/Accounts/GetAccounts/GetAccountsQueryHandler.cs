@@ -15,7 +15,9 @@ public class GetAccountsQueryHandler : IHandler<GetAccountsQuery, Result<GetAcco
 
     public async Task<Result<GetAccountsResult>> HandleAsync(GetAccountsQuery command, CancellationToken cancellationToken)
     {
-        var accounts = await _dbContext.Accounts
+        var accounts = await _dbContext
+            .Accounts
+            .AsNoTracking()
             .Select(a => a.ToDto())
             .ToListAsync(cancellationToken);
 
