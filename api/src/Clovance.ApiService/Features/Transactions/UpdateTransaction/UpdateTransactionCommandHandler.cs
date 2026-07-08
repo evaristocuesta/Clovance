@@ -24,7 +24,7 @@ public class UpdateTransactionCommandHandler : IHandler<UpdateTransactionCommand
     {
         var transaction = await _context
             .Transactions
-            .FirstOrDefaultAsync(t => t.Id == TransactionId.Create(command.Transaction.Id), cancellationToken);
+            .FindAsync(TransactionId.Create(command.Transaction.Id), cancellationToken);
 
         if (transaction is null)
         {

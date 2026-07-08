@@ -55,6 +55,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 
         var activeInvitation = await _dbContext
             .UserInvitations
+            .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Email == email && i.ConsumedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow, cancellationToken);
 
         if (activeInvitation is not null)
