@@ -13,7 +13,7 @@ public class CreateInvitationEndpointTests : IntegrationTestBase
     public async Task CreateInvitationEndpoint_ReturnSuccess()
     {
         // Arrange
-        var email = $"test-{Guid.NewGuid()}@example.com";
+        var email = $"test-{Guid.CreateVersion7()}@example.com";
 
         // Get an authenticated admin token
         var (adminToken, adminRefreshToken) = await EnsureAdminReadyAsync();

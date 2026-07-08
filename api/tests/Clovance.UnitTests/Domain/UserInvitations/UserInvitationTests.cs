@@ -7,7 +7,8 @@ public class UserInvitationTests
     [Fact]
     public void Create_WithValidUserInvitation_ReturnsUserInvitation()
     {
-        var userInvitation = UserInvitation.Create("valid-email@example.com", true, "valid-token", DateTimeOffset.UtcNow, "ByMe");
+        var userId = Guid.CreateVersion7();
+        var userInvitation = UserInvitation.Create("valid-email@example.com", true, "valid-token", DateTimeOffset.UtcNow, userId);
         Assert.Equal("valid-email@example.com", userInvitation.Email.Value);
         Assert.Equal("valid-token", userInvitation.TokenHash.Value);
     }
@@ -15,6 +16,7 @@ public class UserInvitationTests
     [Fact]
     public void Create_WithInvalidUserInvitation_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => UserInvitation.Create("", true, "valid-token", DateTimeOffset.UtcNow, "ByMe"));
+        var userId = Guid.CreateVersion7();
+        Assert.Throws<ArgumentException>(() => UserInvitation.Create("", true, "valid-token", DateTimeOffset.UtcNow, userId));
     }
 }

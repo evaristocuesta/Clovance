@@ -58,13 +58,13 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
             isAdmin: false,
             tokenHash: tokenHash,
             expiresAt: DateTimeOffset.UtcNow.AddHours(24),
-            createdBy: "admin-123"
+            createdBy: Guid.CreateVersion7()
         );
 
         await _dbContext.UserInvitations.AddAsync(invitation, TestContext.Current.CancellationToken);
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var createdUserId = "new-user-123";
+        var createdUserId = Guid.CreateVersion7();
 
         _tokenService.HashToken(command.Token.Trim()).Returns(tokenHash);
         _userManager.FindByEmailAsync(command.Email.Trim()).Returns((ApplicationUser?)null);
@@ -85,7 +85,7 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var updatedInvitation = await _dbContext.UserInvitations.FindAsync(new object[] { invitation.Id }, TestContext.Current.CancellationToken);
         Assert.NotNull(updatedInvitation);
         Assert.NotNull(updatedInvitation.ConsumedAt);
-        Assert.Equal(createdUserId, updatedInvitation.ConsumedBy);
+        Assert.Equal(result.Value.UserId, updatedInvitation.ConsumedBy);
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
             isAdmin: false,
             tokenHash: tokenHash,
             expiresAt: DateTimeOffset.UtcNow.AddHours(-1),
-            createdBy: "admin-123"
+            createdBy: Guid.CreateVersion7()
         );
 
         await _dbContext.UserInvitations.AddAsync(expiredInvitation, TestContext.Current.CancellationToken);
@@ -156,10 +156,10 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
             isAdmin: false,
             tokenHash: tokenHash,
             expiresAt: DateTimeOffset.UtcNow.AddHours(24),
-            createdBy: "admin-123"
+            createdBy: Guid.CreateVersion7()
         );
 
-        consumedInvitation.Consume("user-123");
+        consumedInvitation.Consume(Guid.CreateVersion7());
 
         await _dbContext.UserInvitations.AddAsync(consumedInvitation, TestContext.Current.CancellationToken);
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -190,7 +190,7 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
             isAdmin: false,
             tokenHash: tokenHash,
             expiresAt: DateTimeOffset.UtcNow.AddHours(24),
-            createdBy: "admin-123"
+            createdBy: Guid.CreateVersion7()
         );
 
         await _dbContext.UserInvitations.AddAsync(invitation, TestContext.Current.CancellationToken);
@@ -229,7 +229,7 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
             isAdmin: false,
             tokenHash: tokenHash,
             expiresAt: DateTimeOffset.UtcNow.AddHours(24),
-            createdBy: "admin-123"
+            createdBy: Guid.CreateVersion7()
         );
 
         await _dbContext.UserInvitations.AddAsync(invitation, TestContext.Current.CancellationToken);

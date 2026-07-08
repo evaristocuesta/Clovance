@@ -8,7 +8,7 @@ public class RefreshTokenTests
     public void Create_ShouldInitializePropertiesorrectly()
     {
         // Arrange
-        var userId = Guid.NewGuid().ToString();
+        var userId = Guid.CreateVersion7();
         var token = "refreshToken123";
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
 
@@ -26,7 +26,7 @@ public class RefreshTokenTests
     public void Create_ShouldThrowException_WhenUserIdIsEmpty()
     {
         // Arrange
-        string userId = string.Empty;
+        Guid userId = Guid.Empty;
         var token = "refreshToken123";
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
 
@@ -38,7 +38,7 @@ public class RefreshTokenTests
     public void MarkAsUsed_ShouldSetIsUsedToTrue()
     {
         // Arrange
-        var userId = Guid.NewGuid().ToString();
+        var userId = Guid.CreateVersion7();
         var token = "refreshToken123";
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
         var refreshToken = RefreshToken.Create(userId, token, expiresAt);
@@ -54,7 +54,7 @@ public class RefreshTokenTests
     public void MarkAsUsed_ShouldThrowException_WhenAlreadyUsed()
     {
         // Arrange
-        var userId = Guid.NewGuid().ToString();
+        var userId = Guid.CreateVersion7();
         var token = "refreshToken123";
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
         var refreshToken = RefreshToken.Create(userId, token, expiresAt);

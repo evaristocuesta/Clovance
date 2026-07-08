@@ -15,7 +15,7 @@ public class TokenDiagnosticsTests : IntegrationTestBase
     {
         // Arrange - generate a test token
         var token = GenerateTestToken(
-            userId: "test-user",
+            userId: Guid.CreateVersion7(),
             email: "test@example.com");
 
         // Print the token to console for debugging

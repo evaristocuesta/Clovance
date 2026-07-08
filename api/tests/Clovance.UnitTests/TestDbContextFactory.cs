@@ -8,7 +8,7 @@ public class TestDbContextFactory
     public static ClovanceDbContext CreateInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<ClovanceDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(databaseName: Guid.CreateVersion7().ToString())
             .Options;
 
         return new ClovanceDbContext(options);

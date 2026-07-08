@@ -27,7 +27,7 @@ public class DeleteUserEndpointTests : IntegrationTestBase
     {
         // Arrange
         AuthenticateAsAdminUser();
-        var nonExistentUserId = Guid.NewGuid();
+        var nonExistentUserId = Guid.CreateVersion7();
 
         // Act
         var response = await Client.DeleteAsync($"/api/auth/users/{nonExistentUserId}", TestContext.Current.CancellationToken);
@@ -73,7 +73,7 @@ public class DeleteUserEndpointTests : IntegrationTestBase
         AuthenticateWithToken(string.Empty); // Clear any existing authentication
 
         // Act
-        var response = await Client.DeleteAsync($"/api/auth/users/{Guid.NewGuid()}", TestContext.Current.CancellationToken);
+        var response = await Client.DeleteAsync($"/api/auth/users/{Guid.CreateVersion7()}", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);

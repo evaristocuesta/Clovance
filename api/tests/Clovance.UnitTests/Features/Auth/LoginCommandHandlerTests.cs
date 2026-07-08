@@ -53,7 +53,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
 
         var user = new ApplicationUser
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = Guid.CreateVersion7(),
             UserName = "test@example.com",
             Email = "test@example.com"
         };
@@ -69,7 +69,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.GetRolesAsync(user).Returns(roles);
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
-        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
+        _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns((expectedToken, expectedExpiresAt));
 
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
@@ -167,7 +167,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
 
         var user = new ApplicationUser
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = Guid.CreateVersion7(),
             UserName = "test@example.com",
             Email = "test@example.com"
         };
@@ -182,7 +182,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.GetRolesAsync(user).Returns(roles);
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
-        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
+        _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", expectedExpiresAt));
 
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
@@ -207,7 +207,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
 
         var user = new ApplicationUser
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = Guid.CreateVersion7(),
             UserName = "test@example.com",
             Email = "test@example.com"
         };
@@ -220,7 +220,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.GetRolesAsync(user).Returns(roles);
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
-        _jwtTokenService.GenerateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
+        _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(60)));
 
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);

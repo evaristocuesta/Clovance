@@ -37,10 +37,15 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     /// Note: This uses the same JWT configuration loaded from the appsettings files of the API project.
     /// </summary>
     protected string GenerateTestToken(
-        string userId = "test-user-id",
+        Guid userId = default,
         string email = "test@example.com",
         IEnumerable<string>? roles = null)
     {
+        if (userId == default)
+        {
+            userId = Guid.CreateVersion7();
+        }
+
         var (token, _) = _jwtTokenService.GenerateToken(
             userId,
             email,
@@ -63,7 +68,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     protected void AuthenticateAsRegularUser()
     {
         var token = GenerateTestToken(
-            userId: "regular-user-id",
+            userId: Guid.CreateVersion7(),
             email: "regular@example.com");
         AuthenticateWithToken(token);
     }
@@ -74,7 +79,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     protected void AuthenticateAsAdminUser()
     {
         var token = GenerateTestToken(
-            userId: "admin-user-id",
+            userId: Guid.CreateVersion7(),
             email: "admin@example.com",
             roles: ["Admin"]);
         AuthenticateWithToken(token);
@@ -92,12 +97,12 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     /// Creates a test user via the registration API.
     /// Returns the user's ID, email, and password for later authentication.
     /// </summary>
-    public async Task<(string UserID, string Email, string Password)> CreateTestUserAsync(
+    public async Task<(Guid UserID, string Email, string Password)> CreateTestUserAsync(
         string? email = null,
         string? password = null,
         IEnumerable<string>? roles = null)
     {
-        email ??= $"test-{Guid.NewGuid()}@example.com";
+        email ??= $"test-{Guid.CreateVersion7()}@example.com";
         password ??= "TestPassword123!";
 
         // Determine if the user should be an admin based on roles

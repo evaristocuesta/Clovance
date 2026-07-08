@@ -25,8 +25,8 @@ public class GetUsersRequestHandlerTests
         // Arrange
         var users = new List<ApplicationUser>
         {
-            new ApplicationUser { Id = "user1", UserName = "user1@example.com", Email = "user1@example.com" },
-            new ApplicationUser { Id = "user2", UserName = "user2@example.com", Email = "user2@example.com" }
+            new ApplicationUser { Id = Guid.NewGuid(), UserName = "user1@example.com", Email = "user1@example.com" },
+            new ApplicationUser { Id = Guid.NewGuid(), UserName = "user2@example.com", Email = "user2@example.com" }
         };
 
         _userManager.Users.Returns(users.AsQueryable());

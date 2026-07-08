@@ -8,6 +8,7 @@ public class TransactionTests
     [Fact]
     public void Create_SetsRequiredDataAndAudit()
     {
+        var userId = Guid.CreateVersion7();
         var accountId = AccountId.New();
 
         var transaction = Transaction.Create(
@@ -15,23 +16,25 @@ public class TransactionTests
             TransactionDescription.Create("Dinner"),
             accountId,
             TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
-            "creator");
+            userId);
 
         Assert.NotEqual(default, transaction.Id);
         Assert.Equal(accountId, transaction.AccountId);
-        Assert.Equal("creator", transaction.CreatedBy);
+        Assert.Equal(userId, transaction.CreatedBy);
         Assert.True(transaction.CreatedAt <= DateTimeOffset.UtcNow);
     }
 
     [Fact]
     public void Create_WithDefaultAccountId_ThrowsArgumentException()
     {
+        var userId = Guid.CreateVersion7();
+
         var action = () => Transaction.Create(
             TransactionAmount.Create(10m),
             TransactionDescription.Create("Salary"),
             default,
             TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
-            "creator");
+            userId);
 
         Assert.Throws<ArgumentException>(action);
     }
@@ -39,17 +42,19 @@ public class TransactionTests
     [Fact]
     public void ChangeDescription_UpdatesDescriptionAndAudit()
     {
+        var userId = Guid.CreateVersion7();
+
         var transaction = Transaction.Create(
             TransactionAmount.Create(10m),
             TransactionDescription.Create("Old"),
             AccountId.New(),
             TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
-            "creator");
+            userId);
 
-        transaction.ChangeDescription(TransactionDescription.Create("New"), "editor");
+        transaction.ChangeDescription(TransactionDescription.Create("New"), userId);
 
         Assert.Equal("New", transaction.Description.Value);
-        Assert.Equal("editor", transaction.ModifiedBy);
+        Assert.Equal(userId, transaction.ModifiedBy);
         Assert.NotNull(transaction.ModifiedAt);
     }
 }
