@@ -8,11 +8,12 @@ public class GetAccountByIdEndpoint : IApiEndPoint
     {
         app.MapGet("/{id:guid}", async (
             Guid id, 
-            IHandler<GetAccountByIdQuery, Result<GetAccountByIdResult>> handler, 
+            IHandler<GetAccountByIdQuery, Result<GetAccountByIdResult>> handler,
+            HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
             var result = await handler.HandleAsync(new GetAccountByIdQuery(id), cancellationToken);
-            return result.IsSuccess ? Results.Ok(result.Value.Account) : Results.NotFound();
+            return result.IsSuccess ? Results.Ok(result.Value.Account) : result.ToProblemResult(httpContext);
         })
         .Produces<AccountDto>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status404NotFound)
