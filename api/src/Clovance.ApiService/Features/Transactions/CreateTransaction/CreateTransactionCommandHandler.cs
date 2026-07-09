@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
-using Clovance.ApiService.Features.Accounts.CreateAccount;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +43,7 @@ public class CreateTransactionCommandHandler : IHandler<CreateTransactionCommand
         var transaction = await _context.Transactions.AddAsync(
             Transaction.Create(
                 command.Amount,
+                command.Type,
                 command.Description,
                 command.AccountId,
                 command.Date,

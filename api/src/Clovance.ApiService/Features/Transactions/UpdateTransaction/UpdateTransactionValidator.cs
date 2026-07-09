@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Shared;
+﻿using Clovance.ApiService.Domain.Transactions;
+using Clovance.ApiService.Shared;
 using FluentValidation;
 
 namespace Clovance.ApiService.Features.Transactions.UpdateTransaction;
@@ -27,8 +28,17 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
             .Must(amount => amount != 0)
             .WithErrorCode(ErrorCodes.Transactions.AmountInvalid);
 
+        RuleFor(x => x.Transaction.Type)
+            .IsInEnum()
+            .WithErrorCode(ErrorCodes.Transactions.TypeInvalid);
+
         RuleFor(x => x.Transaction.AccountId)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Accounts.AccountIdRequired);
+
+        RuleFor(x => x.Transaction)
+            .Must(dto => TransactionAmountTypeRules.EnsureAmountMatchesType(dto.Amount, dto.Type))
+            .WithErrorCode(ErrorCodes.Transactions.AmountSignTypeMismatch)
+            .When(x => x.Transaction.Amount != 0 && Enum.IsDefined(typeof(TransactionType), x.Transaction.Type));
     }
 }

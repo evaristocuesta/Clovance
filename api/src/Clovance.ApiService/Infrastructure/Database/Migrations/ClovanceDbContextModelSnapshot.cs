@@ -166,6 +166,12 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("modified_by");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("type");
+
                     b.HasKey("Id")
                         .HasName("pk_transactions");
 
@@ -178,7 +184,12 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                     b.HasIndex("AccountId", "Date")
                         .HasDatabaseName("ix_transactions_account_id_date");
 
-                    b.ToTable("transactions", (string)null);
+                    b.ToTable("transactions", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_transactions_amount_sign_matches_type", "(type = 'Income' AND amount > 0) OR (type = 'Expense' AND amount < 0) OR (type = 'Transfer' AND amount <> 0)");
+
+                            t.HasCheckConstraint("ck_transactions_type_is_valid", "type IN ('Income', 'Expense', 'Transfer')");
+                        });
                 });
 
             modelBuilder.Entity("Clovance.ApiService.Domain.UserInvitations.UserInvitation", b =>

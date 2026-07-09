@@ -119,6 +119,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     account_id = table.Column<Guid>(type: "uuid", nullable: false),
                     description = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
                     date = table.Column<DateOnly>(type: "date", nullable: false),
@@ -130,6 +131,8 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_transactions", x => x.id);
+                    table.CheckConstraint("ck_transactions_amount_sign_matches_type", "(type = 'Income' AND amount > 0) OR (type = 'Expense' AND amount < 0) OR (type = 'Transfer' AND amount <> 0)");
+                    table.CheckConstraint("ck_transactions_type_is_valid", "type IN ('Income', 'Expense', 'Transfer')");
                     table.ForeignKey(
                         name: "fk_transactions_accounts_account_id",
                         column: x => x.account_id,
