@@ -13,6 +13,7 @@ public class TransactionTests
 
         var transaction = Transaction.Create(
             TransactionAmount.Create(-20.50m),
+            TransactionType.Expense,
             TransactionDescription.Create("Dinner"),
             accountId,
             TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
@@ -31,6 +32,7 @@ public class TransactionTests
 
         var action = () => Transaction.Create(
             TransactionAmount.Create(10m),
+            TransactionType.Income,
             TransactionDescription.Create("Salary"),
             default,
             TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),
@@ -46,6 +48,7 @@ public class TransactionTests
 
         var transaction = Transaction.Create(
             TransactionAmount.Create(10m),
+            TransactionType.Income,
             TransactionDescription.Create("Old"),
             AccountId.New(),
             TransactionDate.Create(DateOnly.FromDateTime(DateTime.UtcNow)),

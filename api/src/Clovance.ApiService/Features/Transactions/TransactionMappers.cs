@@ -14,6 +14,7 @@ public static class TransactionMappers
             transaction.Date.Value,
             transaction.Description.Value,
             transaction.Amount.Value,
+            transaction.Type,
             transaction.AccountId.Value);
     }
 }

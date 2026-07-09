@@ -11,6 +11,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     private Transaction(
       TransactionAmount amount,
+      TransactionType type,
       TransactionDescription description,
       AccountId accountId,
       TransactionDate transactionDate,
@@ -21,8 +22,14 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             throw new ArgumentException("Account id cannot be empty.", nameof(accountId));
         }
 
+        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(amount.Value, type))
+        {
+            throw new InvalidOperationException($"Amount type '{amount.GetType().Name}' is not valid for transaction type '{type.GetType().Name}'.");
+        }
+
         Id = TransactionId.New();
         Amount = amount;
+        Type = type;
         Description = description;
         AccountId = accountId;
         Date = transactionDate;
@@ -30,6 +37,8 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
     }
 
     public TransactionAmount Amount { get; private set; } = null!;
+    
+    public TransactionType Type { get; private set; }
 
     public AccountId AccountId { get; private set; }
 
@@ -39,16 +48,18 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     public static Transaction Create(
       TransactionAmount amount,
+      TransactionType type,
       TransactionDescription description,
       AccountId accountId,
       TransactionDate date,
       Guid createdBy)
     {
-        return new Transaction(amount, description, accountId, date, createdBy);
+        return new Transaction(amount, type, description, accountId, date, createdBy);
     }
 
     public static Transaction Create(
         decimal amount,
+        TransactionType type,
         string description, 
         Guid accountId,
         DateOnly date,
@@ -56,6 +67,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
     {
         return Create(
             TransactionAmount.Create(amount),
+            type,
             TransactionDescription.Create(description),
             AccountId.Create(accountId),
             TransactionDate.Create(date),
@@ -69,7 +81,28 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             return;
         }
 
+        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(amount.Value, Type))
+        {
+            throw new InvalidOperationException($"Amount type '{amount.GetType().Name}' is not valid for transaction type '{Type.GetType().Name}'.");
+        }
+
         Amount = amount;
+        MarkAsModified(modifiedBy);
+    }
+
+    public void ChangeType(TransactionType type, Guid modifiedBy)
+    {
+        if (type == Type)
+        {
+            return;
+        }
+
+        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(Amount.Value, type))
+        {
+            throw new InvalidOperationException($"Amount type '{Amount.GetType().Name}' is not valid for transaction type '{type.GetType().Name}'.");
+        }
+
+        Type = type;
         MarkAsModified(modifiedBy);
     }
 

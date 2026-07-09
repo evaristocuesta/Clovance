@@ -90,5 +90,7 @@ public static class ErrorCodes
         public const string YearMonthMustComeTogether = "transactions.year_month.must_come_together";
         public const string PageSizeInvalidRange = "transactions.page_size.invalid_range";
         public const string CursorMustComeTogether = "transactions.cursor.must_come_together";
+        public const string TypeInvalid = "transactions.type.invalid";
+        public const string AmountSignTypeMismatch = "transactions.amount_sign_type.mismatch";
     }
 }

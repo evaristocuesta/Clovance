@@ -24,6 +24,24 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
             .HasPrecision(18, 2)
             .IsRequired();
 
+        builder.Property(t => t.Type)
+            .HasConversion<string>() // save "Income"/"Expense"/"Transfer" instead of 0/1/2, more readable in the DB
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.ToTable(t =>
+        {
+            t.HasCheckConstraint(
+                "ck_transactions_type_is_valid",
+                "type IN ('Income', 'Expense', 'Transfer')");
+
+            t.HasCheckConstraint(
+                "ck_transactions_amount_sign_matches_type",
+                "(type = 'Income' AND amount > 0) OR " +
+                "(type = 'Expense' AND amount < 0) OR " +
+                "(type = 'Transfer' AND amount <> 0)");
+        });
+
         builder.Property(x => x.Description)
             .HasConversion(description => description.Value, value => TransactionDescription.Create(value))
             .HasMaxLength(250)
