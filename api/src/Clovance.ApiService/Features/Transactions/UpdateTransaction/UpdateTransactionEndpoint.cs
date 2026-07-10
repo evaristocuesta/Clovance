@@ -20,7 +20,8 @@ public class UpdateTransactionEndpoint : IApiEndPoint
                     Description: request.Description,
                     Amount: request.Amount,
                     Type: request.Type,
-                    AccountId: request.AccountId
+                    AccountId: request.AccountId,
+                    RelatedTransactionId: null
                 )
             );
 

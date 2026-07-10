@@ -46,6 +46,8 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     public TransactionDate Date { get; private set; } = null!;
 
+    public TransactionId? RelatedTransactionId { get; private set; }
+
     public static Transaction Create(
       TransactionAmount amount,
       TransactionType type,
@@ -126,6 +128,11 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
         Description = description;
         MarkAsModified(modifiedBy);
+    }
+
+    public void ChangeRelatedTransactionId(TransactionId? relatedTransactionId)
+    {
+        RelatedTransactionId = relatedTransactionId;
     }
 
     public void MoveToAccount(AccountId accountId, Guid modifiedBy)

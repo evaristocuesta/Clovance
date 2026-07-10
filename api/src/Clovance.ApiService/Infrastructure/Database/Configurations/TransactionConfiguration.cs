@@ -71,5 +71,9 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
             .WithMany()
             .HasForeignKey(x => x.AccountId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Transaction>()
+            .WithOne()
+            .HasForeignKey<Transaction>(t => t.RelatedTransactionId);
     }
 }
