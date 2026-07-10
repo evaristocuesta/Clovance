@@ -6,7 +6,7 @@ public class GetTransactionsEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapGet("/transactions", async (
+        app.MapGet("/", async (
             int? year,
             int? month,
             Guid? accountId,

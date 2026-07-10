@@ -8,9 +8,9 @@ public sealed class GetTransactionsValidator : AbstractValidator<GetTransactions
 {
     public GetTransactionsValidator()
     {
-        RuleFor(x => x)
-            .Must(x => !string.IsNullOrWhiteSpace(x.Description) || (x.Year.HasValue && x.Month.HasValue))
-            .WithErrorCode(ErrorCodes.Transactions.FilterRequired);
+        //RuleFor(x => x)
+        //    .Must(x => !string.IsNullOrWhiteSpace(x.Description) || (x.Year.HasValue && x.Month.HasValue))
+        //    .WithErrorCode(ErrorCodes.Transactions.FilterRequired);
 
         RuleFor(x => x.Month)
             .InclusiveBetween(1, 12)
