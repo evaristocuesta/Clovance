@@ -123,6 +123,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                     account_id = table.Column<Guid>(type: "uuid", nullable: false),
                     description = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
                     date = table.Column<DateOnly>(type: "date", nullable: false),
+                    related_transaction_id = table.Column<Guid>(type: "uuid", nullable: true),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     created_by = table.Column<Guid>(type: "uuid", maxLength: 100, nullable: false),
                     modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -139,6 +140,11 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         principalTable: "accounts",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_transactions_transactions_related_transaction_id",
+                        column: x => x.related_transaction_id,
+                        principalTable: "transactions",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -311,6 +317,12 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 column: "description")
                 .Annotation("Npgsql:IndexMethod", "gin")
                 .Annotation("Npgsql:IndexOperators", new[] { "gin_trgm_ops" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_transactions_related_transaction_id",
+                table: "transactions",
+                column: "related_transaction_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_invitations_email",

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Clovance.ApiService.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ClovanceDbContext))]
-    [Migration("20260709114248_InitialCreate")]
+    [Migration("20260710125211_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -169,6 +169,10 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("modified_by");
 
+                    b.Property<Guid?>("RelatedTransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("related_transaction_id");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -183,6 +187,10 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Description"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Description"), new[] { "gin_trgm_ops" });
+
+                    b.HasIndex("RelatedTransactionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_transactions_related_transaction_id");
 
                     b.HasIndex("AccountId", "Date")
                         .HasDatabaseName("ix_transactions_account_id_date");
@@ -527,6 +535,11 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_transactions_accounts_account_id");
+
+                    b.HasOne("Clovance.ApiService.Domain.Transactions.Transaction", null)
+                        .WithOne()
+                        .HasForeignKey("Clovance.ApiService.Domain.Transactions.Transaction", "RelatedTransactionId")
+                        .HasConstraintName("fk_transactions_transactions_related_transaction_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
