@@ -190,6 +190,9 @@
         "deleted": "Deleted"
     },
     "transactions": {
-        "title": "Transactions"
+        "title": "Transactions", 
+        "add": "Add",
+        "loading": "Loading transactions...",
+        "emptyTitle": "No transactions found"
     }
 }

@@ -1,0 +1,49 @@
+<section class="bg-gray-50 p-3 sm:p-5 dark:bg-gray-900" *transloco="let t">
+	<div class="mx-auto w-full max-w-screen-xl px-2 sm:px-4 md:px-2 lg:px-12">
+		<div class="overflow-hidden rounded-2xl bg-white shadow-md dark:bg-gray-800">
+			<div class="border-b border-gray-200 px-4 py-5 dark:border-gray-700 sm:px-6">
+				<div class="flex gap-2 flex-row items-center justify-between">
+					<div>
+						<h1 class="text-md font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+							{{ t('transactions.title') }}
+                        </h1>
+					</div>
+					<button
+						type="button"
+						(click)="onAdd()"
+						class="inline-flex w-30 items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+						<app-icon
+							name="circle-plus"
+							class="w-6 h-6">
+						</app-icon>
+						{{ t('transactions.add') }}
+					</button>
+				</div>
+			</div>
+
+			<div class="p-3 sm:p-4 md:p-3 lg:p-6">
+				@if (transactions(); as transactions) {
+					@if (transactions.length) {
+						<div class="grid gap-4">
+							@for (transaction of transactions; track transaction.id) {
+								<app-transaction-card
+									class="block w-full"
+								/>
+							}
+						</div>
+					} @else {
+						<div class="flex min-h-40 w-full md:w-auto md:min-w-90 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-900/40">
+							<h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+								{{ t('transactions.emptyTitle') }}
+							</h2>
+						</div>
+					}
+				} @else {
+					<div class="flex min-h-40 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 px-6 py-10 text-sm font-medium text-gray-500 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-400">
+						{{ t('transactions.loading') }}
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</section>
