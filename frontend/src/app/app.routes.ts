@@ -27,7 +27,7 @@ export const routes: Routes = [
             { path: 'summary', loadComponent: () => import('@features/summary/summary/summary').then(m => m.Summary) }, 
             { path: 'users', loadComponent: () => import('@features/auth/users/users').then(m => m.Users) }, 
             { path: 'account-settings', loadComponent: () => import('@features/auth/account-settings/account-settings').then(m => m.AccountSettings) },
-            { path: '', redirectTo: 'accounts', pathMatch: 'full'}
+            { path: '', redirectTo: 'transactions', pathMatch: 'full'}
         ]
         
     }, 

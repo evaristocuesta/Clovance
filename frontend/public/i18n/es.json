@@ -188,6 +188,9 @@
         "deleted": "Eliminada"
     },
     "transactions": {
-        "title": "Transacciones"
+        "title": "Transacciones", 
+        "add": "Añadir",
+        "loading": "Cargando transacciones...",
+        "emptyTitle": "No se encontraron transacciones"
     }
 }
