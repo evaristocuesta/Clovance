@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, output, signal } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
 import { Icon } from "@shared/ui/icon/icon";
 import { TranslocoDirective } from '@jsverse/transloco';
@@ -8,16 +8,22 @@ import { TranslocoDirective } from '@jsverse/transloco';
   imports: [TranslocoDirective, Icon],
   templateUrl: './transaction-card.html',
   styleUrl: './transaction-card.css',
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+  },
 })
 export class TransactionCard {
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+
   readonly transaction = input.required<Transaction>();
   readonly editTransaction = output<string>();
   readonly deleteTransaction = output<string>();
+  protected isActionsMenuOpen = signal(false);
 
   protected isPositive = computed(() => this.transaction().amount >= 0);
 
   protected amountClass = computed(() => {
-    const baseClass = 'flex h-14 min-w-[8rem] shrink-0 items-center justify-end rounded-2xl px-3 text-sm font-bold tabular-nums whitespace-nowrap transition-colors group-hover:text-white';
+    const baseClass = 'flex h-9 min-w-[9rem] shrink-0 items-center justify-end rounded-2xl px-3 text-sm font-bold tabular-nums whitespace-nowrap transition-colors group-hover:text-white';
 
     return this.isPositive()
       ? `${baseClass} text-primary-700 bg-primary-100 group-hover:bg-primary-600`
@@ -75,10 +81,28 @@ export class TransactionCard {
   }
 
   protected onEdit(): void {
+    this.isActionsMenuOpen.set(false);
     this.editTransaction.emit(this.transaction().id);
   }
 
   protected onDelete(): void {
+    this.isActionsMenuOpen.set(false);
     this.deleteTransaction.emit(this.transaction().id);
+  }
+
+  protected toggleActionsMenu(): void {
+    this.isActionsMenuOpen.update((isOpen) => !isOpen);
+  }
+
+  protected onDocumentClick(event: Event): void {
+    const target = event.target;
+
+    if (!(target instanceof Node)) {
+      return;
+    }
+
+    if (!this.elementRef.nativeElement.contains(target)) {
+      this.isActionsMenuOpen.set(false);
+    }
   }
 }
