@@ -39,4 +39,10 @@ export class TransactionList {
   
   onAdd(): void {
   }
+
+  onEdit(transactionId: string): void {
+  }
+
+  onDelete(transactionId: string): void {
+  }
 }

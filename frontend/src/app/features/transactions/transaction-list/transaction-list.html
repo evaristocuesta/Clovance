@@ -28,6 +28,9 @@
 							@for (transaction of transactions; track transaction.id) {
 								<app-transaction-card
 									class="block w-full"
+									[transaction]="transaction"
+									(editTransaction)="onEdit($event)"
+									(deleteTransaction)="onDelete($event)"
 								/>
 							}
 						</div>
