@@ -191,8 +191,14 @@
     },
     "transactions": {
         "title": "Transactions", 
+        "transaction": "Transaction",
         "add": "Add",
         "loading": "Loading transactions...",
-        "emptyTitle": "No transactions found"
+        "emptyTitle": "No transactions found", 
+        "edit": "Edit",
+        "delete": "Delete", 
+        "income": "Income",
+        "expense": "Expense",
+        "transfer": "Transfer"
     }
 }

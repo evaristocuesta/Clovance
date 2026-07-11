@@ -189,8 +189,14 @@
     },
     "transactions": {
         "title": "Transacciones", 
+        "transaction": "Transacción",
         "add": "Añadir",
         "loading": "Cargando transacciones...",
-        "emptyTitle": "No se encontraron transacciones"
+        "emptyTitle": "No se encontraron transacciones", 
+        "edit": "Modificar",
+        "delete": "Eliminar", 
+        "income": "Ingreso",
+        "expense": "Gasto", 
+        "transfer": "Transferencia"
     }
 }

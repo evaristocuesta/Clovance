@@ -1,1 +1,66 @@
-<p>transaction-card works!</p>
+<article class="group relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800" *transloco="let t">
+	<div class="absolute inset-y-0 left-0 w-1 bg-primary-600"></div>
+
+	<div class="flex min-w-0 flex-col gap-5 pl-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 lg:gap-6">
+		<div class="flex min-w-0 flex-1 items-center gap-3">
+			<div
+				class="flex h-14 min-w-[6.5rem] shrink-0 items-center justify-end rounded-2xl bg-primary-100 px-3 text-sm font-bold tabular-nums whitespace-nowrap ring-8 ring-primary-50 transition-colors group-hover:bg-primary-600 group-hover:text-white dark:bg-primary-900/50 dark:ring-gray-800"
+                [class.text-green-700]="isPositive()"
+                [class.text-red-700]="!isPositive()"
+                [class.dark\:text-green-300]="isPositive()"
+                [class.dark\:text-red-300]="!isPositive()">
+				{{ signedAmount() }}
+			</div>
+			<div class="min-w-0">
+				<p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+					{{ transaction().accountName }}
+				</p>
+				<h3 class="mt-1 break-all text-lg font-semibold text-gray-900 dark:text-white">
+					{{ transaction().description }}
+				</h3>
+				<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+					{{ formattedDate() }}
+				</p>
+				<div class="mt-2 flex flex-wrap items-center gap-2">
+					<span
+						class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
+						[class.bg-green-100]="isPositive()"
+						[class.text-green-700]="isPositive()"
+						[class.dark\:bg-green-900\/40]="isPositive()"
+						[class.dark\:text-green-200]="isPositive()"
+						[class.bg-red-100]="!isPositive()"
+						[class.text-red-700]="!isPositive()"
+						[class.dark\:bg-red-900\/40]="!isPositive()"
+						[class.dark\:text-red-200]="!isPositive()">
+						{{ t(`transactions.${typeLabel()}`) }}
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="grid w-full grid-cols-1 gap-2 sm:w-44 sm:shrink-0 lg:min-w-[15rem] lg:w-auto lg:grid-cols-2">
+            <button
+                type="button"
+                (click)="onEdit()"
+                class="inline-flex w-full items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                <app-icon
+                    name="edit"
+                    class="w-6 h-6">
+                </app-icon>
+                {{ t('transactions.edit') }}
+            </button>
+
+            <button
+                type="button"
+                (click)="onDelete()"
+                class="inline-flex w-full items-center justify-center gap-2 leading-none text-white cursor-pointer bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
+                <app-icon
+                    name="trash-bin"
+                    class="w-6 h-6">
+                </app-icon>
+                {{ t('transactions.delete') }}
+            </button> 
+		</div>
+	</div>
+</article>
+
