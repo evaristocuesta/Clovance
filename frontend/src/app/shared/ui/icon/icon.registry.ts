@@ -104,6 +104,15 @@ export const ICONS: Record<IconName, string> = {
                   clip-rule="evenodd"></path>
         </svg>
     `,
+    'ellipsis-vertical': `
+        <svg aria-hidden="true"
+            fill="currentColor"
+            viewBox="0 0 24 24">
+            <path fill-rule="evenodd"
+                  d="M12 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm0 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm0 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"
+                  clip-rule="evenodd"></path>
+        </svg>
+    `,
     'edit': `
         <svg aria-hidden="true" 
             fill="none" 
