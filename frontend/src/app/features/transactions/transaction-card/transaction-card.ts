@@ -16,6 +16,14 @@ export class TransactionCard {
 
   protected isPositive = computed(() => this.transaction().amount >= 0);
 
+  protected amountClass = computed(() => {
+    const baseClass = 'flex h-14 min-w-[8rem] shrink-0 items-center justify-end rounded-2xl px-3 text-sm font-bold tabular-nums whitespace-nowrap transition-colors group-hover:text-white';
+
+    return this.isPositive()
+      ? `${baseClass} text-primary-700 bg-primary-100 group-hover:bg-primary-600`
+      : `${baseClass} text-red-700 bg-red-200 group-hover:bg-red-600`;
+  });
+
   protected signedAmount = computed(() => {
     const amount = this.transaction().amount;
     const formattedAmount = new Intl.NumberFormat(undefined, {
