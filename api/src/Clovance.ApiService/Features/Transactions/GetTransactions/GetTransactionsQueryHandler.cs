@@ -52,7 +52,12 @@ public class GetTransactionsQueryHandler : IHandler<GetTransactionsQuery, Result
         // Request one more to know if there are more pages, without doing a separate Count
         var rows = await query
             .Take(request.PageSize + 1)
-            .Select(t => t.ToDto())
+            .Join(
+                _dbContext.Accounts.AsNoTracking(),
+                transaction => transaction.AccountId,
+                account => account.Id,
+                (transaction, account) => transaction.ToDto(account.Name.Value)
+             )
             .ToListAsync(cancellationToken);
 
         var hasMore = rows.Count > request.PageSize;

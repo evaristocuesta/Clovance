@@ -7,7 +7,7 @@ namespace Clovance.ApiService.Features.Transactions;
 public static class TransactionMappers
 {
     public static TransactionDto ToDto(
-        this Transaction transaction)
+        this Transaction transaction, string accountName = "")
     {
         return new(
             transaction.Id.Value,
@@ -16,6 +16,7 @@ public static class TransactionMappers
             transaction.Amount.Value,
             transaction.Type,
             transaction.AccountId.Value, 
+            accountName,
             transaction.RelatedTransactionId?.Value);
     }
 }

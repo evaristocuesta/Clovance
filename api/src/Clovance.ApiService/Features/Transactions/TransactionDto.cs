@@ -9,4 +9,5 @@ public sealed record TransactionDto(
     decimal Amount,
     TransactionType Type,
     Guid AccountId, 
+    string AccountName,
     Guid? RelatedTransactionId);
