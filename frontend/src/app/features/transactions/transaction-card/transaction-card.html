@@ -4,11 +4,7 @@
 	<div class="flex min-w-0 flex-col gap-5 pl-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 lg:gap-6">
 		<div class="flex min-w-0 flex-1 items-center gap-3">
 			<div
-				class="flex h-14 min-w-[6.5rem] shrink-0 items-center justify-end rounded-2xl bg-primary-100 px-3 text-sm font-bold tabular-nums whitespace-nowrap ring-8 ring-primary-50 transition-colors group-hover:bg-primary-600 group-hover:text-white dark:bg-primary-900/50 dark:ring-gray-800"
-                [class.text-green-700]="isPositive()"
-                [class.text-red-700]="!isPositive()"
-                [class.dark\:text-green-300]="isPositive()"
-                [class.dark\:text-red-300]="!isPositive()">
+				[class]="amountClass()">
 				{{ signedAmount() }}
 			</div>
 			<div class="min-w-0">
@@ -24,14 +20,10 @@
 				<div class="mt-2 flex flex-wrap items-center gap-2">
 					<span
 						class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
-						[class.bg-green-100]="isPositive()"
-						[class.text-green-700]="isPositive()"
-						[class.dark\:bg-green-900\/40]="isPositive()"
-						[class.dark\:text-green-200]="isPositive()"
+						[class.bg-primary-100]="isPositive()"
+						[class.text-primary-700]="isPositive()"
 						[class.bg-red-100]="!isPositive()"
-						[class.text-red-700]="!isPositive()"
-						[class.dark\:bg-red-900\/40]="!isPositive()"
-						[class.dark\:text-red-200]="!isPositive()">
+						[class.text-red-700]="!isPositive()">
 						{{ t(`transactions.${typeLabel()}`) }}
 					</span>
 				</div>
