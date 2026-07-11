@@ -20,7 +20,12 @@ public class GetTransactionByIdQueryHandler : IHandler<GetTransactionByIdQuery, 
             .Transactions
             .AsNoTracking()
             .Where(t => t.Id == TransactionId.Create(command.Id))
-            .Select(t => t.ToDto())
+            .Join(
+                _dbContext.Accounts.AsNoTracking(),
+                transaction => transaction.AccountId,
+                account => account.Id,
+                (transaction, account) => transaction.ToDto(account.Name.Value)
+             )
             .FirstOrDefaultAsync(cancellationToken);
 
         if (transaction is null)
