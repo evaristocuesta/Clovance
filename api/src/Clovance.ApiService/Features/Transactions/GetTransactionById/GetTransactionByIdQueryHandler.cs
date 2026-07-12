@@ -24,7 +24,7 @@ public class GetTransactionByIdQueryHandler : IHandler<GetTransactionByIdQuery, 
                 _dbContext.Accounts.AsNoTracking(),
                 transaction => transaction.AccountId,
                 account => account.Id,
-                (transaction, account) => transaction.ToDto(account.Name.Value)
+                (transaction, account) => transaction.ToDto(account.Name.Value, account.Currency.Code)
              )
             .FirstOrDefaultAsync(cancellationToken);
 
