@@ -56,7 +56,7 @@ public class GetTransactionsQueryHandler : IHandler<GetTransactionsQuery, Result
                 _dbContext.Accounts.AsNoTracking(),
                 transaction => transaction.AccountId,
                 account => account.Id,
-                (transaction, account) => transaction.ToDto(account.Name.Value)
+                (transaction, account) => transaction.ToDto(account.Name.Value, account.Currency.Code)
              )
             .ToListAsync(cancellationToken);
 
