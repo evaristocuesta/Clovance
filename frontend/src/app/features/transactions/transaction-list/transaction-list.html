@@ -29,6 +29,7 @@
 								<app-transaction-card
 									class="block w-full"
 									[transaction]="transaction"
+									[currencySymbolMap]="currencySymbolMap()"
 									(editTransaction)="onEdit($event)"
 									(deleteTransaction)="onDelete($event)"
 								/>

@@ -16,6 +16,7 @@ export class TransactionCard {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
 
   readonly transaction = input.required<Transaction>();
+  readonly currencySymbolMap = input.required<Record<string, string>>();
   readonly editTransaction = output<string>();
   readonly deleteTransaction = output<string>();
   protected isActionsMenuOpen = signal(false);
@@ -79,6 +80,11 @@ export class TransactionCard {
 
     return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
   }
+
+  protected currencyLabel = computed(() => 
+    this.currencySymbolMap()[this.transaction().currency.toUpperCase()] ?
+    `${this.transaction().currency.toUpperCase()} ${this.currencySymbolMap()[this.transaction().currency.toUpperCase()]}` 
+    : this.transaction().currency.toUpperCase());
 
   protected onEdit(): void {
     this.isActionsMenuOpen.set(false);

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Icon } from "@shared/ui/icon/icon";
 import { TransactionCard } from "../transaction-card/transaction-card";
@@ -8,6 +8,7 @@ import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { map, startWith } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 import { TransactionService } from '../services/transaction.service';
+import { AccountService } from '@features/accounts/services/account.service';
 
 @Component({
   selector: 'app-transaction-list',
@@ -16,10 +17,17 @@ import { TransactionService } from '../services/transaction.service';
   styleUrl: './transaction-list.css',
 })
 export class TransactionList {
+  private readonly accountService = inject(AccountService);
   private readonly transactionService = inject(TransactionService);
   readonly translocoService = inject(TranslocoService);
   readonly dialog = inject(Dialog);
   private readonly refreshTick = signal(0);
+
+  readonly currencies = toSignal(this.accountService.getCurrencies(), { initialValue: [] });
+  
+  readonly currencySymbolMap = computed(() =>
+    Object.fromEntries(this.currencies().map((c) => [c.code.toUpperCase(), c.symbol]))
+  );
 
   protected readonly transactions = toSignal(
     toObservable(this.refreshTick).pipe(
