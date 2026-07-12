@@ -25,7 +25,14 @@ export class TransactionList {
     toObservable(this.refreshTick).pipe(
       switchMap(() => this.transactionService.getTransactions().pipe(
         map((transactions) => {
-          const t = [...transactions].sort((a, b) => a.date.getTime() - b.date.getTime());
+          const t = [...transactions].sort((a, b) => {
+            const dateComparison = b.date.getTime() - a.date.getTime();
+            if (dateComparison !== 0) {
+              return dateComparison;
+            }
+
+            return b.id.localeCompare(a.id);
+          });
           return t;
         }),
       )),
