@@ -1,11 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { afterNextRender, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Icon } from "@shared/ui/icon/icon";
 import { TransactionCard } from "../transaction-card/transaction-card";
 import { Dialog } from '@angular/cdk/dialog';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { map, startWith } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { auditTime, distinctUntilChanged, filter, finalize, fromEvent, map } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 import { TransactionService } from '../services/transaction.service';
 import { AccountService } from '@features/accounts/services/account.service';
@@ -17,39 +16,92 @@ import { AccountService } from '@features/accounts/services/account.service';
   styleUrl: './transaction-list.css',
 })
 export class TransactionList {
+  private static readonly PAGE_SIZE = 20;
+  private static readonly SCROLL_THRESHOLD_PX = 280;
+
   private readonly accountService = inject(AccountService);
   private readonly transactionService = inject(TransactionService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly translocoService = inject(TranslocoService);
   readonly dialog = inject(Dialog);
-  private readonly refreshTick = signal(0);
+  private readonly cursorDate = signal<string | null>(null);
+  private readonly cursorId = signal<string | null>(null);
+  protected readonly hasMoreTransactions = signal(true);
+  protected readonly isLoadingTransactions = signal(false);
 
   readonly currencies = toSignal(this.accountService.getCurrencies(), { initialValue: [] });
+  protected readonly transactions = signal<Transaction[] | null>(null);
   
   readonly currencySymbolMap = computed(() =>
     Object.fromEntries(this.currencies().map((c) => [c.code.toUpperCase(), c.symbol]))
   );
 
-  protected readonly transactions = toSignal(
-    toObservable(this.refreshTick).pipe(
-      switchMap(() => this.transactionService.getTransactions().pipe(
-        map((transactions) => {
-          const t = [...transactions].sort((a, b) => {
-            const dateComparison = b.date.getTime() - a.date.getTime();
-            if (dateComparison !== 0) {
-              return dateComparison;
-            }
-
-            return b.id.localeCompare(a.id);
-          });
-          return t;
-        }),
-      )),
-      startWith(null as Transaction[] | null),
-    ),
-  );
+  constructor() {
+    this.refreshTransactions();
+    afterNextRender(() => this.setupScrollPagination());
+  }
 
   private refreshTransactions(): void {
-    this.refreshTick.update((value) => value + 1);
+    this.cursorDate.set(null);
+    this.cursorId.set(null);
+    this.hasMoreTransactions.set(true);
+    this.transactions.set(null);
+    this.loadNextPage();
+  }
+
+  private setupScrollPagination(): void {
+    fromEvent(window, 'scroll').pipe(
+      auditTime(120),
+      map(() => this.isNearBottom()),
+      distinctUntilChanged(),
+      filter((isNearBottom) => isNearBottom),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => this.loadNextPage());
+  }
+
+  private isNearBottom(): boolean {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const fullHeight = document.documentElement.scrollHeight;
+
+    return scrollPosition >= fullHeight - TransactionList.SCROLL_THRESHOLD_PX;
+  }
+
+  private loadNextPage(): void {
+    if (!this.hasMoreTransactions() || this.isLoadingTransactions()) {
+      return;
+    }
+
+    this.isLoadingTransactions.set(true);
+
+    this.transactionService.getTransactionsPage({
+      cursorDate: this.cursorDate(),
+      cursorId: this.cursorId(),
+      pageSize: TransactionList.PAGE_SIZE,
+    }).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.isLoadingTransactions.set(false)),
+    ).subscribe({
+      next: (page) => {
+        const sortedPage = [...page.items].sort((a, b) => {
+          const dateComparison = b.date.getTime() - a.date.getTime();
+          if (dateComparison !== 0) {
+            return dateComparison;
+          }
+
+          return b.id.localeCompare(a.id);
+        });
+
+        this.transactions.update((current) => current ? [...current, ...sortedPage] : sortedPage);
+        this.hasMoreTransactions.set(page.hasMore);
+        this.cursorDate.set(page.nextCursorDate);
+        this.cursorId.set(page.nextCursorId);
+      },
+      error: () => {
+        if (this.transactions() === null) {
+          this.transactions.set([]);
+        }
+      },
+    });
   }
   
   onAdd(): void {

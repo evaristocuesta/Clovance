@@ -13,8 +13,19 @@ export interface TransactionFilters {
     pageSize?: number | null;
 }
 
-interface TransactionListResponse {
-    items: Array<Omit<Transaction, 'date'> & { date: string }>;
+interface TransactionDto extends Omit<Transaction, 'date'> {
+    date: string;
+}
+
+interface GetTransactionsPageResponseDto {
+    items: TransactionDto[];
+    hasMore: boolean;
+    nextCursorDate: string | null;
+    nextCursorId: string | null;
+}
+
+export interface TransactionPage {
+    items: Transaction[];
     hasMore: boolean;
     nextCursorDate: string | null;
     nextCursorId: string | null;
@@ -24,7 +35,7 @@ interface TransactionListResponse {
 export class TransactionService {
     private http = inject(HttpClient);
 
-    getTransactions(filters: TransactionFilters = {}) : Observable<Transaction[]> {
+    getTransactionsPage(filters: TransactionFilters = {}) : Observable<TransactionPage> {
 
         let params = new HttpParams();
 
@@ -56,11 +67,14 @@ export class TransactionService {
             params = params.set('pageSize', String(filters.pageSize));
         }
 
-        return this.http.get<TransactionListResponse>('/api/transactions/', { params }).pipe(
-            map((response) => response.items.map((transaction) => ({
-                ...transaction,
-                date: new Date(transaction.date),
-            }))),
+        return this.http.get<GetTransactionsPageResponseDto>('/api/transactions/', { params }).pipe(
+            map((responseDto) => this.mapGetTransactionsPageResponseDtoToTransactionPage(responseDto)),
+        );
+    }
+
+    getTransactions(filters: TransactionFilters = {}) : Observable<Transaction[]> {
+        return this.getTransactionsPage(filters).pipe(
+            map((response) => response.items),
         );
     }
 
@@ -78,5 +92,21 @@ export class TransactionService {
 
     deleteTransaction(transactionId: string) : Observable<void> {
         return this.http.delete<void>(`/api/transactions/${transactionId}`);
+    }
+
+    private mapGetTransactionsPageResponseDtoToTransactionPage(responseDto: GetTransactionsPageResponseDto): TransactionPage {
+        return {
+            items: responseDto.items.map((transactionDto) => this.mapTransactionDtoToTransaction(transactionDto)),
+            hasMore: responseDto.hasMore,
+            nextCursorDate: responseDto.nextCursorDate,
+            nextCursorId: responseDto.nextCursorId,
+        };
+    }
+
+    private mapTransactionDtoToTransaction(transactionDto: TransactionDto): Transaction {
+        return {
+            ...transactionDto,
+            date: new Date(transactionDto.date),
+        };
     }
 }
