@@ -6,12 +6,13 @@ import { Dialog } from '@angular/cdk/dialog';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { auditTime, distinctUntilChanged, filter, finalize, fromEvent, map } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
-import { TransactionService } from '../services/transaction.service';
+import { TransactionFilters, TransactionService } from '../services/transaction.service';
 import { AccountService } from '@features/accounts/services/account.service';
+import { TransactionsFilter } from '../transactions-filter/transactions-filter';
 
 @Component({
   selector: 'app-transaction-list',
-  imports: [TranslocoModule, Icon, TransactionCard],
+  imports: [TranslocoModule, Icon, TransactionCard, TransactionsFilter],
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.css',
 })
@@ -28,8 +29,10 @@ export class TransactionList {
   private readonly cursorId = signal<string | null>(null);
   protected readonly hasMoreTransactions = signal(true);
   protected readonly isLoadingTransactions = signal(false);
+  private readonly activeFilters = signal<TransactionFilters>({});
 
   readonly currencies = toSignal(this.accountService.getCurrencies(), { initialValue: [] });
+  readonly accounts = toSignal(this.accountService.getAccounts(), { initialValue: [] });
   protected readonly transactions = signal<Transaction[] | null>(null);
   
   readonly currencySymbolMap = computed(() =>
@@ -74,6 +77,7 @@ export class TransactionList {
     this.isLoadingTransactions.set(true);
 
     this.transactionService.getTransactionsPage({
+      ...this.activeFilters(),
       cursorDate: this.cursorDate(),
       cursorId: this.cursorId(),
       pageSize: TransactionList.PAGE_SIZE,
@@ -102,6 +106,11 @@ export class TransactionList {
         }
       },
     });
+  }
+
+  onApplyFilters(filters: TransactionFilters): void {
+    this.activeFilters.set(filters);
+    this.refreshTransactions();
   }
   
   onAdd(): void {

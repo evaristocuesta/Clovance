@@ -4,8 +4,8 @@ import { Transaction } from '../models/transaction.model';
 import { map, Observable } from 'rxjs';
 
 export interface TransactionFilters {
-    year?: number | null;
-    month?: number | null;
+    dateFrom?: string | null;
+    dateTo?: string | null;
     accountId?: string | null;
     description?: string | null;
     cursorDate?: string | null;
@@ -39,12 +39,12 @@ export class TransactionService {
 
         let params = new HttpParams();
 
-        if (filters.year !== undefined && filters.year !== null) {
-            params = params.set('year', String(filters.year));
+        if (filters.dateFrom) {
+            params = params.set('dateFrom', filters.dateFrom);
         }
 
-        if (filters.month !== undefined && filters.month !== null) {
-            params = params.set('month', String(filters.month));
+        if (filters.dateTo) {
+            params = params.set('dateTo', filters.dateTo);
         }
 
         if (filters.accountId) {
