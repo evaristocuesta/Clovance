@@ -2,6 +2,7 @@ import { Component, computed, ElementRef, inject, input, output, signal } from '
 import { Transaction } from '../models/transaction.model';
 import { Icon } from "@shared/ui/icon/icon";
 import { TranslocoDirective } from '@jsverse/transloco';
+import { TRANSACTION_TYPE_MAP } from '../models/transaction-type.model';
 
 @Component({
   selector: 'app-transaction-card',
@@ -17,7 +18,7 @@ export class TransactionCard {
 
   readonly transaction = input.required<Transaction>();
   readonly currencySymbolMap = input.required<Record<string, string>>();
-  readonly editTransaction = output<string>();
+  readonly editTransaction = output<Transaction>();
   readonly deleteTransaction = output<string>();
   protected isActionsMenuOpen = signal(false);
 
@@ -43,7 +44,7 @@ export class TransactionCard {
 
   protected typeLabel = computed(() => {
     const rawType = String(this.transaction().type).trim().toLowerCase();
-    const mappedType = this.transactionTypeMap[rawType] ?? rawType;
+    const mappedType = TRANSACTION_TYPE_MAP[rawType] ?? rawType;
 
     return mappedType;
   });
@@ -62,15 +63,6 @@ export class TransactionCard {
     }).format(date);
   });
 
-  private readonly transactionTypeMap: Record<string, 'income' | 'expense' | 'transfer'> = {
-    '0': 'income',
-    '1': 'expense',
-    '2': 'transfer',
-    income: 'income',
-    expense: 'expense',
-    transfer: 'transfer',
-  };
-
   private parseDate(value: Date): Date | null {
     if (value instanceof Date) {
       return Number.isNaN(value.getTime()) ? null : value;
@@ -88,7 +80,7 @@ export class TransactionCard {
 
   protected onEdit(): void {
     this.isActionsMenuOpen.set(false);
-    this.editTransaction.emit(this.transaction().id);
+    this.editTransaction.emit(this.transaction());
   }
 
   protected onDelete(): void {

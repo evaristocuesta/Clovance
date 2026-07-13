@@ -2,13 +2,16 @@ import { afterNextRender, Component, DestroyRef, computed, inject, signal } from
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Icon } from "@shared/ui/icon/icon";
 import { TransactionCard } from "../transaction-card/transaction-card";
-import { Dialog } from '@angular/cdk/dialog';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { auditTime, distinctUntilChanged, filter, finalize, fromEvent, map } from 'rxjs';
+import { auditTime, distinctUntilChanged, filter, finalize, fromEvent, map, take, tap } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 import { TransactionFilters, TransactionService } from '../services/transaction.service';
 import { AccountService } from '@features/accounts/services/account.service';
 import { TransactionsFilter } from '../transactions-filter/transactions-filter';
+import { TransactionForm, TransactionFormData } from '../transaction-form/transaction-form';
+import { TransferForm } from '../transfer-form/transfer-form';
+import { toTransactionType } from '../models/transaction-type.model';
 
 @Component({
   selector: 'app-transaction-list',
@@ -114,12 +117,68 @@ export class TransactionList {
   }
   
   onAddTransfer(): void {
+    const dialogRef = this.dialog.open<boolean>(TransferForm, {
+          width: '640px',
+          height: 'auto'
+        });
+    
+        this.refreshOnDialogSuccess(dialogRef);
   }
 
-  onAddTransaction(): void {
+  onAddExpense(): void {
+    const dialogData: TransactionFormData = {
+      type: 'expense',
+      accounts: this.accounts(),
+    };
+
+    const dialogRef = this.dialog.open<boolean>(TransactionForm, {
+          width: '640px',
+          height: 'auto', 
+          data: dialogData,
+        });
+    
+        this.refreshOnDialogSuccess(dialogRef);
   }
 
-  onEdit(transactionId: string): void {
+  onAddIncome(): void {
+    const dialogData: TransactionFormData = {
+      type: 'income',
+      accounts: this.accounts(),
+    };
+
+    const dialogRef = this.dialog.open<boolean>(TransactionForm, {
+          width: '640px',
+          height: 'auto', 
+          data: dialogData,
+        });
+    
+        this.refreshOnDialogSuccess(dialogRef);
+  }
+
+  private refreshOnDialogSuccess(dialogRef: DialogRef<boolean>): void {
+    dialogRef.closed
+      .pipe(
+        take(1),  
+        filter((result): result is true => result === true),
+        tap(() => this.refreshTransactions()),
+      )
+      .subscribe();
+  }
+
+  onEdit(transaction: Transaction): void {
+    const dialogData: TransactionFormData = {
+      transaction,
+      type: toTransactionType(transaction.type) || transaction.type,
+      accounts: this.accounts(),
+    };
+
+    const dialogRef = this.dialog.open<boolean>(TransactionForm, {
+          width: '640px',
+          height: 'auto', 
+          data: dialogData,
+        });
+    
+        this.refreshOnDialogSuccess(dialogRef);
   }
 
   onDelete(transactionId: string): void {
