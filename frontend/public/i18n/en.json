@@ -211,6 +211,26 @@
         },
         "income": "Income",
         "expense": "Expense",
-        "transfer": "Transfer"
+        "transfer": "Transfer", 
+        "addTransaction": "Add Transaction",
+        "updateTransaction": "Update Transaction",
+        "dateLabel": "Date",
+        "datePlaceholder": "Select a date",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Enter a description",
+        "amountLabel": "Amount",
+        "amountPlaceholder": "Enter the amount",
+        "closeModal": "Close modal", 
+        "descriptionRequired": "Description is required",
+        "amountRequired": "Amount is required",
+        "amountGreaterThanZero": "Amount must be greater than zero",
+        "dateRequired": "Date is required", 
+        "addIncome": "Add Income",
+        "updateIncome": "Update Income",
+        "addExpense": "Add Expense",
+        "updateExpense": "Update Expense", 
+        "accountLabel": "Account",
+        "accountPlaceholder": "Select an account",
+        "accountRequired": "Account is required" 
     }
 }

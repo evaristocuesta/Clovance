@@ -7,6 +7,8 @@ export type IconName =
   | 'users'
   | 'user-circle'
   | 'arrow-right-to-bracket'
+  | 'arrow-down-to-bracket'
+  | 'arrow-up-from-bracket'
   | 'sort-horizontal'
   | 'wallet'
   | 'chart-line-up'

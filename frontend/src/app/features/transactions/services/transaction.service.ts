@@ -31,6 +31,14 @@ export interface TransactionPage {
     nextCursorId: string | null;
 }
 
+export interface SaveTransactionDto {
+    date: string;
+    description: string;
+    amount: number;
+    type: number;
+    accountId: string;
+}
+
 @Service()
 export class TransactionService {
     private http = inject(HttpClient);
@@ -82,12 +90,12 @@ export class TransactionService {
         return this.http.get<Transaction>(`/api/transactions/${transactionId}`);
     }
 
-    createTransaction(transaction: Transaction) : Observable<Transaction> {
-        return this.http.post<Transaction>('/api/transactions', transaction);
+    createTransaction(command: SaveTransactionDto) : Observable<Transaction> {
+        return this.http.post<Transaction>('/api/transactions', command);
     }
 
-    updateTransaction(transaction: Transaction) : Observable<Transaction> {
-        return this.http.put<Transaction>(`/api/transactions/${transaction.id}`, transaction);
+    updateTransaction(transactionId: string, command: SaveTransactionDto) : Observable<Transaction> {
+        return this.http.put<Transaction>(`/api/transactions/${transactionId}`, command);
     }
 
     deleteTransaction(transactionId: string) : Observable<void> {
