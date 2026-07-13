@@ -113,7 +113,10 @@ export class TransactionList {
     this.refreshTransactions();
   }
   
-  onAdd(): void {
+  onAddTransfer(): void {
+  }
+
+  onAddTransaction(): void {
   }
 
   onEdit(transactionId: string): void {
