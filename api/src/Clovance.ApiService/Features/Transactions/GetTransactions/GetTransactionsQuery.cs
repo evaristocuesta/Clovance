@@ -1,8 +1,8 @@
 ﻿namespace Clovance.ApiService.Features.Transactions.GetTransactions;
 
 public sealed record GetTransactionsQuery(
-    int? Year,
-    int? Month,
+    DateOnly? DateFrom,
+    DateOnly? DateTo,
     Guid? AccountId,
     string? Description,
     DateOnly? CursorDate,

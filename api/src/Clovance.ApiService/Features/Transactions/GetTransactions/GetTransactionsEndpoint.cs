@@ -7,8 +7,8 @@ public class GetTransactionsEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("/", async (
-            int? year,
-            int? month,
+            DateOnly? dateFrom,
+            DateOnly? dateTo,
             Guid? accountId,
             string? description,
             DateOnly? cursorDate,
@@ -19,8 +19,8 @@ public class GetTransactionsEndpoint : IApiEndPoint
             CancellationToken cancellationToken) =>
         {
             var query = new GetTransactionsQuery(
-                year,
-                month,
+                dateFrom,
+                dateTo,
                 accountId,
                 description,
                 cursorDate,
