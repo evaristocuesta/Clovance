@@ -197,6 +197,18 @@
         "emptyTitle": "No transactions found", 
         "edit": "Edit",
         "delete": "Delete", 
+        "filters": {
+            "dateFrom": "From",
+            "dateTo": "To",
+            "account": "Account",
+            "allAccounts": "All accounts",
+            "description": "Description",
+            "descriptionPlaceholder": "Search by description",
+            "dateToAndDateFromRequired": "Select both From and To dates",
+            "invalidDateRange": "The From date cannot be later than the To date",
+            "apply": "Filter",
+            "clear": "Clear"
+        },
         "income": "Income",
         "expense": "Expense",
         "transfer": "Transfer"

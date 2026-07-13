@@ -20,6 +20,14 @@
 					</button>
 				</div>
 			</div>
+			<div class="border-b border-gray-200 px-6 py-5 dark:border-gray-700 sm:px-6">
+				<div class="mt-4">
+					<app-transactions-filter
+						[accounts]="accounts()"
+						(applyFilters)="onApplyFilters($event)"
+					/>
+				</div>
+			</div>
 
 			<div class="p-3 sm:p-4 md:p-3 lg:p-6">
 				@if (transactions(); as transactions) {

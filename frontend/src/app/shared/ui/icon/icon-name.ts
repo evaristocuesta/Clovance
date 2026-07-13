@@ -19,4 +19,5 @@ export type IconName =
   | 'edit'
   | 'plus'
   | 'circle-plus'
+  | 'filter'
 ;
