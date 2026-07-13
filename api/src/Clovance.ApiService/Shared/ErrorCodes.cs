@@ -87,7 +87,7 @@ public static class ErrorCodes
         public const string DateRequired = "transactions.transaction.date.required";
         public const string FilterRequired = "transactions.filter.required";
         public const string MonthInvalidRange = "transactions.month.invalid_range";
-        public const string YearMonthMustComeTogether = "transactions.year_month.must_come_together";
+        public const string DateFromDateToMustComeTogether = "transactions.date_from_date_to.must_come_together";
         public const string PageSizeInvalidRange = "transactions.page_size.invalid_range";
         public const string CursorMustComeTogether = "transactions.cursor.must_come_together";
         public const string TypeInvalid = "transactions.type.invalid";

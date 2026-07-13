@@ -19,11 +19,11 @@ public class GetTransactionsQueryHandler : IHandler<GetTransactionsQuery, Result
     {
         var query = _dbContext.Transactions.AsNoTracking().AsQueryable();
 
-        if (request.Year.HasValue && request.Month.HasValue)
+        if (request.DateFrom.HasValue && request.DateTo.HasValue)
         {
-            var startDate = TransactionDate.Create(new DateOnly(request.Year.Value, request.Month.Value, 1));
-            var endDate = TransactionDate.Create(startDate.Value.AddMonths(1));
-            query = query.Where(t => t.Date >= startDate && t.Date < endDate);
+            var startDate = TransactionDate.Create(request.DateFrom.Value);
+            var endDate = TransactionDate.Create(request.DateTo.Value);
+            query = query.Where(t => t.Date >= startDate && t.Date <= endDate);
         }
 
         if (request.AccountId.HasValue)
@@ -34,7 +34,16 @@ public class GetTransactionsQueryHandler : IHandler<GetTransactionsQuery, Result
         if (!string.IsNullOrWhiteSpace(request.Description))
         {
             var term = request.Description.Trim();
-            query = query.Where(t => EF.Functions.ILike(t.Description.Value, $"%{term}%"));
+            // Use FromSqlInterpolated to leverage PostgreSQL's ILIKE and GIN index
+            // while avoiding EF Core's value converter translation issues
+            var filteredIds = _dbContext.Transactions
+                .FromSqlInterpolated($@"
+                    SELECT * FROM transactions 
+                    WHERE description ILIKE {$"%{term}%"}")
+                .AsNoTracking()
+                .Select(t => t.Id);
+
+            query = query.Where(t => filteredIds.Contains(t.Id));
         }
 
         // Stable order: date desc, and as a tiebreaker Id desc (to ensure the cursor is unique)
