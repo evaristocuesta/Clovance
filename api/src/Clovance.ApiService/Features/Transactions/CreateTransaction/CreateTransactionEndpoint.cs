@@ -19,9 +19,9 @@ public class CreateTransactionEndpoint : IApiEndPoint
                 return result.ToProblemResult(httpContext);
             }
 
-            return Results.Ok(result.Value.Transaction);
+            return Results.Created($"/transactions/{result.Value.Transaction.Id}", result.Value.Transaction);
         })
-        .Produces<TransactionDto>(StatusCodes.Status200OK)
+        .Produces<TransactionDto>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
         .ProducesProblem(StatusCodes.Status404NotFound)
