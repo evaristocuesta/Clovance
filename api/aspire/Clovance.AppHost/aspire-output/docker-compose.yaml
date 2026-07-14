@@ -9,60 +9,68 @@ services:
     networks:
       - "aspire"
     restart: "always"
-  postgres:
-    image: "docker.io/library/postgres:17.6"
+  clovance-postgres:
+    image: "docker.io/library/postgres:18.3"
     environment:
       POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
-      POSTGRES_USER: "postgres"
+      POSTGRES_USER: "${POSTGRES_USERNAME}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "database"
+      POSTGRES_DB: "clovance-database"
     expose:
       - "5432"
     volumes:
       - type: "volume"
-        target: "/var/lib/postgresql/data"
-        source: "clovance.apphost-f8d48ee71c-postgres-data"
+        target: "/var/lib/postgresql"
+        source: "clovance.apphost-f8d48ee71c-clovance-postgres-data"
         read_only: false
     networks:
       - "aspire"
-  apiservice:
-    image: "${APISERVICE_IMAGE}"
+  clovance-apiservice:
+    image: "${CLOVANCE_APISERVICE_IMAGE}"
     environment:
       OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-      HTTP_PORTS: "${APISERVICE_PORT}"
-      ConnectionStrings__Database: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=database"
-      ConnectionStrings__database: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=database"
-      DATABASE_HOST: "postgres"
-      DATABASE_PORT: "5432"
-      DATABASE_USERNAME: "postgres"
-      DATABASE_PASSWORD: "${POSTGRES_PASSWORD}"
-      DATABASE_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/database"
-      DATABASE_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/database"
-      DATABASE_DATABASENAME: "database"
+      HTTP_PORTS: "${CLOVANCE_APISERVICE_PORT}"
+      ConnectionStrings__clovance-database: "Host=clovance-postgres;Port=5432;Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD};Database=clovance-database"
+      CLOVANCE_DATABASE_HOST: "clovance-postgres"
+      CLOVANCE_DATABASE_PORT: "5432"
+      CLOVANCE_DATABASE_USERNAME: "${POSTGRES_USERNAME}"
+      CLOVANCE_DATABASE_PASSWORD: "${POSTGRES_PASSWORD}"
+      CLOVANCE_DATABASE_URI: "postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@clovance-postgres:5432/clovance-database"
+      CLOVANCE_DATABASE_JDBCCONNECTIONSTRING: "jdbc:postgresql://clovance-postgres:5432/clovance-database"
+      CLOVANCE_DATABASE_DATABASENAME: "clovance-database"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
-      OTEL_SERVICE_NAME: "apiservice"
+      OTEL_SERVICE_NAME: "clovance-apiservice"
     ports:
-      - "${APISERVICE_PORT}"
+      - "${CLOVANCE_APISERVICE_PORT}"
+    depends_on:
+      clovance-postgres:
+        condition: "service_started"
     networks:
       - "aspire"
-  frontend:
-    image: "${FRONTEND_IMAGE}"
+  clovance-frontend:
+    image: "${CLOVANCE_FRONTEND_IMAGE}"
+    command:
+      - "nginx"
+      - "-g"
+      - "daemon off;"
+    entrypoint:
+      - "/docker-entrypoint.sh"
     environment:
       NODE_ENV: "production"
-      APISERVICE_HTTP: "http://apiservice:${APISERVICE_PORT}"
-      services__apiservice__http__0: "http://apiservice:${APISERVICE_PORT}"
-      APISERVICE_HTTPS: "https://apiservice:${APISERVICE_PORT}"
+      CLOVANCE_APISERVICE_HTTP: "http://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
+      services__clovance-apiservice__http__0: "http://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
+      CLOVANCE_APISERVICE_HTTPS: "https://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
       PORT: "8000"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
-      OTEL_SERVICE_NAME: "frontend"
+      OTEL_SERVICE_NAME: "clovance-frontend"
     ports:
       - "8000"
     depends_on:
-      apiservice:
+      clovance-apiservice:
         condition: "service_started"
     networks:
       - "aspire"
@@ -70,5 +78,5 @@ networks:
   aspire:
     driver: "bridge"
 volumes:
-  clovance.apphost-f8d48ee71c-postgres-data:
+  clovance.apphost-f8d48ee71c-clovance-postgres-data:
     driver: "local"

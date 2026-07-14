@@ -10,7 +10,7 @@ public static class DatabaseServiceCollectionExtensions
     {
         services.Configure<UserInvitationOptions>(configuration.GetSection(UserInvitationOptions.SectionName));
 
-        var connectionString = configuration.GetConnectionString("Database");
+        var connectionString = configuration.GetConnectionString("clovance-database");
 
         services.AddDbContext<ClovanceDbContext>(options =>
         {

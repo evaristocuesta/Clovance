@@ -30,7 +30,6 @@ if (!isTestEnvironment)
 var database = postgres.AddDatabase("clovance-database");
 
 var apiService = builder.AddProject<Projects.Clovance_ApiService>("clovance-apiservice")
-    .WithEnvironment("ConnectionStrings__Database", database)
     .WithReference(database)
     .WaitFor(database)
     .WithHttpHealthCheck("/health")
