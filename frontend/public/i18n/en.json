@@ -212,8 +212,8 @@
         "income": "Income",
         "expense": "Expense",
         "transfer": "Transfer", 
-        "addTransaction": "Add Transaction",
-        "updateTransaction": "Update Transaction",
+        "addTransfer": "Add Transfer",
+        "updateTransfer": "Update Transfer",
         "dateLabel": "Date",
         "datePlaceholder": "Select a date",
         "descriptionLabel": "Description",
@@ -231,6 +231,17 @@
         "updateExpense": "Update Expense", 
         "accountLabel": "Account",
         "accountPlaceholder": "Select an account",
-        "accountRequired": "Account is required" 
+        "accountRequired": "Account is required", 
+        "typeLabel": "Type",
+        "typePlaceholder": "Select a type",
+        "typeRequired": "Type is required", 
+        "confirmDeleteTitle": "Delete Transaction",
+        "confirmDeleteMessage": "Are you sure you want to delete the transaction {{description}}?",
+        "cancel": "Cancel", 
+        "fromAccountLabel": "From Account",
+        "fromAccountRequired": "From account is required",
+        "toAccountLabel": "To Account",
+        "toAccountRequired": "To account is required", 
+        "toAccountNotSameAsFromAccount": "To account cannot be the same as From account"
     }
 }

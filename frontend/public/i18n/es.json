@@ -212,8 +212,8 @@
         "income": "Ingreso",
         "expense": "Gasto", 
         "transfer": "Transferencia",
-        "addTransaction": "Añadir transacción",
-        "updateTransaction": "Modificar transacción",
+        "addTransfer": "Añadir transferencia",
+        "updateTransfer": "Modificar transferencia",
         "dateLabel": "Fecha",
         "datePlaceholder": "Selecciona una fecha",
         "descriptionLabel": "Descripción",
@@ -231,6 +231,17 @@
         "updateExpense": "Modificar gasto", 
         "accountLabel": "Cuenta",
         "accountPlaceholder": "Selecciona una cuenta",
-        "accountRequired": "La cuenta es obligatoria"
+        "accountRequired": "La cuenta es obligatoria", 
+        "typeLabel": "Tipo",
+        "typePlaceholder": "Selecciona un tipo", 
+        "typeRequired": "El tipo es obligatorio", 
+        "confirmDeleteTitle": "Eliminar transacción",
+        "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar la transacción {{description}}?",
+        "cancel": "Cancelar", 
+        "fromAccountLabel": "Cuenta origen",
+        "fromAccountRequired": "La cuenta origen es obligatoria",
+        "toAccountLabel": "Cuenta destino",
+        "toAccountRequired": "La cuenta destino es obligatoria", 
+        "toAccountNotSameAsFromAccount": "La cuenta destino no puede ser la misma que la cuenta origen"
     }
 }

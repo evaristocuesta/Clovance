@@ -66,32 +66,32 @@ export class AccountsList {
     const name = this.accounts()?.find((account) => account.id === accountId)?.name || '';
 
     const dialogRef = this.dialog.open(ConfirmDialog, {
-          width: '640px',
-          height: 'auto',
-          data: {
-            title: this.translocoService.translate('accounts.confirmDeleteTitle'),
-            message: this.translocoService.translate('accounts.confirmDeleteMessage', { name }),
-            confirmText: this.translocoService.translate('accounts.delete'),
-            confirmIcon: 'trash-bin',
-            cancelText: this.translocoService.translate('accounts.cancel'),
-            danger: true
-          } 
-        });
+      width: '640px',
+      height: 'auto',
+      data: {
+        title: this.translocoService.translate('accounts.confirmDeleteTitle'),
+        message: this.translocoService.translate('accounts.confirmDeleteMessage', { name }),
+        confirmText: this.translocoService.translate('accounts.delete'),
+        confirmIcon: 'trash-bin',
+        cancelText: this.translocoService.translate('accounts.cancel'),
+        danger: true
+      } 
+    });
     
-        dialogRef.closed.subscribe((confirmed) => {
-          if (!confirmed) {
-            return;
-          }
-    
-          this.accountService.deleteAccount(accountId).subscribe({
-            next: () => {
-              this.refreshAccounts();
-            },
-            error: (error) => {
-              console.error('Error deleting account:', error);
-            }
-          });
-        });
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.accountService.deleteAccount(accountId).subscribe({
+        next: () => {
+          this.refreshAccounts();
+        },
+        error: (error) => {
+          console.error('Error deleting account:', error);
+        }
+      });
+    });
   }
 
   protected onRestore(accountId: string): void {

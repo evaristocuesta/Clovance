@@ -8,11 +8,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Icon } from '@shared/ui/icon/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Account } from '@features/accounts/models/account.model';
-import { toTransactionTypeCode } from '../models/transaction-type.model';
 
 export interface TransactionFormData {
   transaction?: Transaction;
-  type: 'income' | 'expense' | 'transfer';
+  type: 'Income' | 'Expense' | 'Transfer';
   accounts: Account[];
 }
 
@@ -31,7 +30,7 @@ export class TransactionForm implements OnInit {
     description: '',
     amount: 0,
     accountId: '',
-    type: 'income',
+    type: 'Income',
     accountName: '',
     currency: '',
   });
@@ -42,15 +41,21 @@ export class TransactionForm implements OnInit {
   data = inject<TransactionFormData>(DIALOG_DATA, { optional: true });
 
   ngOnInit(): void {
+    const dataType = this.data?.type;
+
+    if (dataType) {
+      this.transaction.update((t) => ({ ...t, type: dataType }));
+    }
+
     if (this.data?.transaction) {
       this.transaction.set(this.data.transaction);
 
-      if (this.data?.type === 'expense') {
+      if (this.data?.type === 'Expense') {
         this.transaction.update((t) => ({ ...t, amount: Math.abs(t.amount) }));
       }
-      
-      if (this.data?.type) {
-        this.transaction.update((t) => ({ ...t, type: this.data?.type || 'income' }));
+
+      if (dataType) {
+        this.transaction.update((t) => ({ ...t, type: dataType }));
       }
     }
   }
@@ -85,22 +90,16 @@ export class TransactionForm implements OnInit {
           
           try {
             const formValue = field().value();
-            const transactionTypeCode = toTransactionTypeCode(formValue.type);
-
-            if (!transactionTypeCode) {
-              this.errorMessage.set('transactions.typeRequired');
-              return;
-            }
 
             const dto: SaveTransactionDto = {
               date: this.toDateOnlyString(formValue.date),
               description: formValue.description,
               amount: formValue.amount,
-              type: Number(transactionTypeCode),
+              type: formValue.type,
               accountId: formValue.accountId,
             };
 
-            if (this.data?.type === 'expense') {
+            if (dto.type === 'Expense') {
               dto.amount = -Math.abs(dto.amount);
             }
 

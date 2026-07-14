@@ -35,8 +35,21 @@ export interface SaveTransactionDto {
     date: string;
     description: string;
     amount: number;
-    type: number;
+    type: 'Income' | 'Expense' | 'Transfer';
     accountId: string;
+}
+
+export interface SaveTransferCommand {
+    date: string;
+    description: string;
+    amount: number;
+    fromAccountId: string;
+    toAccountId: string;
+}
+
+export interface SaveTransferResult {
+    fromTransaction: Transaction;
+    toTransaction: Transaction;
 }
 
 @Service()
@@ -100,6 +113,14 @@ export class TransactionService {
 
     deleteTransaction(transactionId: string) : Observable<void> {
         return this.http.delete<void>(`/api/transactions/${transactionId}`);
+    }
+
+    createTransfer(command: SaveTransferCommand) : Observable<SaveTransferResult> {
+        return this.http.post<SaveTransferResult>('/api/transactions/transfer', command);
+    }
+
+    updateTransfer(transactionId: string, command: SaveTransferCommand) : Observable<SaveTransferResult> {
+        return this.http.put<SaveTransferResult>(`/api/transactions/transfer/${transactionId}`, command);
     }
 
     private mapGetTransactionsPageResponseDtoToTransactionPage(responseDto: GetTransactionsPageResponseDto): TransactionPage {

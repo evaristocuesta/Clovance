@@ -10,8 +10,8 @@ import { TransactionFilters, TransactionService } from '../services/transaction.
 import { AccountService } from '@features/accounts/services/account.service';
 import { TransactionsFilter } from '../transactions-filter/transactions-filter';
 import { TransactionForm, TransactionFormData } from '../transaction-form/transaction-form';
-import { TransferForm } from '../transfer-form/transfer-form';
-import { toTransactionType } from '../models/transaction-type.model';
+import { TransferForm, TransferFormData } from '../transfer-form/transfer-form';
+import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-transaction-list',
@@ -117,9 +117,14 @@ export class TransactionList {
   }
   
   onAddTransfer(): void {
+    const dialogData: TransferFormData = {
+      accounts: this.accounts(),
+    };
+
     const dialogRef = this.dialog.open<boolean>(TransferForm, {
           width: '640px',
-          height: 'auto'
+          height: 'auto', 
+          data: dialogData,
         });
     
         this.refreshOnDialogSuccess(dialogRef);
@@ -127,7 +132,7 @@ export class TransactionList {
 
   onAddExpense(): void {
     const dialogData: TransactionFormData = {
-      type: 'expense',
+      type: 'Expense',
       accounts: this.accounts(),
     };
 
@@ -142,7 +147,7 @@ export class TransactionList {
 
   onAddIncome(): void {
     const dialogData: TransactionFormData = {
-      type: 'income',
+      type: 'Income',
       accounts: this.accounts(),
     };
 
@@ -166,21 +171,98 @@ export class TransactionList {
   }
 
   onEdit(transaction: Transaction): void {
+    if (transaction.type === 'Transfer') {
+      this.editTransfer(transaction);
+    } else {
+      this.editTransaction(transaction);
+    }
+  }
+
+  onDelete(transactionId: string): void {
+    const description = this.transactions()?.find((transaction) => transaction.id === transactionId)?.description || '';
+    
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '640px',
+      height: 'auto',
+      data: {
+        title: this.translocoService.translate('transactions.confirmDeleteTitle'),
+        message: this.translocoService.translate('transactions.confirmDeleteMessage', { description }),
+        confirmText: this.translocoService.translate('transactions.delete'),
+        confirmIcon: 'trash-bin',
+        cancelText: this.translocoService.translate('transactions.cancel'),
+        danger: true
+      } 
+    });
+    
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.transactionService.deleteTransaction(transactionId).subscribe({
+        next: () => {
+          this.refreshTransactions();
+        },
+        error: (error) => {
+          console.error('Error deleting transaction:', error);
+        }
+      });
+    });
+  }
+
+  private editTransaction(transaction: Transaction) {
     const dialogData: TransactionFormData = {
       transaction,
-      type: toTransactionType(transaction.type) || transaction.type,
+      type: transaction.type,
       accounts: this.accounts(),
     };
 
     const dialogRef = this.dialog.open<boolean>(TransactionForm, {
-          width: '640px',
-          height: 'auto', 
-          data: dialogData,
-        });
-    
-        this.refreshOnDialogSuccess(dialogRef);
+      width: '640px',
+      height: 'auto',
+      data: dialogData,
+    });
+
+    this.refreshOnDialogSuccess(dialogRef);
   }
 
-  onDelete(transactionId: string): void {
+  private editTransfer(transaction: Transaction) {
+    if (!transaction.relatedTransactionId) {
+      return;
+    }
+    
+    var relatedTransaction = this.transactions()?.find((t) => t.id === transaction.relatedTransactionId);
+
+    let dialogData: TransferFormData = {
+      accounts: this.accounts(),
+    };
+
+    if (!relatedTransaction) {
+      this.transactionService.getTransactionById(transaction.relatedTransactionId).subscribe({
+        next: (fetchedRelatedTransaction) => {
+          relatedTransaction = fetchedRelatedTransaction;
+
+          dialogData = {
+            toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
+            fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
+            accounts: this.accounts(),
+          };
+        }
+      });
+    } else {
+      dialogData = {
+        toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
+        fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
+        accounts: this.accounts(),
+      };
+    }
+
+    const dialogRef = this.dialog.open<boolean>(TransferForm, {
+      width: '640px',
+      height: 'auto',
+      data: dialogData,
+    });
+
+    this.refreshOnDialogSuccess(dialogRef);
   }
 }

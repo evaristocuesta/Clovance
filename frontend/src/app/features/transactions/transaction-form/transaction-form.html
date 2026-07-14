@@ -5,9 +5,9 @@
       <!-- Modal header -->
       <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            @if (this.data?.type === 'income') {
+            @if (transactionForm.type().value() === 'Income') {
               {{ t('transactions.income') }}
-            } @else if (this.data?.type === 'expense') {
+            } @else if (transactionForm.type().value() === 'Expense') {
               {{ t('transactions.expense') }}
             }
           </h3>
@@ -24,6 +24,17 @@
       </div>
       <!-- Modal body -->
       <form [formRoot]="transactionForm" class="space-y-4 md:space-y-6" novalidate>
+        <div class="pb-4">
+          <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('transactions.typeLabel') }}</label>
+          <select id="type" [formField]="transactionForm.type" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" [class.border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.border-gray-300]="!transactionForm.type().invalid() || !transactionForm.type().touched()" [class.dark:border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.dark:border-gray-600]="!transactionForm.type().invalid() || !transactionForm.type().touched()">
+            <option value="">{{ t('transactions.typePlaceholder') }}</option>
+              <option value="Income">{{ t('transactions.income') }}</option>
+              <option value="Expense">{{ t('transactions.expense') }}</option>
+          </select>
+          @if (transactionForm.type().touched() && transactionForm.type().errors().length && transactionForm.type().errors()[0].message) {
+            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(transactionForm.type().errors()[0].message!) }}</p>
+          }
+        </div>
         <div class="pb-4">
           <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('transactions.dateLabel') }}</label>
           <input type="date" id="date" [formField]="transactionForm.date" autocomplete="given-name" placeholder="{{ t('transactions.datePlaceholder') }}" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" [class.border-red-500]="transactionForm.date().invalid() && transactionForm.date().touched()" [class.border-gray-300]="!transactionForm.date().invalid() || !transactionForm.date().touched()" [class.dark:border-red-500]="transactionForm.date().invalid() && transactionForm.date().touched()" [class.dark:border-gray-600]="!transactionForm.date().invalid() || !transactionForm.date().touched()">
@@ -65,13 +76,13 @@
               name="circle-plus"
               class="w-6 h-6">
             </app-icon>
-            @if (this.data?.transaction?.id && this.data?.type === 'income') {
+            @if (this.data?.transaction?.id && transactionForm.type().value() === 'Income') {
               {{ t('transactions.updateIncome') }}
-            } @else if (this.data?.transaction?.id && this.data?.type === 'expense') {
+            } @else if (this.data?.transaction?.id && transactionForm.type().value() === 'Expense') {
               {{ t('transactions.updateExpense') }}
-            } @else if (this.data?.type === 'income') {
+            } @else if (transactionForm.type().value() === 'Income') {
               {{ t('transactions.addIncome') }}
-            } @else if (this.data?.type === 'expense') {
+            } @else if (transactionForm.type().value() === 'Expense') {
               {{ t('transactions.addExpense') }}
             }
             @if (transactionForm().submitting()) {
