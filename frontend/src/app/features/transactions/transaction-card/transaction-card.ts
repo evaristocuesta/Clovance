@@ -2,7 +2,6 @@ import { Component, computed, ElementRef, inject, input, output, signal } from '
 import { Transaction } from '../models/transaction.model';
 import { Icon } from "@shared/ui/icon/icon";
 import { TranslocoDirective } from '@jsverse/transloco';
-import { TRANSACTION_TYPE_MAP } from '../models/transaction-type.model';
 
 @Component({
   selector: 'app-transaction-card',
@@ -40,13 +39,6 @@ export class TransactionCard {
     }).format(Math.abs(amount));
 
     return amount >= 0 ? `+${formattedAmount}` : `-${formattedAmount}`;
-  });
-
-  protected typeLabel = computed(() => {
-    const rawType = String(this.transaction().type).trim().toLowerCase();
-    const mappedType = TRANSACTION_TYPE_MAP[rawType] ?? rawType;
-
-    return mappedType;
   });
 
   protected formattedDate = computed(() => {

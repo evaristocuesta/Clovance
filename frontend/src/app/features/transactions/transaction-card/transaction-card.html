@@ -26,7 +26,7 @@
 					[class.text-primary-700]="isPositive()"
 					[class.bg-red-100]="!isPositive()"
 					[class.text-red-700]="!isPositive()">
-					{{ t(`transactions.${typeLabel()}`) }}
+					{{ t(`transactions.${transaction().type.toLowerCase()}`) }}
 				</span>
 
 				<div class="relative">
