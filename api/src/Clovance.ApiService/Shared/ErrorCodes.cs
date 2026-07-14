@@ -92,5 +92,6 @@ public static class ErrorCodes
         public const string CursorMustComeTogether = "transactions.cursor.must_come_together";
         public const string TypeInvalid = "transactions.type.invalid";
         public const string AmountSignTypeMismatch = "transactions.amount_sign_type.mismatch";
+        public const string AccountsMustBeDifferent = "transactions.accounts.must_be_different";
     }
 }

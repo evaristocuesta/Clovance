@@ -6,7 +6,6 @@ public sealed record CreateTransferCommand(
     DateOnly Date,
     string Description,
     decimal Amount,
-    TransactionType Type,
     Guid FromAccountId,
     Guid ToAccountId);
 

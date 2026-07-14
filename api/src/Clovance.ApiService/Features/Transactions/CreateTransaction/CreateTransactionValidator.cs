@@ -33,7 +33,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionCom
             .WithErrorCode(ErrorCodes.Accounts.AccountIdRequired);
 
         RuleFor(x => x)
-            .Must(dto => TransactionAmountTypeRules.EnsureAmountMatchesType(dto.Amount, dto.Type))
+            .Must(dto => TransactionAmountTypeRules.EnsureAmountMatchesType(dto.Amount, dto.Amount, dto.Type))
             .WithErrorCode(ErrorCodes.Transactions.AmountSignTypeMismatch)
             .When(x => x.Amount != 0 && Enum.IsDefined(typeof(TransactionType), x.Type));
     }

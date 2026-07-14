@@ -2,13 +2,13 @@
 
 public class TransactionAmountTypeRules
 {
-    public static bool EnsureAmountMatchesType(decimal amount, TransactionType type)
+    public static bool EnsureAmountMatchesType(decimal currentAmount, decimal newAmount, TransactionType type)
     {
         return type switch
         {
-            TransactionType.Income => amount > 0,
-            TransactionType.Expense => amount < 0,
-            TransactionType.Transfer => amount != 0,
+            TransactionType.Income => newAmount > 0,
+            TransactionType.Expense => newAmount < 0,
+            TransactionType.Transfer => newAmount != 0 && Math.Sign(currentAmount) == Math.Sign(newAmount),
             _ => false
         };
     }

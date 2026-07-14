@@ -21,6 +21,11 @@ public sealed class TransactionAmount : ValueObject
         return new TransactionAmount(decimal.Round(value, 2, MidpointRounding.ToEven));
     }
 
+    public TransactionAmount Negate()
+    {
+        return new TransactionAmount(-Value);
+    }
+
     public bool IsIncome => Value > 0;
 
     public bool IsExpense => Value < 0;

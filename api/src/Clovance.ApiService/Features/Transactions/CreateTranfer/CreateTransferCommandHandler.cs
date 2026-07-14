@@ -52,7 +52,7 @@ public class CreateTransferCommandHandler : IHandler<CreateTransferCommand, Resu
 
         var from = Transaction.Create(
                 command.Amount * -1,
-                command.Type,
+                TransactionType.Transfer,
                 command.Description,
                 command.FromAccountId,
                 command.Date,
@@ -61,7 +61,7 @@ public class CreateTransferCommandHandler : IHandler<CreateTransferCommand, Resu
 
         var to = Transaction.Create(
             command.Amount,
-            command.Type,
+            TransactionType.Transfer,
             command.Description,
             command.ToAccountId,
             command.Date,
