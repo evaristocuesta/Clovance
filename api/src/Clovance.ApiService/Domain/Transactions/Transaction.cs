@@ -22,7 +22,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             throw new ArgumentException("Account id cannot be empty.", nameof(accountId));
         }
 
-        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(amount.Value, type))
+        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(amount.Value, amount.Value, type))
         {
             throw new InvalidOperationException($"Amount type '{amount.GetType().Name}' is not valid for transaction type '{type.GetType().Name}'.");
         }
@@ -83,7 +83,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             return;
         }
 
-        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(amount.Value, Type))
+        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(Amount.Value, amount.Value, Type))
         {
             throw new InvalidOperationException($"Amount type '{amount.GetType().Name}' is not valid for transaction type '{Type.GetType().Name}'.");
         }
@@ -94,17 +94,13 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     public void ChangeType(TransactionType type, Guid modifiedBy)
     {
-        if (type == Type)
+        if (type == Type || type == TransactionType.Transfer)
         {
             return;
         }
 
-        if (!TransactionAmountTypeRules.EnsureAmountMatchesType(Amount.Value, type))
-        {
-            throw new InvalidOperationException($"Amount type '{Amount.GetType().Name}' is not valid for transaction type '{type.GetType().Name}'.");
-        }
-
         Type = type;
+        ChangeAmount(Amount.Negate(), modifiedBy);
         MarkAsModified(modifiedBy);
     }
 

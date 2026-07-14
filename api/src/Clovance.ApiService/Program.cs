@@ -1,4 +1,5 @@
-﻿using Clovance.ApiService.Exceptions;
+﻿using System.Text.Json.Serialization;
+using Clovance.ApiService.Exceptions;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
@@ -52,6 +53,11 @@ builder.Services.AddOpenApi(options =>
 
         return Task.CompletedTask;
     });
+});
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
 var app = builder.Build();

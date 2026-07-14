@@ -52,6 +52,7 @@ public class UpdateTransactionCommandHandler : IHandler<UpdateTransactionCommand
         }
 
         transaction.ChangeDate(TransactionDate.Create(command.Transaction.Date), userId);
+        transaction.ChangeType(command.Transaction.Type, userId);
         transaction.ChangeAmount(TransactionAmount.Create(command.Transaction.Amount), userId);
         transaction.ChangeDescription(TransactionDescription.Create(command.Transaction.Description), userId);
         transaction.MoveToAccount(AccountId.Create(command.Transaction.AccountId), userId);

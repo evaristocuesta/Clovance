@@ -28,6 +28,6 @@ public class CreateTransferEndpoint : IApiEndPoint
         .RequireAuthorization()
         .WithName("CreateTransfer")
         .WithSummary("Create Transfer")
-        .WithDescription("Creates a new transfer"); ;
+        .WithDescription("Creates a new transfer");
     }
 }

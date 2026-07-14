@@ -30,6 +30,8 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
 
         RuleFor(x => x.Transaction.Type)
             .IsInEnum()
+            .WithErrorCode(ErrorCodes.Transactions.TypeInvalid)
+            .Must(x => x != TransactionType.Transfer)
             .WithErrorCode(ErrorCodes.Transactions.TypeInvalid);
 
         RuleFor(x => x.Transaction.AccountId)
@@ -37,7 +39,7 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
             .WithErrorCode(ErrorCodes.Accounts.AccountIdRequired);
 
         RuleFor(x => x.Transaction)
-            .Must(dto => TransactionAmountTypeRules.EnsureAmountMatchesType(dto.Amount, dto.Type))
+            .Must(dto => TransactionAmountTypeRules.EnsureAmountMatchesType(dto.Amount, dto.Amount, dto.Type))
             .WithErrorCode(ErrorCodes.Transactions.AmountSignTypeMismatch)
             .When(x => x.Transaction.Amount != 0 && Enum.IsDefined(typeof(TransactionType), x.Transaction.Type));
     }

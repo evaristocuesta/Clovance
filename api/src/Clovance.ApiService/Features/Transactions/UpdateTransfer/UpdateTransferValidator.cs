@@ -1,13 +1,16 @@
-﻿using Clovance.ApiService.Domain.Transactions;
-using Clovance.ApiService.Shared;
+﻿using Clovance.ApiService.Shared;
 using FluentValidation;
 
-namespace Clovance.ApiService.Features.Transactions.CreateTranfer;
+namespace Clovance.ApiService.Features.Transactions.UpdateTransfer;
 
-public class CreateTransferValidator : AbstractValidator<CreateTransferCommand>
+public class UpdateTransferValidator : AbstractValidator<UpdateTransferCommand>
 {
-    public CreateTransferValidator()
+    public UpdateTransferValidator()
     {
+        RuleFor(x => x.TrasactionId)
+            .NotEmpty()
+            .WithErrorCode(ErrorCodes.Transactions.TransactionIdRequired);
+
         RuleFor(x => x.Date)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Transactions.DateRequired);
