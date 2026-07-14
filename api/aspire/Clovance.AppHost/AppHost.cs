@@ -41,6 +41,8 @@ builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName
     .WaitFor(apiService)
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
-    .PublishAsDockerFile();
+    .PublishAsDockerFile(container => container
+        .WithEntrypoint("/docker-entrypoint.sh")
+        .WithArgs("nginx", "-g", "daemon off;"));
 
 await builder.Build().RunAsync();
