@@ -84,13 +84,10 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/", () => Results.Redirect("/scalar", permanent: false));
 }
 
-// Apply migrations in Development and Testing environments
-if (app.Environment.IsDevelopment() || app.Environment.IsTesting())
-{
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ClovanceDbContext>();
-    await dbContext.Database.MigrateAsync();
-}
+
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<ClovanceDbContext>();
+await dbContext.Database.MigrateAsync();
 
 // Map endpoints
 app.RegisterApiEndpointsFromAssembly(typeof(Program).Assembly);
