@@ -33,7 +33,8 @@ var apiService = builder.AddProject<Projects.Clovance_ApiService>("clovance-apis
     .WithReference(database)
     .WaitFor(database)
     .WithHttpHealthCheck("/health")
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
 
 builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName: "start")
     .WithPnpm(installArgs: ["--frozen-lockfile", "--ignore-scripts"])
@@ -41,8 +42,6 @@ builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName
     .WaitFor(apiService)
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
-    .PublishAsDockerFile(container => container
-        .WithEntrypoint("/docker-entrypoint.sh")
-        .WithArgs("nginx", "-g", "daemon off;"));
+    .PublishAsDockerFile();
 
 await builder.Build().RunAsync();
