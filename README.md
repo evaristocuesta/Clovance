@@ -1,8 +1,22 @@
+![Clovance](/docs/images/clovance.svg)
+
 # Clovance
 
-Personal finance management application built with .NET Aspire, Angular, and PostgreSQL.
+Personal finance management application built with .NET Aspire, Angular, and PostgreSQL. Clovance helps you manage your daily accounting by tracking multiple accounts, recording expenses and income, and keeping a clear history of your financial movements. You can also register transfers between accounts, organize your personal finances in one place, and review statistics to better understand spending patterns and cash flow over time.
+
+![Clovance](/docs/images/clovance-screenshot.jpg)
 
 ## 🚀 Quick Start
+
+### Docker Compose
+
+If you want to run Clovance with Docker Compose instead of local tooling, run from the repository root:
+
+```bash
+docker compose up --build
+```
+
+For complete setup options and commands, see [Docker Usage Guide](docs/DOCKER_USAGE.md).
 
 ### Local Development
 
@@ -75,8 +89,8 @@ Clovance/
 ## 📦 Docker Images
 
 Docker images are automatically published to:
-- `ghcr.io/evaristocuesta/clovance/clovance-api`
-- `ghcr.io/evaristocuesta/clovance/clovance-frontend`
+- [https://ghcr.io/evaristocuesta/clovance/clovance-api](https://ghcr.io/evaristocuesta/clovance/clovance-api)
+- [https://ghcr.io/evaristocuesta/clovance/clovance-frontend](https://ghcr.io/evaristocuesta/clovance/clovance-frontend)
 
 ## 🤝 Contributing
 
