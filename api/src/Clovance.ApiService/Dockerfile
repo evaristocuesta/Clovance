@@ -4,6 +4,9 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy solution and project files
+COPY ["api/Directory.Packages.props", "api/"]
+COPY ["api/Directory.Build.props", "api/"]
+COPY ["api/nuget.config", "api/"]
 COPY ["api/src/Clovance.ApiService/Clovance.ApiService.csproj", "api/src/Clovance.ApiService/"]
 COPY ["api/aspire/Clovance.ServiceDefaults/Clovance.ServiceDefaults.csproj", "api/aspire/Clovance.ServiceDefaults/"]
 
