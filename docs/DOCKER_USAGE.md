@@ -4,56 +4,110 @@ This document shows how to use the Docker images published to GitHub Container R
 
 ## 🐳 Docker Compose
 
+Create a `.env` file by filling in the api service image, api service port, frontend image and postgres username and password. 
+
+```
+# Container image name for clovance-apiservice
+CLOVANCE_APISERVICE_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-alpha1
+
+# Default container port for clovance-apiservice
+CLOVANCE_APISERVICE_PORT=8080
+
+# Container image name for clovance-frontend
+CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0-alpha1
+
+# Parameter postgres-password
+POSTGRES_PASSWORD=your_postgres_password
+
+# Parameter postgres-username
+POSTGRES_USERNAME=your_postgres_username
+```
+
 Create a `docker-compose.yml` file to run the complete application:
 
 ```yaml
 services:
-  postgres:
-    image: postgres:18.3
-	environment:
-	  POSTGRES_DB: clovance-database
-	  POSTGRES_USER: postgres
-	  POSTGRES_PASSWORD: your_secure_password
-	volumes:
-	  - postgres-data:/var/lib/postgresql/data
-	ports:
-	  - "5432:5432"
-	healthcheck:
-	  test: ["CMD-SHELL", "pg_isready -U postgres"]
-	  interval: 10s
-	  timeout: 5s
-	  retries: 5
-
-  api:
-	image: ghcr.io/evaristocuesta/clovance/clovance-api:latest
-	environment:
-	  ASPNETCORE_ENVIRONMENT: Production
-	  ConnectionStrings__DefaultConnection: "Host=postgres;Database=clovance-database;Username=postgres;Password=your_secure_password"
-	  JWT__Secret: "your-super-secret-jwt-key-change-this-in-production"
-	  JWT__Issuer: "https://api.clovance.com"
-	  JWT__Audience: "https://clovance.com"
-	ports:
-	  - "8080:8080"
-	depends_on:
-	  postgres:
-		condition: service_healthy
-	healthcheck:
-	  test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-	  interval: 30s
-	  timeout: 10s
-	  retries: 3
-
-  frontend:
-	image: ghcr.io/evaristocuesta/clovance/clovance-frontend:latest
-	environment:
-	  API_URL: http://api:8080
-	ports:
-	  - "8000:8000"
-	depends_on:
-	  - api
-
+  env-dashboard:
+    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
+    ports:
+      - "18888"
+    expose:
+      - "18889"
+      - "18890"
+    networks:
+      - "aspire"
+    restart: "always"
+  clovance-postgres:
+    image: "docker.io/library/postgres:18.3"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "${POSTGRES_USERNAME}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "clovance-database"
+    expose:
+      - "5432"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/postgresql"
+        source: "clovance.apphost-f8d48ee71c-clovance-postgres-data"
+        read_only: false
+    networks:
+      - "aspire"
+  clovance-apiservice:
+    image: "${CLOVANCE_APISERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${CLOVANCE_APISERVICE_PORT}"
+      ConnectionStrings__clovance-database: "Host=clovance-postgres;Port=5432;Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD};Database=clovance-database"
+      CLOVANCE_DATABASE_HOST: "clovance-postgres"
+      CLOVANCE_DATABASE_PORT: "5432"
+      CLOVANCE_DATABASE_USERNAME: "${POSTGRES_USERNAME}"
+      CLOVANCE_DATABASE_PASSWORD: "${POSTGRES_PASSWORD}"
+      CLOVANCE_DATABASE_URI: "postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@clovance-postgres:5432/clovance-database"
+      CLOVANCE_DATABASE_JDBCCONNECTIONSTRING: "jdbc:postgresql://clovance-postgres:5432/clovance-database"
+      CLOVANCE_DATABASE_DATABASENAME: "clovance-database"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "clovance-apiservice"
+    ports:
+      - "${CLOVANCE_APISERVICE_PORT}"
+    depends_on:
+      clovance-postgres:
+        condition: "service_started"
+    networks:
+      - "aspire"
+  clovance-frontend:
+    image: "${CLOVANCE_FRONTEND_IMAGE}"
+    command:
+      - "nginx"
+      - "-g"
+      - "daemon off;"
+    entrypoint:
+      - "/docker-entrypoint.sh"
+    environment:
+      NODE_ENV: "production"
+      CLOVANCE_APISERVICE_HTTP: "http://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
+      services__clovance-apiservice__http__0: "http://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
+      CLOVANCE_APISERVICE_HTTPS: "https://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
+      PORT: "8000"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "clovance-frontend"
+    ports:
+      - "8000"
+    depends_on:
+      clovance-apiservice:
+        condition: "service_started"
+    networks:
+      - "aspire"
+networks:
+  aspire:
+    driver: "bridge"
 volumes:
-  postgres-data:
+  clovance.apphost-f8d48ee71c-clovance-postgres-data:
+    driver: "local"
 ```
 
 Start the application:
