@@ -10,13 +10,7 @@ Personal finance management application built with .NET Aspire, Angular, and Pos
 
 ### Docker Compose
 
-If you want to run Clovance with Docker Compose instead of local tooling, run from the repository root:
-
-```bash
-docker compose up --build
-```
-
-For complete setup options and commands, see [Docker Usage Guide](docs/DOCKER_USAGE.md).
+You can use Docker Compose instead of local tooling to run Clovance app. For complete setup options and commands, see [Docker Usage Guide](docs/DOCKER_USAGE.md).
 
 ### Local Development
 
