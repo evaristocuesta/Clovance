@@ -1,4 +1,4 @@
-name: api
+name: Build and Test API
 
 on:
   push:
