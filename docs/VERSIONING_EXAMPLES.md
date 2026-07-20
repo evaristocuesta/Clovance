@@ -72,7 +72,7 @@ You want some users to test a new feature before the official release:
 ```yaml
 services:
   api:
-    image: ghcr.io/evaristocuesta/clovance/clovance-api:2.0.0-beta.1
+	image: ghcr.io/evaristocuesta/clovance/clovance-api:2.0.0-beta.1
 ```
 
 ---
@@ -210,9 +210,9 @@ Example of a complete release cycle from alpha to production:
 # docker-compose.yml
 services:
   api:
-    image: ghcr.io/evaristocuesta/clovance/clovance-api:latest
+	image: ghcr.io/evaristocuesta/clovance/clovance-api:latest
     # Or a specific version:
-    # image: ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0
+	# image: ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0
 ```
 
 ### Testing (Specific Pre-release)
@@ -220,7 +220,7 @@ services:
 ```yaml
 services:
   api:
-    image: ghcr.io/evaristocuesta/clovance/clovance-api:2.0.0-beta.1
+	image: ghcr.io/evaristocuesta/clovance/clovance-api:2.0.0-beta.1
 ```
 
 ---

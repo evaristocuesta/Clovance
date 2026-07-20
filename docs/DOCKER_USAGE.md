@@ -10,47 +10,47 @@ Create a `docker-compose.yml` file to run the complete application:
 services:
   postgres:
     image: postgres:18.3
-    environment:
-      POSTGRES_DB: clovance-database
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: your_secure_password
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+	environment:
+	  POSTGRES_DB: clovance-database
+	  POSTGRES_USER: postgres
+	  POSTGRES_PASSWORD: your_secure_password
+	volumes:
+	  - postgres-data:/var/lib/postgresql/data
+	ports:
+	  - "5432:5432"
+	healthcheck:
+	  test: ["CMD-SHELL", "pg_isready -U postgres"]
+	  interval: 10s
+	  timeout: 5s
+	  retries: 5
 
   api:
-    image: ghcr.io/evaristocuesta/clovance/clovance-api:latest
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Host=postgres;Database=clovance-database;Username=postgres;Password=your_secure_password"
-      JWT__Secret: "your-super-secret-jwt-key-change-this-in-production"
-      JWT__Issuer: "https://api.clovance.com"
-      JWT__Audience: "https://clovance.com"
-    ports:
-      - "8080:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+	image: ghcr.io/evaristocuesta/clovance/clovance-api:latest
+	environment:
+	  ASPNETCORE_ENVIRONMENT: Production
+	  ConnectionStrings__DefaultConnection: "Host=postgres;Database=clovance-database;Username=postgres;Password=your_secure_password"
+	  JWT__Secret: "your-super-secret-jwt-key-change-this-in-production"
+	  JWT__Issuer: "https://api.clovance.com"
+	  JWT__Audience: "https://clovance.com"
+	ports:
+	  - "8080:8080"
+	depends_on:
+	  postgres:
+		condition: service_healthy
+	healthcheck:
+	  test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+	  interval: 30s
+	  timeout: 10s
+	  retries: 3
 
   frontend:
-    image: ghcr.io/evaristocuesta/clovance/clovance-frontend:latest
-    environment:
-      API_URL: http://api:8080
-    ports:
-      - "8000:8000"
-    depends_on:
-      - api
+	image: ghcr.io/evaristocuesta/clovance/clovance-frontend:latest
+	environment:
+	  API_URL: http://api:8080
+	ports:
+	  - "8000:8000"
+	depends_on:
+	  - api
 
 volumes:
   postgres-data:
