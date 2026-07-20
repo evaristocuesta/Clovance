@@ -4,14 +4,12 @@ WORKDIR /app
 ENV CI=true
 
 RUN corepack enable
-RUN corepack prepare pnpm@11.1.1 --activate
+RUN corepack prepare pnpm@11.8.0 --activate
 
 COPY package.json package.json
 COPY pnpm-lock.yaml pnpm-lock.yaml
 
-RUN pnpm install --frozen-lockfile --ignore-scripts \
-    && pnpm approve-builds @parcel/watcher esbuild lmdb msgpackr-extract \
-    && pnpm rebuild @parcel/watcher esbuild lmdb msgpackr-extract
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
