@@ -1,17 +1,17 @@
-# Publicación de Imágenes Docker con GitHub Actions
+# Publishing Docker Images with GitHub Actions
 
-Este documento explica cómo funciona la publicación automática de imágenes Docker a GitHub Container Registry (GHCR).
+This document explains how automatic publishing of Docker images to GitHub Container Registry (GHCR) works.
 
-## 🚀 Proceso de Publicación
+## 🚀 Publishing Process
 
-### Automático con Script (Recomendado)
+### Automatic with Script (Recommended)
 
-Usa el script de PowerShell incluido para crear y publicar versiones de forma segura:
+Use the included PowerShell script to safely create and publish new versions:
 
 ```powershell
-# Desde la raíz del repositorio
+# From the repository root
 
-# Versión de producción
+# Production release
 .\scripts\publish-version.ps1 -Version "1.0.0"
 
 # Pre-release (beta, rc, alpha)
@@ -19,114 +19,116 @@ Usa el script de PowerShell incluido para crear y publicar versiones de forma se
 .\scripts\publish-version.ps1 -Version "2.0.0-rc.2"
 .\scripts\publish-version.ps1 -Version "1.0.0-alpha"
 
-# Para ver qué haría sin ejecutarlo (dry run)
+# Preview what would happen without executing it (dry run)
 .\scripts\publish-version.ps1 -Version "1.0.0" -DryRun
 ```
 
-El script verificará automáticamente:
-- ✅ Formato de versión correcto (X.Y.Z o X.Y.Z-prerelease)
-- ✅ No hay cambios sin commitear
-- ✅ Estás sincronizado con el remoto
-- ✅ El tag no existe ya
+The script automatically verifies:
+
+- ✅ Correct version format (`X.Y.Z` or `X.Y.Z-prerelease`)
+- ✅ No uncommitted changes
+- ✅ Your local branch is up to date with the remote
+- ✅ The tag does not already exist
 
 ### Manual
 
-También puedes crear tags manualmente:
+You can also create tags manually:
 
 ```bash
-# Crear un tag de versión de producción
+# Create a production release tag
 git tag v1.0.0
 
-# Crear un tag de pre-release
+# Create a pre-release tag
 git tag v1.0.0-beta1
 
-# Subir el tag a GitHub
+# Push the tag to GitHub
 git push origin v1.0.0
-# o
+# or
 git push origin v1.0.0-beta1
 ```
 
-### Qué ocurre automáticamente
+### What Happens Automatically
 
-Esto disparará el workflow de GitHub Actions que:
-1. Construirá las imágenes Docker para API y Frontend
-2. Las etiquetará con múltiples tags:
-   - `v1.0.0` (versión completa)
+This triggers the GitHub Actions workflow, which will:
+
+1. Build the Docker images for the API and Frontend.
+2. Tag them with multiple tags:
+   - `v1.0.0` (full version)
    - `v1.0` (major.minor)
    - `v1` (major)
-   - `latest` (si es la rama por defecto)
-   - `main-<sha>` (SHA del commit)
-3. Las publicará en `ghcr.io/evaristocuesta/clovance/`
-4. Generará attestation de provenance
+   - `latest` (if published from the default branch)
+   - `main-<sha>` (commit SHA)
+3. Publish them to `ghcr.io/evaristocuesta/clovance/`.
+4. Generate a provenance attestation.
 
-### Imágenes Publicadas
+### Published Images
 
 - **API**: `ghcr.io/evaristocuesta/clovance/clovance-api:v1.0.0`
 - **Frontend**: `ghcr.io/evaristocuesta/clovance/clovance-frontend:v1.0.0`
 
-## 📦 Estructura de Tags
+## 📦 Tag Structure
 
-El workflow genera automáticamente múltiples tags por cada versión:
+The workflow automatically generates multiple tags for each version.
 
-### Versiones de Producción
+### Production Releases
 
 ```
-v1.2.3 → Genera los siguientes tags:
-  - v1.2.3    (versión completa)
+v1.2.3 → Generates the following tags:
+  - v1.2.3    (full version)
   - v1.2      (major.minor)
   - v1        (major)
-  - latest    (solo si es default branch)
-  - main-abc123def (SHA corto del commit)
+  - latest    (default branch only)
+  - main-abc123def (short commit SHA)
 ```
 
 ### Pre-releases (beta, rc, alpha)
 
 ```
-v1.2.3-beta1 → Genera solo:
-  - v1.2.3-beta1  (versión completa)
-  - main-abc123def (SHA corto del commit)
+v1.2.3-beta1 → Generates only:
+  - v1.2.3-beta1  (full version)
+  - main-abc123def (short commit SHA)
 
-⚠️ Las pre-releases NO actualizan:
+⚠️ Pre-releases DO NOT update:
   - major.minor (v1.2)
   - major (v1)
   - latest
 ```
 
-Esto asegura que las versiones de prueba no sobrescriban las versiones estables en producción.
+This ensures that preview releases do not overwrite stable production releases.
 
-## 🔧 Configuración Local con Aspire
+## 🔧 Local Development with Aspire
 
-### Desarrollo Local
+### Local Development
 
-Para ejecutar localmente con Aspire:
+To run the application locally with Aspire:
 
 ```bash
 cd api/aspire/Clovance.AppHost
 dotnet run
 ```
 
-Esto utilizará `appsettings.Development.json` y NO intentará publicar contenedores.
+This uses `appsettings.Development.json` and **does not** attempt to publish containers.
 
-### Generar Manifests para Deployment
+### Generate Deployment Manifests
 
-Aspire puede generar manifests de deployment (Kubernetes, Docker Compose, etc.) que referenciarán las imágenes publicadas en GHCR:
+Aspire can generate deployment manifests (Kubernetes, Docker Compose, etc.) that reference the images published to GHCR:
 
 ```bash
-# Generar manifests
+# Generate manifests
 dotnet run --project api/aspire/Clovance.AppHost \
   -- \
   --publisher manifest \
   --output-path ./manifests
 ```
 
-Esto generará archivos de deployment listos para usar con las imágenes de GHCR.
+This generates deployment files ready to use with the images published in GHCR.
 
-## 🐳 Probar Construcción Local
+## 🐳 Test Local Builds
 
 ### API Service
 
 ```bash
-# Desde la raíz del repositorio
+# From the repository root
 docker build -t clovance-api:local -f api/src/Clovance.ApiService/Dockerfile .
 docker run -p 8080:8080 clovance-api:local
 ```
@@ -134,71 +136,74 @@ docker run -p 8080:8080 clovance-api:local
 ### Frontend
 
 ```bash
-# Desde el directorio frontend
+# From the frontend directory
 cd frontend
 docker build -t clovance-frontend:local .
 docker run -p 8000:8000 clovance-frontend:local
 ```
 
-## 🔐 Permisos de GHCR
+## 🔐 GHCR Permissions
 
-Las imágenes se publican como públicas por defecto. Para cambiar la visibilidad:
+Images are published as public by default. To change their visibility:
 
-1. Ve a https://github.com/evaristocuesta?tab=packages
-2. Encuentra el paquete (clovance-api o clovance-frontend)
-3. Ve a "Package settings"
-4. Cambia la visibilidad a "Public" o "Private"
+1. Go to https://github.com/evaristocuesta?tab=packages
+2. Find the package (`clovance-api` or `clovance-frontend`)
+3. Open **Package settings**
+4. Change the visibility to **Public** or **Private**
 
-## 📋 Requisitos del Workflow
+## 📋 Workflow Requirements
 
-El workflow requiere los siguientes permisos (ya configurados):
-- `contents: read` - Para clonar el repositorio
-- `packages: write` - Para publicar en GHCR
+The workflow requires the following permissions (already configured):
 
-Usa automáticamente `${{ secrets.GITHUB_TOKEN }}` que se genera automáticamente en cada workflow.
+- `contents: read` - To clone the repository
+- `packages: write` - To publish to GHCR
 
-## 🔄 Versionado Semántico
+It automatically uses `${{ secrets.GITHUB_TOKEN }}`, which GitHub generates for every workflow run.
 
-Se recomienda seguir [Semantic Versioning](https://semver.org/):
+## 🔄 Semantic Versioning
 
-- **MAJOR** (v1.0.0 → v2.0.0): Cambios incompatibles en la API
-- **MINOR** (v1.0.0 → v1.1.0): Nueva funcionalidad compatible
-- **PATCH** (v1.0.0 → v1.0.1): Correcciones de bugs
-- **PRE-RELEASE** (v1.0.0-beta1): Versiones de prueba antes del lanzamiento oficial
+It is recommended to follow [Semantic Versioning](https://semver.org/):
 
-### Ejemplos de Versionado
+- **MAJOR** (`v1.0.0` → `v2.0.0`): Breaking API changes
+- **MINOR** (`v1.0.0` → `v1.1.0`): New backward-compatible functionality
+- **PATCH** (`v1.0.0` → `v1.0.1`): Bug fixes
+- **PRE-RELEASE** (`v1.0.0-beta1`): Preview versions before the official release
+
+### Versioning Examples
 
 ```bash
-# Desarrollo y testing
-git tag v1.0.0-alpha && git push origin v1.0.0-alpha    # Versión muy temprana
-git tag v1.0.0-beta.1 && git push origin v1.0.0-beta.1  # Primera beta
-git tag v1.0.0-beta.2 && git push origin v1.0.0-beta.2  # Segunda beta
+# Development and testing
+git tag v1.0.0-alpha && git push origin v1.0.0-alpha    # Very early version
+git tag v1.0.0-beta.1 && git push origin v1.0.0-beta.1  # First beta
+git tag v1.0.0-beta.2 && git push origin v1.0.0-beta.2  # Second beta
 git tag v1.0.0-rc.1 && git push origin v1.0.0-rc.1      # Release candidate
 
-# Producción
-git tag v1.0.0 && git push origin v1.0.0  # Release inicial
+# Production
+git tag v1.0.0 && git push origin v1.0.0  # Initial release
 git tag v1.0.1 && git push origin v1.0.1  # Bug fix
-git tag v1.1.0 && git push origin v1.1.0  # Nueva feature
+git tag v1.1.0 && git push origin v1.1.0  # New feature
 git tag v2.0.0 && git push origin v2.0.0  # Breaking change
 ```
 
 ## 🚨 Troubleshooting
 
-### ¿Cuándo usar pre-releases?
+### When Should I Use Pre-releases?
 
-Usa pre-releases para:
-- ✅ **Testing** de nuevas features antes del lanzamiento
-- ✅ **Betas públicas** para usuarios que quieran probar versiones anticipadas
-- ✅ **Release candidates** antes de una versión final
-- ✅ **Versiones alpha** para desarrollo muy temprano
+Use pre-releases for:
 
-**NO uses pre-releases para:**
-- ❌ Versiones de producción estables
-- ❌ Hotfixes urgentes (usa versiones de producción)
+- ✅ Testing new features before release
+- ✅ Public beta versions for early adopters
+- ✅ Release candidates before a final release
+- ✅ Alpha versions during early development
 
-### Usar una pre-release en producción
+**Do NOT use pre-releases for:**
 
-Si necesitas usar una pre-release específica:
+- ❌ Stable production releases
+- ❌ Urgent hotfixes (use production releases instead)
+
+### Using a Pre-release in Production
+
+If you need to use a specific pre-release:
 
 ```yaml
 # docker-compose.yml
@@ -212,37 +217,41 @@ services:
 docker pull ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-beta1
 ```
 
-### El workflow falla con "permission denied"
+### The Workflow Fails with "permission denied"
 
-Verifica que el repositorio tenga activado "Read and write permissions" para workflows:
-1. Settings → Actions → General
-2. Workflow permissions → "Read and write permissions"
+Verify that the repository has **Read and write permissions** enabled for GitHub Actions:
 
-### Las imágenes no se ven en GHCR
+1. **Settings → Actions → General**
+2. **Workflow permissions → Read and write permissions**
 
-Pueden tardar unos minutos en aparecer. Verifica:
-1. El workflow completó exitosamente: https://github.com/evaristocuesta/Clovance/actions
-2. Los paquetes en: https://github.com/evaristocuesta?tab=packages
+### Images Do Not Appear in GHCR
 
-### Quiero cambiar el registry
+It may take a few minutes for the images to appear. Check:
 
-Edita `.github/workflows/publish-images.yml` y cambia:
+1. The workflow completed successfully: https://github.com/evaristocuesta/Clovance/actions
+2. The packages are available at: https://github.com/evaristocuesta?tab=packages
+
+### I Want to Change the Registry
+
+Edit `.github/workflows/publish-images.yml` and change:
+
 ```yaml
 env:
-  REGISTRY: ghcr.io  # Cambiar a docker.io, quay.io, etc.
+  REGISTRY: ghcr.io  # Change to docker.io, quay.io, etc.
 ```
 
-También actualiza `appsettings.Production.json`:
+Also update `appsettings.Production.json`:
+
 ```json
 {
   "Parameters": {
-	"container-registry": "docker.io/tu-usuario/clovance"
+    "container-registry": "docker.io/your-username/clovance"
   }
 }
 ```
 
-## 📚 Referencias
+## 📚 References
 
-- [GitHub Container Registry Docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+- [GitHub Container Registry Documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 - [.NET Aspire Deployment](https://learn.microsoft.com/en-us/dotnet/aspire/deployment/overview)
 - [Docker Build Push Action](https://github.com/marketplace/actions/build-and-push-docker-images)
