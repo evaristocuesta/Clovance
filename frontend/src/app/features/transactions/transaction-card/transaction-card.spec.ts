@@ -12,6 +12,18 @@ describe('TransactionCard', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(TransactionCard);
+    fixture.componentRef.setInput('transaction', {
+      id: 'tx-1',
+      accountId: 'acc-1',
+      accountName: 'Main account',
+      currency: 'EUR',
+      amount: 100,
+      date: new Date(),
+      description: 'Test transaction',
+      type: 'Income',
+    });
+    fixture.componentRef.setInput('currencySymbolMap', { EUR: '€' });
+    fixture.detectChanges();
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
