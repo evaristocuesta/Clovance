@@ -1,4 +1,4 @@
-![Clovance](/docs/images/clovance.svg)
+![Clovance](/docs/images/logo-full.svg)
 
 # Clovance
 
