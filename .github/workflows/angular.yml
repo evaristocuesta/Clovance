@@ -3,8 +3,14 @@ name: Build and Test Frontend
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/angular.yml"
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/angular.yml"
   workflow_dispatch:
 
 jobs:

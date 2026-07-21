@@ -3,8 +3,14 @@ name: Build and Test API
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "api/**"
+      - ".github/workflows/dotnet.yml"
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "api/**"
+      - ".github/workflows/dotnet.yml"
   workflow_dispatch:
 
 jobs:
