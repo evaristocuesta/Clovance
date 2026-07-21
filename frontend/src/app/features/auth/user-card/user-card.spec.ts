@@ -12,6 +12,15 @@ describe('UserCard', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserCard);
+    fixture.componentRef.setInput('user', {
+      id: 'user-1',
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@example.com',
+      roles: ['User'],
+    });
+    fixture.componentRef.setInput('isOwner', false);
+    fixture.detectChanges();
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -44,4 +44,4 @@ jobs:
         run: pnpm build
 
       - name: Run tests
-        run: pnpm test --watch=false
+        run: pnpm test --watch=false --providers-file=src/testing/ci-test.providers.ts
