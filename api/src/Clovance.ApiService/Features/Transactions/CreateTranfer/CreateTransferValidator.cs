@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Domain.Transactions;
-using Clovance.ApiService.Shared;
+﻿using Clovance.ApiService.Shared;
 using FluentValidation;
 
 namespace Clovance.ApiService.Features.Transactions.CreateTranfer;
