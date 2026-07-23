@@ -17,7 +17,7 @@ public static class TransactionSummaryQueries
 
         var raw = await baseQuery
             .Where(t => t.Date >= fromDate && t.Date <= toDate)
-            .Select(t => new { t.Date, t.AccountId, t.Amount })
+            .Select(t => new { t.Date, t.AccountId, t.Amount, t.Type })
             .ToListAsync(ct);
 
         return raw
@@ -25,8 +25,10 @@ public static class TransactionSummaryQueries
             .Select(g => new DailyAccountFlow(
                 g.Key.Date.Value,
                 g.Key.AccountId,
-                Income: g.Sum(t => t.Amount.Value > 0 ? t.Amount.Value : 0m),
-                Expenses: g.Sum(t => t.Amount.Value < 0 ? t.Amount.Value : 0m)))
+                Income: g.Sum(t => t.Type != TransactionType.Transfer && t.Amount.Value > 0 ? t.Amount.Value : 0m),
+                Expenses: g.Sum(t => t.Type != TransactionType.Transfer && t.Amount.Value < 0 ? t.Amount.Value : 0m),
+                TransferIn: g.Sum(t => t.Type == TransactionType.Transfer && t.Amount.Value > 0 ? t.Amount.Value : 0m),
+                TransferOut: g.Sum(t => t.Type == TransactionType.Transfer && t.Amount.Value < 0 ? t.Amount.Value : 0m)))
             .ToList();
     }
 
