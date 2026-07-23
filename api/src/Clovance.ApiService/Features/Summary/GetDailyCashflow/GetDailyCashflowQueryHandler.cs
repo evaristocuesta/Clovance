@@ -2,8 +2,6 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Clovance.ApiService.Features.Summary.GetDailyCashflow;
 
@@ -30,16 +28,13 @@ public class GetDailyCashflowQueryHandler : IHandler<GetDailyCashflowQuery, Resu
             .GroupBy(f => PeriodKey.Daily(f.Date))
             .ToDictionary(
                 g => g.Key,
-                g => g.Select(f => (f.AccountId, f.Income, f.Expenses)).ToList());
+                g => g.Select(f => new AccountFlowTotals(f.AccountId, f.Income, f.Expenses, f.TransferIn, f.TransferOut)).ToList());
 
         var orderedPeriods = Enumerable.Range(0, monthEnd.DayNumber - monthStart.DayNumber + 1)
             .Select(i => PeriodKey.Daily(monthStart.AddDays(i)))
             .ToList();
 
-        var aggregated = CashflowAggregator.Aggregate(
-            orderedPeriods,
-            rowsByPeriod,
-            includeByAccount: query.AccountId is null);
+        var aggregated = CashflowAggregator.Aggregate(orderedPeriods, rowsByPeriod, includeByAccount: query.AccountId is null);
 
         var result = aggregated
             .Select(a => new DailyCashflowPoint(new DateOnly(a.Period.Year, a.Period.Month, a.Period.Day!.Value), a.Income, a.Expenses, a.ByAccount))

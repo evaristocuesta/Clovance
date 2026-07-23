@@ -2,7 +2,6 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Summary.GetDailyBalance;
 

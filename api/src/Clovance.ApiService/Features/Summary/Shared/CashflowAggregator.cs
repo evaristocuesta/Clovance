@@ -1,12 +1,10 @@
-﻿using Clovance.ApiService.Domain.Accounts;
-
-namespace Clovance.ApiService.Features.Summary.Shared;
+﻿namespace Clovance.ApiService.Features.Summary.Shared;
 
 public static class CashflowAggregator
 {
     public static List<(PeriodKey Period, decimal Income, decimal Expenses, List<AccountCashflowBreakdown>? ByAccount)> Aggregate(
         IReadOnlyList<PeriodKey> orderedPeriods,
-        IReadOnlyDictionary<PeriodKey, List<(AccountId AccountId, decimal Income, decimal Expenses)>> rowsByPeriod,
+        IReadOnlyDictionary<PeriodKey, List<AccountFlowTotals>> rowsByPeriod,
         bool includeByAccount)
     {
         var result = new List<(PeriodKey, decimal, decimal, List<AccountCashflowBreakdown>?)>();
@@ -15,11 +13,14 @@ public static class CashflowAggregator
         {
             var rows = rowsByPeriod.GetValueOrDefault(period) ?? [];
 
-            var byAccount = includeByAccount
-                ? rows.Select(r => new AccountCashflowBreakdown(r.AccountId.Value, r.Income, r.Expenses)).ToList()
+            var totalIncome = rows.Sum(r => r.Income);
+            var totalExpenses = rows.Sum(r => r.Expenses);
+
+            List<AccountCashflowBreakdown>? byAccount = includeByAccount
+                ? rows.Select(r => new AccountCashflowBreakdown(r.AccountId.Value, r.AccountIncome, r.AccountExpenses)).ToList()
                 : null;
 
-            result.Add((period, rows.Sum(r => r.Income), rows.Sum(r => r.Expenses), byAccount));
+            result.Add((period, totalIncome, totalExpenses, byAccount));
         }
 
         return result;

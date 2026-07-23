@@ -1,10 +1,8 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
-using Clovance.ApiService.Domain.Transactions;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Clovance.ApiService.Features.Summary.GetMonthlyCashflow;
 
@@ -32,13 +30,17 @@ public class GetMonthlyCashflowQueryHandler : IHandler<GetMonthlyCashflowQuery, 
 
         var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, cancellationToken);
 
-        // roll-up a mes en memoria — aquí sí puedes usar .Year/.Month sin restricciones
         var rowsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Monthly(f.Date.Year, f.Date.Month))
             .ToDictionary(
                 g => g.Key,
                 g => g.GroupBy(f => f.AccountId)
-                      .Select(a => (a.Key, a.Sum(f => f.Income), a.Sum(f => f.Expenses)))
+                      .Select(a => new AccountFlowTotals(
+                          a.Key,
+                          a.Sum(f => f.Income),
+                          a.Sum(f => f.Expenses),
+                          a.Sum(f => f.TransferIn),
+                          a.Sum(f => f.TransferOut)))
                       .ToList());
 
         var orderedPeriods = Enumerable.Range(0, query.MonthsBack)
