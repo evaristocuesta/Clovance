@@ -18,6 +18,10 @@ public class UpdateAccountValidator : AbstractValidator<UpdateAccountCommand>
             .MaximumLength(200)
             .WithErrorCode(ErrorCodes.Accounts.AccountNameMaxLength);
 
+        RuleFor(x => x.Type)
+            .IsInEnum()
+            .WithErrorCode(ErrorCodes.Accounts.AccountTypeInvalid);
+
         RuleFor(x => x.Currency)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Accounts.AccountCurrencyInvalid)

@@ -11,6 +11,7 @@ public class AccountTests
 
         var account = Account.Create(
             AccountName.Create("Checking"),
+            AccountType.Checking,
             Currency.Create("EUR"),
             userId);
 
@@ -26,6 +27,7 @@ public class AccountTests
 
         var account = Account.Create(
             AccountName.Create("Checking"),
+            AccountType.Checking,
             Currency.Create("EUR"),
             userId);
 
@@ -43,6 +45,7 @@ public class AccountTests
 
         var account = Account.Create(
             AccountName.Create("Checking"),
+            AccountType.Checking,
             Currency.Create("EUR"),
             userId);
 

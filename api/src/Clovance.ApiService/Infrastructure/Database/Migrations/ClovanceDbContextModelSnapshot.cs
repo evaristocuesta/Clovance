@@ -17,7 +17,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
@@ -72,10 +72,19 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("type");
+
                     b.HasKey("Id")
                         .HasName("pk_accounts");
 
-                    b.ToTable("accounts", (string)null);
+                    b.ToTable("accounts", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_transactions_type_is_valid", "type IN ('Checking', 'Savings', 'Cash', 'CreditCard', 'Loan', 'Mortgage', 'Investment')");
+                        });
                 });
 
             modelBuilder.Entity("Clovance.ApiService.Domain.RefreshTokens.RefreshToken", b =>

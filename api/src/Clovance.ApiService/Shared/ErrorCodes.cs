@@ -74,6 +74,7 @@ public static class ErrorCodes
         public const string AccountNameRequired = "accounts.account.name.required";
         public const string AccountNameMaxLength = "accounts.account.name.max_length";
         public const string AccountCurrencyInvalid = "accounts.account.currency.invalid";
+        public const string AccountTypeInvalid = "accounts.account.type.invalid";
     }
 
     public static class Transactions

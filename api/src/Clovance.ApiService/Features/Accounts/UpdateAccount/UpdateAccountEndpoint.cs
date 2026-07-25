@@ -16,6 +16,7 @@ public class UpdateAccountEndpoint : IApiEndPoint
             var command = new UpdateAccountCommand(
                 Id: id,
                 Name: request.Name,
+                Type: request.Type,
                 Currency: request.Currency
             );
 

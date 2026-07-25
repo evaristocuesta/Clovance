@@ -19,6 +19,18 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
             .HasMaxLength(200)
             .IsRequired();
 
+        builder.Property(t => t.Type)
+            .HasConversion<string>() // save "Checking"/"Savings"/"Cash"/"CreditCard"/"Loan"/"Mortgage"/"Investment" instead of 0/1/2, more readable in the DB
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.ToTable(t =>
+        {
+            t.HasCheckConstraint(
+                "ck_transactions_type_is_valid",
+                "type IN ('Checking', 'Savings', 'Cash', 'CreditCard', 'Loan', 'Mortgage', 'Investment')");
+        });
+
         builder.Property(x => x.Currency)
             .HasConversion(currency => currency.Code, value => Currency.Create(value))
             .HasMaxLength(3)

@@ -42,6 +42,7 @@ public class UpdateAccountCommandHandler : IHandler<UpdateAccountCommand, Result
         }
 
         account.Rename(command.Name, userId);
+        account.ChangeType(command.Type, userId);
         account.ChangeCurrency(command.Currency, userId);
 
         _context.Accounts.Update(account);

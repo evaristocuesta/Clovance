@@ -1,7 +1,9 @@
-﻿namespace Clovance.ApiService.Features.Accounts.UpdateAccount;
+﻿using Clovance.ApiService.Domain.Accounts;
 
-public sealed record UpdateAccountRequest(string Name, string Currency);
+namespace Clovance.ApiService.Features.Accounts.UpdateAccount;
 
-public sealed record UpdateAccountCommand(Guid Id, string Name, string Currency);
+public sealed record UpdateAccountRequest(string Name, AccountType Type, string Currency);
+
+public sealed record UpdateAccountCommand(Guid Id, string Name, AccountType Type, string Currency);
 
 public sealed record UpdateAccountResult(AccountDto Account);
