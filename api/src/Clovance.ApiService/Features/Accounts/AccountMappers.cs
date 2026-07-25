@@ -10,6 +10,7 @@ public static class AccountMappers
         return new(
             account.Id.Value,
             account.Name.Value,
+            account.Type,
             account.Currency.Code, 
             account.IsDeleted);
     }
@@ -20,6 +21,7 @@ public static class AccountMappers
     {
         return Account.Create(
             AccountName.Create(accountDto.Name), 
+            accountDto.Type,
             Currency.Create(accountDto.Currency), 
             createdBy);
     }

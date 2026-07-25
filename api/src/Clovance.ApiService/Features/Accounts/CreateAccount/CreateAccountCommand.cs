@@ -1,5 +1,7 @@
-﻿namespace Clovance.ApiService.Features.Accounts.CreateAccount;
+﻿using Clovance.ApiService.Domain.Accounts;
 
-public sealed record CreateAccountCommand(string Name, string Currency);
+namespace Clovance.ApiService.Features.Accounts.CreateAccount;
+
+public sealed record CreateAccountCommand(string Name, AccountType Type, string Currency);
 
 public sealed record CreateAccountResult(AccountDto Account);

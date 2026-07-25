@@ -1,3 +1,5 @@
-﻿namespace Clovance.ApiService.Features.Accounts;
+﻿using Clovance.ApiService.Domain.Accounts;
 
-public sealed record AccountDto(Guid Id, string Name, string Currency, bool? IsDeleted);
+namespace Clovance.ApiService.Features.Accounts;
+
+public sealed record AccountDto(Guid Id, string Name, AccountType Type, string Currency, bool? IsDeleted);

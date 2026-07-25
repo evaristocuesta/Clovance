@@ -31,7 +31,7 @@ public class CreateAccountCommandHandler : IHandler<CreateAccountCommand, Result
         }
 
         var account = await _context.Accounts.AddAsync(
-            Account.Create(command.Name, command.Currency, userId), 
+            Account.Create(command.Name, command.Type, command.Currency, userId), 
             cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);

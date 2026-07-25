@@ -21,6 +21,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     created_by = table.Column<Guid>(type: "uuid", maxLength: 100, nullable: false),
@@ -33,6 +34,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_accounts", x => x.id);
+                    table.CheckConstraint("ck_transactions_type_is_valid", "type IN ('Checking', 'Savings', 'Cash', 'CreditCard', 'Loan', 'Mortgage', 'Investment')");
                 });
 
             migrationBuilder.CreateTable(
