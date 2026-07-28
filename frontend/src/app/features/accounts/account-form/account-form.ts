@@ -5,10 +5,11 @@ import { form, FormField, FormRoot, maxLength, minLength, required } from '@angu
 import { firstValueFrom, map } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from '../services/account.service';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Icon } from "@shared/ui/icon/icon";
 import { Currency } from '../models/currency.model';
+import { AccountOpeningBalance } from '../models/accountOpeningBalance';
 
 @Component({
   selector: 'app-account-form',
@@ -20,13 +21,20 @@ export class AccountForm implements OnInit {
   errorMessage = signal('');
   private readonly priorityCurrencyCodes = ['EUR', 'USD', 'JPY', 'GBP'];
 
-  account = signal<Account>({
+  private readonly accountService = inject(AccountService);
+  private readonly translocoService = inject(TranslocoService);
+
+  account = signal<AccountOpeningBalance>({
     id: '',
     name: '',
-    currency: ''
+    type: '',
+    currency: '', 
+    openingBalance: 0,
+    openingDate: this.toDateOnlyString(new Date()),
+    openingDescription: this.translocoService.translate('accounts.openingBalanceDescription'),
   });
 
-  private readonly accountService = inject(AccountService);
+  readonly accountTypes = ['Checking', 'Savings', 'Cash', 'CreditCard', 'Loan', 'Mortgage', 'Investment'];
 
   readonly currencies = toSignal(
     this.accountService.getCurrencies().pipe(
@@ -41,7 +49,7 @@ export class AccountForm implements OnInit {
   ngOnInit(): void {
     if (this.data?.id) {
       firstValueFrom(this.accountService.getAccountById(this.data.id)).then((account) => {
-        this.account.set(account);
+        this.account.set( { ...account, openingBalance: 0, openingDate: this.toDateOnlyString(new Date()), openingDescription: this.translocoService.translate('accounts.openingBalanceDescription') });
       });
     }
   }
@@ -78,9 +86,12 @@ export class AccountForm implements OnInit {
       (schemaPath) => {
         maxLength(schemaPath.name, 100, { message: 'accounts.nameMaxLength' });
         required(schemaPath.name, { message: 'accounts.nameRequired' });
+        required(schemaPath.type, { message: 'accounts.typeRequired' });
         maxLength(schemaPath.currency, 3, { message: 'accounts.currencyLength' });
         minLength(schemaPath.currency, 3, { message: 'accounts.currencyLength' });
         required(schemaPath.currency, { message: 'accounts.currencyRequired' });
+        required(schemaPath.openingBalance, { message: 'accounts.openingBalanceRequired' });
+        required(schemaPath.openingDate, { message: 'accounts.openingDateRequired' });
       },
       {
         submission: {
@@ -91,7 +102,13 @@ export class AccountForm implements OnInit {
               if (this.data?.id) {
                 await firstValueFrom(this.accountService.updateAccount(field().value()));
               } else {
-                await firstValueFrom(this.accountService.createAccount(field().value()));
+                var accountToCreate: AccountOpeningBalance = field().value();
+                if (accountToCreate.openingBalance !== null) {
+                  accountToCreate.openingDescription = this.translocoService.translate('accounts.openingBalanceDescription');
+                  accountToCreate.openingDate = this.toDateOnlyString(new Date());
+                }
+
+                await firstValueFrom(this.accountService.createAccount(accountToCreate));
               }
               this.dialogRef.close(true);
             } catch (err: HttpErrorResponse | any) {
@@ -103,4 +120,16 @@ export class AccountForm implements OnInit {
         },
       },
     );
+
+    private toDateOnlyString(value: Date | string): string {
+      if (typeof value === 'string') {
+        return value.length >= 10 ? value.slice(0, 10) : value;
+      }
+
+      const year = value.getFullYear();
+      const month = String(value.getMonth() + 1).padStart(2, '0');
+      const day = String(value.getDate()).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    }
 }

@@ -1,4 +1,8 @@
 {
+    "common": {
+        "unexpected_error": "Ocurrió un error inesperado.", 
+        "validation_failed": "La validación falló. Por favor, verifica los campos de entrada e inténtalo de nuevo."
+    },
     "language": {
         "english": "English",
         "spanish": "Español"
@@ -187,7 +191,24 @@
         "restore": "Restaurar",
         "confirmRestoreTitle": "Restaurar cuenta",
         "confirmRestoreMessage": "¿Estás seguro de que deseas restaurar la cuenta {{name}}?",
-        "deleted": "Eliminada"
+        "deleted": "Eliminada", 
+        "types": {
+            "Checking": "Cuenta corriente",
+            "Savings": "Cuenta de ahorros",
+            "Cash": "Efectivo",
+            "CreditCard": "Tarjeta de crédito",
+            "Loan": "Préstamo",
+            "Mortgage": "Hipoteca",
+            "Investment": "Inversión"
+        }, 
+        "typeLabel": "Tipo",
+        "typePlaceholder": "Selecciona un tipo",
+        "typeRequired": "El tipo es obligatorio", 
+        "openingBalanceDescription": "Saldo inicial",
+        "openingBalanceLabel": "Saldo inicial",
+        "openingBalancePlaceholder": "Introduce el saldo inicial (negativo para tarjeta de crédito, préstamo o hipoteca)",
+        "openingDateLabel": "Fecha del saldo inicial",
+        "openingDatePlaceholder": "Selecciona la fecha del saldo inicial"
     },
     "transactions": {
         "title": "Transacciones", 
@@ -212,6 +233,9 @@
         "income": "Ingreso",
         "expense": "Gasto", 
         "transfer": "Transferencia",
+        "openingBalance": "Saldo inicial",  
+        "addOpeningBalance": "Añadir saldo inicial",
+        "updateOpeningBalance": "Modificar saldo inicial",
         "addTransfer": "Añadir transferencia",
         "updateTransfer": "Modificar transferencia",
         "dateLabel": "Fecha",

@@ -22,4 +22,11 @@ export type IconName =
   | 'plus'
   | 'circle-plus'
   | 'filter'
+  | 'checking'
+  | 'savings'
+  | 'cash'
+  | 'credit-card'
+  | 'loan'
+  | 'mortgage'
+  | 'investment'
 ;

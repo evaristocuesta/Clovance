@@ -6,6 +6,6 @@ export interface Transaction {
   amount: number;
   date: Date;
   description: string;
-  type: 'Income' | 'Expense' | 'Transfer';
+  type: 'Income' | 'Expense' | 'Transfer' | 'OpeningBalance' | 'LoanPayment';
   relatedTransactionId?: string;
 }

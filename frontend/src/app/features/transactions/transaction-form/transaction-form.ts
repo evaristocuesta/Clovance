@@ -11,7 +11,7 @@ import { Account } from '@features/accounts/models/account.model';
 
 export interface TransactionFormData {
   transaction?: Transaction;
-  type: 'Income' | 'Expense' | 'Transfer';
+  type: 'Income' | 'Expense' | 'Transfer' | 'OpeningBalance' | 'LoanPayment';
   accounts: Account[];
 }
 
@@ -70,7 +70,13 @@ export class TransactionForm implements OnInit {
       required(schemaPath.date, { message: 'transactions.dateRequired' });
       required(schemaPath.description, { message: 'transactions.descriptionRequired' });
       required(schemaPath.amount, { message: 'transactions.amountRequired' });
-      validate(schemaPath.amount, ({ value }) => {
+      validate(schemaPath.amount, ({ value, valueOf }) => {
+        const type = valueOf(schemaPath.type);
+        
+        if (type === 'OpeningBalance') {
+          return null;
+        }
+
         const amount = value();
         if (amount <= 0) {
           return {
