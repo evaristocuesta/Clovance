@@ -9,6 +9,8 @@ public class TransactionAmountTypeRules
             TransactionType.Income => newAmount > 0,
             TransactionType.Expense => newAmount < 0,
             TransactionType.Transfer => newAmount != 0 && Math.Sign(currentAmount) == Math.Sign(newAmount),
+            TransactionType.LoanPayment => newAmount != 0,
+            TransactionType.OpeningBalance => true,
             _ => false
         };
     }

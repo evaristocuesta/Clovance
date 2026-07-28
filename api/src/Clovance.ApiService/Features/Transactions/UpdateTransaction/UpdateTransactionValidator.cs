@@ -22,12 +22,6 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
             .MaximumLength(250)
             .WithErrorCode(ErrorCodes.Transactions.DescriptionMaxLength);
 
-        RuleFor(x => x.Transaction.Amount)
-            .NotEmpty()
-            .WithErrorCode(ErrorCodes.Transactions.AmountRequired)
-            .Must(amount => amount != 0)
-            .WithErrorCode(ErrorCodes.Transactions.AmountInvalid);
-
         RuleFor(x => x.Transaction.Type)
             .IsInEnum()
             .WithErrorCode(ErrorCodes.Transactions.TypeInvalid)

@@ -134,8 +134,8 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_transactions", x => x.id);
-                    table.CheckConstraint("ck_transactions_amount_sign_matches_type", "(type = 'Income' AND amount > 0) OR (type = 'Expense' AND amount < 0) OR (type = 'Transfer' AND amount <> 0)");
-                    table.CheckConstraint("ck_transactions_type_is_valid", "type IN ('Income', 'Expense', 'Transfer')");
+                    table.CheckConstraint("ck_transactions_amount_sign_matches_type", "(type = 'Income' AND amount > 0) OR (type = 'Expense' AND amount < 0) OR (type = 'Transfer' AND amount <> 0) OR (type = 'LoanPayment' AND amount <> 0) OR (type = 'OpeningBalance')");
+                    table.CheckConstraint("ck_transactions_type_is_valid", "type IN ('Income', 'Expense', 'Transfer', 'LoanPayment', 'OpeningBalance')");
                     table.ForeignKey(
                         name: "fk_transactions_accounts_account_id",
                         column: x => x.account_id,

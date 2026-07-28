@@ -25,7 +25,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionCom
             .WithErrorCode(ErrorCodes.Transactions.AmountInvalid);
 
         RuleFor(x => x.Type)
-            .IsInEnum()
+            .Must(type => type == TransactionType.Income || type == TransactionType.Expense)
             .WithErrorCode(ErrorCodes.Transactions.TypeInvalid);
 
         RuleFor(x => x.AccountId)
