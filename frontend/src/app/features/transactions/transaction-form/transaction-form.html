@@ -5,14 +5,8 @@
       <!-- Modal header -->
       <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            @if (transactionForm.type().value() === 'Income') {
-              {{ t('transactions.income') }}
-            } @else if (transactionForm.type().value() === 'Expense') {
-              {{ t('transactions.expense') }}
-            } @else if (transactionForm.type().value() === 'OpeningBalance') {
-              {{ t('transactions.openingBalance') }}
-            }
-          </h3>
+            {{ t(`transactions.title${transactionForm.type().value()}`) }}
+            </h3>
           <button 
               type="button" 
               (click)="close()"
@@ -31,11 +25,11 @@
           <select id="type" [formField]="transactionForm.type" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" [class.border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.border-gray-300]="!transactionForm.type().invalid() || !transactionForm.type().touched()" [class.dark:border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.dark:border-gray-600]="!transactionForm.type().invalid() || !transactionForm.type().touched()">
             <option value="">{{ t('transactions.typePlaceholder') }}</option>
             @if (this.data?.transaction?.type !== 'OpeningBalance') {
-              <option value="Income">{{ t('transactions.income') }}</option>
-              <option value="Expense">{{ t('transactions.expense') }}</option>
+              <option value="Income">{{ t('transactions.titleIncome') }}</option>
+              <option value="Expense">{{ t('transactions.titleExpense') }}</option>
             }
             @if (this.data?.transaction?.id && this.data?.transaction?.type === 'OpeningBalance') {
-              <option value="OpeningBalance">{{ t('transactions.openingBalance') }}</option>
+              <option value="OpeningBalance">{{ t('transactions.titleOpeningBalance') }}</option>
             }
           </select>
           @if (transactionForm.type().touched() && transactionForm.type().errors().length && transactionForm.type().errors()[0].message) {
