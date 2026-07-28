@@ -97,5 +97,6 @@ public static class ErrorCodes
         public const string TypeInvalid = "transactions.type.invalid";
         public const string AmountSignTypeMismatch = "transactions.amount_sign_type.mismatch";
         public const string AccountsMustBeDifferent = "transactions.accounts.must_be_different";
+        public const string PrincipalAmountMustBeLessThanOrEqualToAmount = "transactions.principal_amount.must_be_less_than_or_equal_to_amount";
     }
 }
