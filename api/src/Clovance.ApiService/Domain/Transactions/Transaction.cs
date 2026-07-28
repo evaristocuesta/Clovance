@@ -11,6 +11,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     private Transaction(
       TransactionAmount amount,
+      TransactionAmount? principalAmount,
       TransactionType type,
       TransactionDescription description,
       AccountId accountId,
@@ -37,6 +38,8 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
     }
 
     public TransactionAmount Amount { get; private set; } = null!;
+
+    public TransactionAmount? PrincipalAmount {  get; private set; } = null!;
     
     public TransactionType Type { get; private set; }
 
@@ -56,7 +59,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
       TransactionDate date,
       Guid createdBy)
     {
-        return new Transaction(amount, type, description, accountId, date, createdBy);
+        return new Transaction(amount, null, type, description, accountId, date, createdBy);
     }
 
     public static Transaction Create(
@@ -116,6 +119,45 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             createdBy);
         
         return new Transfer
+        {
+            From = fromTransaction,
+            To = toTransaction
+        };
+    }
+
+    public static LoanPayment CreateLoanPayment(
+        decimal amount,
+        decimal principalAmount,
+        string description,
+        Guid fromAccountId,
+        Guid toAccountId,
+        DateOnly date,
+        Guid createdBy)
+    {
+        if (principalAmount < 0 || principalAmount > amount)
+        {
+            throw new ArgumentException("Principal amount must be greater than or equal to 0 and less than or equal to the total amount.", nameof(principalAmount));
+        }
+
+        var fromTransaction = new Transaction(
+            TransactionAmount.Create(-amount),
+            TransactionAmount.Create(-principalAmount),
+            TransactionType.LoanPayment,
+            TransactionDescription.Create(description),
+            AccountId.Create(fromAccountId),
+            TransactionDate.Create(date),
+            createdBy);
+
+        var toTransaction = new Transaction(
+            TransactionAmount.Create(principalAmount),
+            null,
+            TransactionType.LoanPayment,
+            TransactionDescription.Create(description),
+            AccountId.Create(toAccountId),
+            TransactionDate.Create(date),
+            createdBy);
+
+        return new LoanPayment
         {
             From = fromTransaction,
             To = toTransaction
