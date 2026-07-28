@@ -50,19 +50,10 @@ public class CreateTransferCommandHandler : IHandler<CreateTransferCommand, Resu
             return Result<CreateTransferResult>.Failure(AppErrors.Accounts.AccountNotFound());
         }
 
-        var from = Transaction.Create(
-                command.Amount * -1,
-                TransactionType.Transfer,
-                command.Description,
-                command.FromAccountId,
-                command.Date,
-                userId
-            );
-
-        var to = Transaction.Create(
+        var transfer = Transaction.CreateTransfer(
             command.Amount,
-            TransactionType.Transfer,
             command.Description,
+            command.FromAccountId,
             command.ToAccountId,
             command.Date,
             userId
@@ -70,18 +61,18 @@ public class CreateTransferCommandHandler : IHandler<CreateTransferCommand, Resu
 
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-        await _context.Transactions.AddRangeAsync([from, to], cancellationToken);
+        await _context.Transactions.AddRangeAsync([transfer.From, transfer.To], cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        from.ChangeRelatedTransactionId(to.Id);
-        to.ChangeRelatedTransactionId(from.Id);
+        transfer.From.ChangeRelatedTransactionId(transfer.To.Id);
+        transfer.To.ChangeRelatedTransactionId(transfer.From.Id);
         await _context.SaveChangesAsync(cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
 
         return Result<CreateTransferResult>.Success(
             new CreateTransferResult(
-                from.ToDto(), 
-                to.ToDto()));
+                transfer.From.ToDto(), 
+                transfer.To.ToDto()));
     }
 }

@@ -23,5 +23,13 @@ public class CreateAccountValidator : AbstractValidator<CreateAccountCommand>
             .WithErrorCode(ErrorCodes.Accounts.AccountCurrencyInvalid)
             .Must(CurrencyValidator.IsValid)
             .WithErrorCode(ErrorCodes.Accounts.AccountCurrencyInvalid);
+
+        RuleFor(x => x.OpeningDate)
+            .NotEmpty()
+            .WithErrorCode(ErrorCodes.Accounts.AccountOpeningDateRequired);
+
+        RuleFor(x => x.OpeningDescription)
+            .NotEmpty()
+            .WithErrorCode(ErrorCodes.Accounts.AccountOpeningDescriptionRequired);
     }
 }

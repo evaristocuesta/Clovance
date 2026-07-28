@@ -25,7 +25,7 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
             .IsRequired();
 
         builder.Property(t => t.Type)
-            .HasConversion<string>() // save "Income"/"Expense"/"Transfer" instead of 0/1/2, more readable in the DB
+            .HasConversion<string>() // save "Income"/"Expense"/"Transfer"/"LoanPayment"/"OpeningBalance" instead of 0/1/2/3/4, more readable in the DB
             .HasMaxLength(20)
             .IsRequired();
 
@@ -33,13 +33,15 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
         {
             t.HasCheckConstraint(
                 "ck_transactions_type_is_valid",
-                "type IN ('Income', 'Expense', 'Transfer')");
+                "type IN ('Income', 'Expense', 'Transfer', 'LoanPayment', 'OpeningBalance')");
 
             t.HasCheckConstraint(
                 "ck_transactions_amount_sign_matches_type",
                 "(type = 'Income' AND amount > 0) OR " +
                 "(type = 'Expense' AND amount < 0) OR " +
-                "(type = 'Transfer' AND amount <> 0)");
+                "(type = 'Transfer' AND amount <> 0) OR " +
+                "(type = 'LoanPayment' AND amount <> 0) OR " +
+                "(type = 'OpeningBalance')");
         });
 
         builder.Property(x => x.Description)

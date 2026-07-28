@@ -203,9 +203,9 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
 
                     b.ToTable("transactions", null, t =>
                         {
-                            t.HasCheckConstraint("ck_transactions_amount_sign_matches_type", "(type = 'Income' AND amount > 0) OR (type = 'Expense' AND amount < 0) OR (type = 'Transfer' AND amount <> 0)");
+                            t.HasCheckConstraint("ck_transactions_amount_sign_matches_type", "(type = 'Income' AND amount > 0) OR (type = 'Expense' AND amount < 0) OR (type = 'Transfer' AND amount <> 0) OR (type = 'LoanPayment' AND amount <> 0) OR (type = 'OpeningBalance')");
 
-                            t.HasCheckConstraint("ck_transactions_type_is_valid", "type IN ('Income', 'Expense', 'Transfer')");
+                            t.HasCheckConstraint("ck_transactions_type_is_valid", "type IN ('Income', 'Expense', 'Transfer', 'LoanPayment', 'OpeningBalance')");
                         });
                 });
 

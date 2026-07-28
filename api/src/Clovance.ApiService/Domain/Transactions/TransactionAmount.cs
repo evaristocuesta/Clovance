@@ -13,11 +13,6 @@ public sealed class TransactionAmount : ValueObject
 
     public static TransactionAmount Create(decimal value)
     {
-        if (value == 0)
-        {
-            throw new ArgumentException("Transaction amount cannot be zero.", nameof(value));
-        }
-
         return new TransactionAmount(decimal.Round(value, 2, MidpointRounding.ToEven));
     }
 

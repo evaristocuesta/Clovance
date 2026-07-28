@@ -76,6 +76,52 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             createdBy);
     }
 
+    public static Transaction CreateOpeningBalance(
+        decimal amount,
+        string description,
+        Guid accountId,
+        DateOnly date,
+        Guid createdBy)
+    {
+        return Create(
+            TransactionAmount.Create(amount),
+            TransactionType.OpeningBalance,
+            TransactionDescription.Create(description),
+            AccountId.Create(accountId),
+            TransactionDate.Create(date),
+            createdBy);
+    }
+
+    public static Transfer CreateTransfer(
+        decimal amount,
+        string description,
+        Guid fromAccountId,
+        Guid toAccountId,
+        DateOnly date,
+        Guid createdBy)
+    {
+        var fromTransaction = Create(
+            TransactionAmount.Create(-amount),
+            TransactionType.Transfer,
+            TransactionDescription.Create(description),
+            AccountId.Create(fromAccountId),
+            TransactionDate.Create(date),
+            createdBy);
+        var toTransaction = Create(
+            TransactionAmount.Create(amount),
+            TransactionType.Transfer,
+            TransactionDescription.Create(description),
+            AccountId.Create(toAccountId),
+            TransactionDate.Create(date),
+            createdBy);
+        
+        return new Transfer
+        {
+            From = fromTransaction,
+            To = toTransaction
+        };
+    }
+
     public void ChangeAmount(TransactionAmount amount, Guid modifiedBy)
     {
         if (amount == Amount)
