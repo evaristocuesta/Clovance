@@ -2,23 +2,23 @@
 using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
 using Clovance.ApiService.Features.Shared;
-using Clovance.ApiService.Features.Transactions.UpdateTransaction;
+using Clovance.ApiService.Features.Transactions.UpdateTransfer;
 using Clovance.ApiService.Infrastructure.Database;
 
-namespace Clovance.ApiService.Features.Transactions.UpdateTransfer;
+namespace Clovance.ApiService.Features.Transactions.UpdateLoanPayment;
 
-public class UpdateTransferCommandHandler : IHandler<UpdateTransferCommand, Result<UpdateTransferResult>>
+public class UpdateLoanPaymentCommandHandler : IHandler<UpdateLoanPaymentCommand, Result<UpdateLoanPaymentResult>>
 {
     private readonly ClovanceDbContext _context;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public UpdateTransferCommandHandler(ClovanceDbContext context, IHttpContextAccessor contextAccessor)
+    public UpdateLoanPaymentCommandHandler(ClovanceDbContext context, IHttpContextAccessor contextAccessor)
     {
         _context = context;
         _contextAccessor = contextAccessor;
     }
 
-    public async Task<Result<UpdateTransferResult>> HandleAsync(UpdateTransferCommand command, CancellationToken cancellationToken)
+    public async Task<Result<UpdateLoanPaymentResult>> HandleAsync(UpdateLoanPaymentCommand command, CancellationToken cancellationToken)
     {
         var transaction = await _context
             .Transactions
@@ -26,7 +26,7 @@ public class UpdateTransferCommandHandler : IHandler<UpdateTransferCommand, Resu
 
         if (transaction is null || !transaction.RelatedTransactionId.HasValue)
         {
-            return Result<UpdateTransferResult>.Failure(AppErrors.Transactions.TransactionNotFound());
+            return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Transactions.TransactionNotFound());
         }
 
         var relatedTransaction = await _context
@@ -35,7 +35,7 @@ public class UpdateTransferCommandHandler : IHandler<UpdateTransferCommand, Resu
 
         if (relatedTransaction is null)
         {
-            return Result<UpdateTransferResult>.Failure(AppErrors.Transactions.TransactionNotFound());
+            return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Transactions.TransactionNotFound());
         }
 
         var userId = Guid.TryParse(
@@ -45,13 +45,14 @@ public class UpdateTransferCommandHandler : IHandler<UpdateTransferCommand, Resu
 
         if (userId == Guid.Empty)
         {
-            return Result<UpdateTransferResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
+            return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
         }
 
         var fromTransaction = transaction.Amount.Value < 0 ? transaction : relatedTransaction;
 
         fromTransaction.ChangeDate(TransactionDate.Create(command.Date), userId);
         fromTransaction.ChangeAmount(TransactionAmount.Create(Math.Abs(command.Amount) * -1), userId);
+        fromTransaction.ChangePrincipalAmount(TransactionPrincipalAmount.Create(Math.Abs(command.PrincipalAmount) * -1), userId);
         fromTransaction.ChangeDescription(TransactionDescription.Create(command.Description), userId);
         fromTransaction.MoveToAccount(AccountId.Create(command.FromAccountId), userId);
 
@@ -68,7 +69,7 @@ public class UpdateTransferCommandHandler : IHandler<UpdateTransferCommand, Resu
 
         _context.SaveChanges();
 
-        return Result<UpdateTransferResult>.Success(new UpdateTransferResult
+        return Result<UpdateLoanPaymentResult>.Success(new UpdateLoanPaymentResult
         (
             FromTransaction: fromTransaction.ToDto(),
             ToTransaction: toTransaction.ToDto()
