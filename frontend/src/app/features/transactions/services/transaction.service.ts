@@ -35,7 +35,7 @@ export interface SaveTransactionDto {
     date: string;
     description: string;
     amount: number;
-    type: 'Income' | 'Expense' | 'Transfer';
+    type: 'Income' | 'Expense' | 'Transfer' | 'OpeningBalance' | 'LoanPayment';
     accountId: string;
 }
 

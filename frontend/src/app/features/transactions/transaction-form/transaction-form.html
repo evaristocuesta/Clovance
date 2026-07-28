@@ -9,6 +9,8 @@
               {{ t('transactions.income') }}
             } @else if (transactionForm.type().value() === 'Expense') {
               {{ t('transactions.expense') }}
+            } @else if (transactionForm.type().value() === 'OpeningBalance') {
+              {{ t('transactions.openingBalance') }}
             }
           </h3>
           <button 
@@ -28,8 +30,13 @@
           <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('transactions.typeLabel') }}</label>
           <select id="type" [formField]="transactionForm.type" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" [class.border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.border-gray-300]="!transactionForm.type().invalid() || !transactionForm.type().touched()" [class.dark:border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.dark:border-gray-600]="!transactionForm.type().invalid() || !transactionForm.type().touched()">
             <option value="">{{ t('transactions.typePlaceholder') }}</option>
+            @if (this.data?.transaction?.type !== 'OpeningBalance') {
               <option value="Income">{{ t('transactions.income') }}</option>
               <option value="Expense">{{ t('transactions.expense') }}</option>
+            }
+            @if (this.data?.transaction?.id && this.data?.transaction?.type === 'OpeningBalance') {
+              <option value="OpeningBalance">{{ t('transactions.openingBalance') }}</option>
+            }
           </select>
           @if (transactionForm.type().touched() && transactionForm.type().errors().length && transactionForm.type().errors()[0].message) {
             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(transactionForm.type().errors()[0].message!) }}</p>
@@ -71,19 +78,15 @@
         <div class="flex pb-4 items-end justify-end space-x-4">
           <button
             type="submit"
-            class="inline-flex w-55 items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+            class="inline-flex w-60 items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
             <app-icon
-              name="circle-plus"
+              [name]="this.data?.transaction?.id ? 'edit' : 'circle-plus'"
               class="w-6 h-6">
             </app-icon>
-            @if (this.data?.transaction?.id && transactionForm.type().value() === 'Income') {
-              {{ t('transactions.updateIncome') }}
-            } @else if (this.data?.transaction?.id && transactionForm.type().value() === 'Expense') {
-              {{ t('transactions.updateExpense') }}
-            } @else if (transactionForm.type().value() === 'Income') {
-              {{ t('transactions.addIncome') }}
-            } @else if (transactionForm.type().value() === 'Expense') {
-              {{ t('transactions.addExpense') }}
+            @if (this.data?.transaction?.id) {
+              {{ t(`transactions.update${transactionForm.type().value()}`) }}
+            } @else {
+              {{ t(`transactions.add${transactionForm.type().value()}`) }}
             }
             @if (transactionForm().submitting()) {
             ...

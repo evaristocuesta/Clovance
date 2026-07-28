@@ -3,6 +3,7 @@ import { inject, Service } from '@angular/core';
 import { Account } from '../models/account.model';
 import { Observable, of, tap } from 'rxjs';
 import { Currency } from '../models/currency.model';
+import { AccountOpeningBalance } from '../models/accountOpeningBalance';
 
 @Service()
 export class AccountService {
@@ -27,11 +28,11 @@ export class AccountService {
         );
     }
 
-    createAccount(account: Account) : Observable<Account> {
+    createAccount(account: AccountOpeningBalance) : Observable<Account> {
         return this.http.post<Account>('/api/accounts', account);
     }
 
-    updateAccount(account: Account) : Observable<Account> {
+    updateAccount(account: AccountOpeningBalance) : Observable<Account> {
         return this.http.put<Account>(`/api/accounts/${account.id}`, account);
     }
 

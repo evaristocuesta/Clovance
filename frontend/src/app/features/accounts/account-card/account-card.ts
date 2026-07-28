@@ -16,12 +16,26 @@ export class AccountCard {
   readonly deleteAccount = output<string>();
   readonly restoreAccount = output<string>();
 
-  protected accountInitial = computed(() => {
-    const name = this.account().name.trim();
-
-    return name ? name.charAt(0).toUpperCase() : 'A';
+  protected iconName = computed(() => {
+    switch (this.account().type) {
+      case 'Checking':
+        return 'checking';
+      case 'Savings':
+        return 'savings';
+      case 'Cash':
+        return 'cash';
+      case 'CreditCard':
+        return 'credit-card';
+      case 'Loan':
+        return 'loan';
+      case 'Mortgage':
+        return 'mortgage';
+      case 'Investment':
+        return 'investment';
+      default:
+        return 'checking';
+    }
   });
-
   protected currencyLabel = computed(() => 
     this.currencySymbolMap()[this.account().currency.toUpperCase()] ?
     `${this.account().currency.toUpperCase()} (${this.currencySymbolMap()[this.account().currency.toUpperCase()]})` 

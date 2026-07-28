@@ -1,4 +1,8 @@
 {
+   "common": {
+        "unexpected_error": "An unexpected error occurred.", 
+        "validation_failed": "Validation failed. Please check the input fields and try again."
+    },
     "language": {
         "english": "English",
         "spanish": "Español"
@@ -187,7 +191,24 @@
         "restore": "Restore", 
         "confirmRestoreTitle": "Restore Account",
         "confirmRestoreMessage": "Are you sure you want to restore the account {{name}}?",
-        "deleted": "Deleted"
+        "deleted": "Deleted", 
+        "types": {
+            "Checking": "Checking",
+            "Savings": "Savings",
+            "Cash": "Cash",
+            "CreditCard": "Credit Card",
+            "Loan": "Loan",
+            "Mortgage": "Mortgage",
+            "Investment": "Investment"
+        }, 
+        "typeLabel": "Type",
+        "typePlaceholder": "Select a type",
+        "typeRequired": "Type is required", 
+        "openingBalanceDescription": "Opening balance",
+        "openingBalanceLabel": "Opening Balance",
+        "openingBalancePlaceholder": "Enter the opening balance (negative for credit card, loan, or mortgage)", 
+        "openingDateLabel": "Opening Balance Date",
+        "openingDatePlaceholder": "Select the opening balance date"
     },
     "transactions": {
         "title": "Transactions", 
@@ -212,6 +233,9 @@
         "income": "Income",
         "expense": "Expense",
         "transfer": "Transfer", 
+        "openingBalance": "Opening Balance",
+        "addOpeningBalance": "Add Opening Balance",
+        "updateOpeningBalance": "Update Opening Balance",
         "addTransfer": "Add Transfer",
         "updateTransfer": "Update Transfer",
         "dateLabel": "Date",
