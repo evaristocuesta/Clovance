@@ -88,6 +88,8 @@ public static class ErrorCodes
         public const string DescriptionMaxLength = "transactions.transaction.description.max_length";
         public const string AmountRequired = "transactions.transaction.amount.required";
         public const string AmountInvalid = "transactions.transaction.amount.invalid";
+        public const string PrincipalAmountRequired = "transactions.transaction.principal_amount.required";
+        public const string PrincipalAmountInvalid = "transactions.transaction.principal_amount.invalid";
         public const string DateRequired = "transactions.transaction.date.required";
         public const string FilterRequired = "transactions.filter.required";
         public const string MonthInvalidRange = "transactions.month.invalid_range";

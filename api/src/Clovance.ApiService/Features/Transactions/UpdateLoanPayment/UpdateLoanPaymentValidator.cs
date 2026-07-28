@@ -1,12 +1,16 @@
 ﻿using Clovance.ApiService.Shared;
 using FluentValidation;
 
-namespace Clovance.ApiService.Features.Transactions.CreateLoanPayment;
+namespace Clovance.ApiService.Features.Transactions.UpdateLoanPayment;
 
-public class CreateLoanPaymentValidator : AbstractValidator<CreateLoanPaymentCommand>
+public class UpdateLoanPaymentValidator : AbstractValidator<UpdateLoanPaymentCommand>
 {
-    public CreateLoanPaymentValidator()
+    public UpdateLoanPaymentValidator()
     {
+        RuleFor(x => x.TransactionId)
+            .NotEmpty()
+            .WithErrorCode(ErrorCodes.Transactions.TransactionIdRequired);
+
         RuleFor(x => x.Date)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Transactions.DateRequired);
@@ -25,7 +29,7 @@ public class CreateLoanPaymentValidator : AbstractValidator<CreateLoanPaymentCom
 
         RuleFor(x => x.PrincipalAmount)
             .NotEmpty()
-            .WithErrorCode(ErrorCodes.Transactions.AmountRequired)
+            .WithErrorCode(ErrorCodes.Transactions.PrincipalAmountRequired)
             .LessThanOrEqualTo(x => x.Amount)
             .WithErrorCode(ErrorCodes.Transactions.PrincipalAmountMustBeLessThanOrEqualToAmount);
 

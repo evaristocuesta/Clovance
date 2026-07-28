@@ -7,7 +7,7 @@ public class UpdateTransferValidator : AbstractValidator<UpdateTransferCommand>
 {
     public UpdateTransferValidator()
     {
-        RuleFor(x => x.TrasactionId)
+        RuleFor(x => x.TransactionId)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Transactions.TransactionIdRequired);
 
@@ -24,7 +24,7 @@ public class UpdateTransferValidator : AbstractValidator<UpdateTransferCommand>
         RuleFor(x => x.Amount)
             .NotEmpty()
             .WithErrorCode(ErrorCodes.Transactions.AmountRequired)
-            .Must(amount => amount > 0)
+            .GreaterThan(0)
             .WithErrorCode(ErrorCodes.Transactions.AmountInvalid);
 
         RuleFor(x => x.FromAccountId)

@@ -15,7 +15,7 @@ public class UpdateTransferEndpoint : IApiEndPoint
         {
             var command = new UpdateTransferCommand
             (
-                TrasactionId: transactionId,
+                TransactionId: transactionId,
                 Date: request.Date,
                 Description: request.Description,
                 Amount: request.Amount,

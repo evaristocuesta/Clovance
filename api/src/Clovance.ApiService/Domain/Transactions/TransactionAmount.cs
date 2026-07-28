@@ -21,10 +21,6 @@ public sealed class TransactionAmount : ValueObject
         return new TransactionAmount(-Value);
     }
 
-    public bool IsIncome => Value > 0;
-
-    public bool IsExpense => Value < 0;
-
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Value;

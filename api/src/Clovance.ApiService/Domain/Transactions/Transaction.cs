@@ -11,7 +11,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     private Transaction(
       TransactionAmount amount,
-      TransactionAmount? principalAmount,
+      TransactionPrincipalAmount principalAmount,
       TransactionType type,
       TransactionDescription description,
       AccountId accountId,
@@ -39,7 +39,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     public TransactionAmount Amount { get; private set; } = null!;
 
-    public TransactionAmount? PrincipalAmount {  get; private set; } = null!;
+    public TransactionPrincipalAmount PrincipalAmount {  get; private set; } = null!;
     
     public TransactionType Type { get; private set; }
 
@@ -59,7 +59,14 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
       TransactionDate date,
       Guid createdBy)
     {
-        return new Transaction(amount, null, type, description, accountId, date, createdBy);
+        return new Transaction(
+            amount, 
+            TransactionPrincipalAmount.Create(null), 
+            type, 
+            description, 
+            accountId, 
+            date, 
+            createdBy);
     }
 
     public static Transaction Create(
@@ -110,6 +117,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             AccountId.Create(fromAccountId),
             TransactionDate.Create(date),
             createdBy);
+
         var toTransaction = Create(
             TransactionAmount.Create(amount),
             TransactionType.Transfer,
@@ -141,7 +149,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
         var fromTransaction = new Transaction(
             TransactionAmount.Create(-amount),
-            TransactionAmount.Create(-principalAmount),
+            TransactionPrincipalAmount.Create(-principalAmount),
             TransactionType.LoanPayment,
             TransactionDescription.Create(description),
             AccountId.Create(fromAccountId),
@@ -150,7 +158,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
         var toTransaction = new Transaction(
             TransactionAmount.Create(principalAmount),
-            null,
+            TransactionPrincipalAmount.Create(null),
             TransactionType.LoanPayment,
             TransactionDescription.Create(description),
             AccountId.Create(toAccountId),
@@ -177,6 +185,27 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
         }
 
         Amount = amount;
+        MarkAsModified(modifiedBy);
+    }
+
+    public void ChangePrincipalAmount(TransactionPrincipalAmount principalAmount, Guid modifiedBy)
+    {
+        if (principalAmount == PrincipalAmount)
+        {
+            return;
+        }
+
+        if (Type != TransactionType.LoanPayment)
+        {
+            throw new InvalidOperationException($"Principal amount can only be set for transaction type '{TransactionType.LoanPayment.GetType().Name}'.");
+        }
+
+        if (principalAmount.Value < 0 || principalAmount.Value > Amount.Value)
+        {
+            throw new ArgumentException("Principal amount must be greater than or equal to 0 and less than or equal to the total amount.", nameof(principalAmount));
+        }
+
+        PrincipalAmount = principalAmount;
         MarkAsModified(modifiedBy);
     }
 
