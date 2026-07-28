@@ -9,6 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Icon } from '@shared/ui/icon/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { toDateOnlyString } from '@shared/utils/date-utils';
 
 export interface TransferFormData {
   toTransaction?: Transaction;
@@ -100,7 +101,7 @@ export class TransferForm implements OnInit {
 
             if (this.data?.toTransaction?.id) {
               const dto: SaveTransferCommand = {
-                date: this.toDateOnlyString(formValue.date),
+                date: toDateOnlyString(formValue.date),
                 description: formValue.description,
                 amount: formValue.amount,
                 fromAccountId: formValue.fromAccountId,
@@ -110,7 +111,7 @@ export class TransferForm implements OnInit {
               await firstValueFrom(this.transactionService.updateTransfer(this.data.toTransaction.id, dto));
             } else {
               const dto: SaveTransferCommand = {
-                date: this.toDateOnlyString(formValue.date),
+                date: toDateOnlyString(formValue.date),
                 description: formValue.description,
                 amount: formValue.amount,
                 fromAccountId: formValue.fromAccountId,
@@ -130,15 +131,4 @@ export class TransferForm implements OnInit {
     }
   );
 
-  private toDateOnlyString(value: Date | string): string {
-    if (typeof value === 'string') {
-      return value.length >= 10 ? value.slice(0, 10) : value;
-    }
-
-    const year = value.getFullYear();
-    const month = String(value.getMonth() + 1).padStart(2, '0');
-    const day = String(value.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
-  }
 }

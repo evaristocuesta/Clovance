@@ -10,6 +10,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Icon } from "@shared/ui/icon/icon";
 import { Currency } from '../models/currency.model';
 import { AccountOpeningBalance } from '../models/accountOpeningBalance';
+import { toDateOnlyString } from '@shared/utils/date-utils';
 
 @Component({
   selector: 'app-account-form',
@@ -30,7 +31,7 @@ export class AccountForm implements OnInit {
     type: '',
     currency: '', 
     openingBalance: 0,
-    openingDate: this.toDateOnlyString(new Date()),
+    openingDate: toDateOnlyString(new Date()),
     openingDescription: this.translocoService.translate('accounts.openingBalanceDescription'),
   });
 
@@ -49,7 +50,7 @@ export class AccountForm implements OnInit {
   ngOnInit(): void {
     if (this.data?.id) {
       firstValueFrom(this.accountService.getAccountById(this.data.id)).then((account) => {
-        this.account.set( { ...account, openingBalance: 0, openingDate: this.toDateOnlyString(new Date()), openingDescription: this.translocoService.translate('accounts.openingBalanceDescription') });
+        this.account.set( { ...account, openingBalance: 0, openingDate: toDateOnlyString(new Date()), openingDescription: this.translocoService.translate('accounts.openingBalanceDescription') });
       });
     }
   }
@@ -105,7 +106,7 @@ export class AccountForm implements OnInit {
                 var accountToCreate: AccountOpeningBalance = field().value();
                 if (accountToCreate.openingBalance !== null) {
                   accountToCreate.openingDescription = this.translocoService.translate('accounts.openingBalanceDescription');
-                  accountToCreate.openingDate = this.toDateOnlyString(new Date());
+                  accountToCreate.openingDate = toDateOnlyString(new Date());
                 }
 
                 await firstValueFrom(this.accountService.createAccount(accountToCreate));
@@ -121,15 +122,4 @@ export class AccountForm implements OnInit {
       },
     );
 
-    private toDateOnlyString(value: Date | string): string {
-      if (typeof value === 'string') {
-        return value.length >= 10 ? value.slice(0, 10) : value;
-      }
-
-      const year = value.getFullYear();
-      const month = String(value.getMonth() + 1).padStart(2, '0');
-      const day = String(value.getDate()).padStart(2, '0');
-
-      return `${year}-${month}-${day}`;
-    }
 }
