@@ -25,8 +25,11 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
             .IsRequired();
 
         builder.Property(x => x.PrincipalAmount)
-            .HasConversion(principalAmount => principalAmount.Value, value => TransactionPrincipalAmount.Create(value))
-            .HasPrecision(18, 2);
+            .HasConversion(
+                principalAmount => principalAmount != null ? principalAmount.Value : (decimal?)null,
+                value => value.HasValue ? TransactionPrincipalAmount.Create(value.Value) : null!)
+            .HasPrecision(18, 2)
+            .IsRequired(false);
 
         builder.Property(t => t.Type)
             .HasConversion<string>() // save "Income"/"Expense"/"Transfer"/"LoanPayment"/"OpeningBalance" instead of 0/1/2/3/4, more readable in the DB
