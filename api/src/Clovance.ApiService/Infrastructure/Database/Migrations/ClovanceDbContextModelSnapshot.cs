@@ -175,7 +175,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("modified_by");
 
-                    b.Property<decimal>("PrincipalAmount")
+                    b.Property<decimal?>("PrincipalAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("principal_amount");

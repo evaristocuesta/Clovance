@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Clovance.ApiService.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ClovanceDbContext))]
-    [Migration("20260728230750_InitialCreate")]
+    [Migration("20260731234121_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -178,7 +178,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("modified_by");
 
-                    b.Property<decimal>("PrincipalAmount")
+                    b.Property<decimal?>("PrincipalAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("principal_amount");
