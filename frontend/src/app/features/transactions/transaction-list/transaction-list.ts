@@ -1,4 +1,5 @@
 import { afterNextRender, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import type { LoanPaymentFormData } from '../loan-payment-form/loan-payment-form';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Icon } from "@shared/ui/icon/icon";
 import { TransactionCard } from "../transaction-card/transaction-card";
@@ -12,6 +13,7 @@ import { TransactionsFilter } from '../transactions-filter/transactions-filter';
 import { TransactionForm, TransactionFormData } from '../transaction-form/transaction-form';
 import { TransferForm, TransferFormData } from '../transfer-form/transfer-form';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
+import { LoanPaymentForm } from '../loan-payment-form/loan-payment-form';
 
 @Component({
   selector: 'app-transaction-list',
@@ -114,6 +116,20 @@ export class TransactionList {
   onApplyFilters(filters: TransactionFilters): void {
     this.activeFilters.set(filters);
     this.refreshTransactions();
+  }
+
+  onAddLoanPayment(): void {
+    const dialogData: LoanPaymentFormData = {
+      accounts: this.accounts(),
+    };
+
+    const dialogRef = this.dialog.open<boolean>(LoanPaymentForm, {
+          width: '640px',
+          height: 'auto', 
+          data: dialogData,
+        });
+    
+        this.refreshOnDialogSuccess(dialogRef);
   }
   
   onAddTransfer(): void {
