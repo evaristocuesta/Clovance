@@ -233,6 +233,7 @@
         "titleIncome": "Income",
         "titleExpense": "Expense",
         "titleTransfer": "Transfer", 
+        "titleLoanPayment": "Loan",
         "titleOpeningBalance": "Opening Balance",
         "addOpeningBalance": "Add Opening Balance",
         "updateOpeningBalance": "Update Opening Balance",

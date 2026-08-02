@@ -233,6 +233,7 @@
         "titleIncome": "Ingreso",
         "titleExpense": "Gasto", 
         "titleTransfer": "Transferencia",
+        "titleLoanPayment": "Préstamo",
         "titleOpeningBalance": "Saldo inicial",
         "addOpeningBalance": "Añadir saldo inicial",
         "updateOpeningBalance": "Modificar saldo inicial",

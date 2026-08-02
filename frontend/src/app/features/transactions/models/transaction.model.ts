@@ -4,6 +4,7 @@ export interface Transaction {
   accountName: string;
   currency: string;
   amount: number;
+  principalAmount?: number;
   date: Date;
   description: string;
   type: 'Income' | 'Expense' | 'Transfer' | 'OpeningBalance' | 'LoanPayment';

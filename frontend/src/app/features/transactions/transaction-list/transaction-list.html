@@ -11,6 +11,16 @@
 					<div class="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:items-center lg:w-auto">
 						<button
 							type="button"
+							(click)="onAddLoanPayment()"
+							class="inline-flex w-full sm:w-35 items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+							<app-icon
+								name="loan"
+								class="w-6 h-6">
+							</app-icon>
+							{{ t('transactions.titleLoanPayment') }}
+						</button>
+						<button
+							type="button"
 							(click)="onAddTransfer()"
 							class="inline-flex w-full sm:w-35 items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
 							<app-icon
