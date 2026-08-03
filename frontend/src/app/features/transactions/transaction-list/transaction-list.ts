@@ -125,11 +125,11 @@ export class TransactionList {
 
     const dialogRef = this.dialog.open<boolean>(LoanPaymentForm, {
           width: '640px',
-          height: 'auto', 
+          maxHeight: '90vh',
           data: dialogData,
         });
     
-        this.refreshOnDialogSuccess(dialogRef);
+    this.refreshOnDialogSuccess(dialogRef);
   }
   
   onAddTransfer(): void {
@@ -143,7 +143,7 @@ export class TransactionList {
           data: dialogData,
         });
     
-        this.refreshOnDialogSuccess(dialogRef);
+    this.refreshOnDialogSuccess(dialogRef);
   }
 
   onAddExpense(): void {
@@ -158,7 +158,7 @@ export class TransactionList {
           data: dialogData,
         });
     
-        this.refreshOnDialogSuccess(dialogRef);
+    this.refreshOnDialogSuccess(dialogRef);
   }
 
   onAddIncome(): void {
@@ -173,7 +173,7 @@ export class TransactionList {
           data: dialogData,
         });
     
-        this.refreshOnDialogSuccess(dialogRef);
+    this.refreshOnDialogSuccess(dialogRef);
   }
 
   private refreshOnDialogSuccess(dialogRef: DialogRef<boolean>): void {

@@ -1,1 +1,197 @@
-<p>loan-payment-form works!</p>
+<div
+  class="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-lg bg-white shadow-xl dark:bg-gray-800"
+  *transloco="let t">
+
+<!-- Header -->
+  <div class="flex shrink-0 items-center justify-between border-b p-5 dark:border-gray-600">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+      {{ t('transactions.titleLoanPayment') }}
+    </h3>
+    <button
+      type="button"
+      (click)="close()"
+      class="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
+      <app-icon
+        name="close"
+        class="h-5 w-5">
+      </app-icon>
+      <span class="sr-only">{{ t('transactions.closeModal') }}</span>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <form
+    [formRoot]="loanPaymentForm"
+    class="flex min-h-0 flex-1 flex-col"
+    novalidate>
+    <div class="flex-1 overflow-y-auto p-5 space-y-4 md:space-y-6">
+        <div>
+            <label
+                for="date"
+                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                {{ t('transactions.dateLabel') }}
+            </label>
+            <input
+                type="date"
+                id="date"
+                [formField]="loanPaymentForm.date"
+                placeholder="{{ t('transactions.datePlaceholder') }}"
+                class="block w-full rounded-lg border bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:bg-gray-700 dark:text-white"
+                [class.border-red-500]="loanPaymentForm.date().invalid() && loanPaymentForm.date().touched()"
+                [class.border-gray-300]="!loanPaymentForm.date().invalid() || !loanPaymentForm.date().touched()"
+                [class.dark:border-red-500]="loanPaymentForm.date().invalid() && loanPaymentForm.date().touched()"
+                [class.dark:border-gray-600]="!loanPaymentForm.date().invalid() || !loanPaymentForm.date().touched()">
+
+                @if (loanPaymentForm.date().touched() && loanPaymentForm.date().errors().length && loanPaymentForm.date().errors()[0].message) {
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+                        {{ t(loanPaymentForm.date().errors()[0].message!) }}
+                    </p>
+                }
+        </div>
+        <div class="pb-4">
+            <label 
+                for="description" 
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {{ t('transactions.descriptionLabel') }}
+            </label>
+            <input 
+                type="text" 
+                id="description" 
+                [formField]="loanPaymentForm.description" 
+                autocomplete="given-name" 
+                placeholder="{{ t('transactions.descriptionPlaceholder') }}" 
+                class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                [class.border-red-500]="loanPaymentForm.description().invalid() && loanPaymentForm.description().touched()" 
+                [class.border-gray-300]="!loanPaymentForm.description().invalid() || !loanPaymentForm.description().touched()" 
+                [class.dark:border-red-500]="loanPaymentForm.description().invalid() && loanPaymentForm.description().touched()" 
+                [class.dark:border-gray-600]="!loanPaymentForm.description().invalid() || !loanPaymentForm.description().touched()">
+                
+                @if (loanPaymentForm.description().touched() && loanPaymentForm.description().errors().length && loanPaymentForm.description().errors()[0].message) {
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(loanPaymentForm.description().errors()[0].message!) }}</p>
+                }
+        </div>
+        <div class="pb-4">
+            <label 
+                for="amount" 
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {{ t('transactions.amountLabel') }}
+            </label>
+            <input 
+                type="number" 
+                id="amount" 
+                [formField]="loanPaymentForm.amount" 
+                autocomplete="given-name" 
+                placeholder="{{ t('transactions.amountPlaceholder') }}" 
+                class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                [class.border-red-500]="loanPaymentForm.amount().invalid() && loanPaymentForm.amount().touched()" 
+                [class.border-gray-300]="!loanPaymentForm.amount().invalid() || !loanPaymentForm.amount().touched()" 
+                [class.dark:border-red-500]="loanPaymentForm.amount().invalid() && loanPaymentForm.amount().touched()" 
+                [class.dark:border-gray-600]="!loanPaymentForm.amount().invalid() || !loanPaymentForm.amount().touched()">
+                @if (loanPaymentForm.amount().touched() && loanPaymentForm.amount().errors().length && loanPaymentForm.amount().errors()[0].message) {
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(loanPaymentForm.amount().errors()[0].message!) }}</p>
+                }
+        </div>
+        <div class="pb-4">
+            <label 
+                for="principalAmount" 
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {{ t('transactions.principalAmountLabel') }}
+            </label>
+            <input 
+                type="number" 
+                id="principalAmount" 
+                [formField]="loanPaymentForm.principalAmount" 
+                autocomplete="given-name" 
+                placeholder="{{ t('transactions.principalAmountPlaceholder') }}" 
+                class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                [class.border-red-500]="loanPaymentForm.principalAmount().invalid() && loanPaymentForm.principalAmount().touched()" 
+                [class.border-gray-300]="!loanPaymentForm.principalAmount().invalid() || !loanPaymentForm.principalAmount().touched()" 
+                [class.dark:border-red-500]="loanPaymentForm.principalAmount().invalid() && loanPaymentForm.principalAmount().touched()" 
+                [class.dark:border-gray-600]="!loanPaymentForm.principalAmount().invalid() || !loanPaymentForm.principalAmount().touched()">
+                @if (loanPaymentForm.principalAmount().touched() && loanPaymentForm.principalAmount().errors().length && loanPaymentForm.principalAmount().errors()[0].message) {
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(loanPaymentForm.principalAmount().errors()[0].message!) }}</p>
+                }
+        </div>        
+        <div class="pb-4">
+            <label 
+                for="fromAccount" 
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {{ t('transactions.fromAccountLabel') }}
+            </label>
+            <select 
+                id="fromAccount" 
+                [formField]="loanPaymentForm.fromAccountId" 
+                class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                [class.border-red-500]="loanPaymentForm.fromAccountId().invalid() && loanPaymentForm.fromAccountId().touched()" 
+                [class.border-gray-300]="!loanPaymentForm.fromAccountId().invalid() || !loanPaymentForm.fromAccountId().touched()" 
+                [class.dark:border-red-500]="loanPaymentForm.fromAccountId().invalid() && loanPaymentForm.fromAccountId().touched()" 
+                [class.dark:border-gray-600]="!loanPaymentForm.fromAccountId().invalid() || !loanPaymentForm.fromAccountId().touched()">
+                <option value="">{{ t('transactions.accountPlaceholder') }}</option>
+                @for (account of this.data?.accounts; track account.id) {
+                    <option [value]="account.id">{{ account.name }}</option>
+                }
+            </select>
+            @if (loanPaymentForm.fromAccountId().touched() && loanPaymentForm.fromAccountId().errors().length && loanPaymentForm.fromAccountId().errors()[0].message) {
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(loanPaymentForm.fromAccountId().errors()[0].message!) }}</p>
+            }
+        </div>
+        <div class="pb-4">
+            <label 
+                for="toAccount" 
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {{ t('transactions.toAccountLabel') }}
+            </label>
+            <select 
+                id="toAccount" 
+                [formField]="loanPaymentForm.toAccountId" 
+                class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                [class.border-red-500]="loanPaymentForm.toAccountId().invalid() && loanPaymentForm.toAccountId().touched()" 
+                [class.border-gray-300]="!loanPaymentForm.toAccountId().invalid() || !loanPaymentForm.toAccountId().touched()" 
+                [class.dark:border-red-500]="loanPaymentForm.toAccountId().invalid() && loanPaymentForm.toAccountId().touched()" 
+                [class.dark:border-gray-600]="!loanPaymentForm.toAccountId().invalid() || !loanPaymentForm.toAccountId().touched()">
+                <option value="">{{ t('transactions.accountPlaceholder') }}</option>
+                @for (account of this.data?.accounts; track account.id) {
+                    <option [value]="account.id">{{ account.name }}</option>
+                }
+            </select>
+            @if (loanPaymentForm.toAccountId().touched() && loanPaymentForm.toAccountId().errors().length && loanPaymentForm.toAccountId().errors()[0].message) {
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(loanPaymentForm.toAccountId().errors()[0].message!) }}</p>
+            }
+        </div>
+
+      @if (errorMessage()) {
+        <p class="text-sm text-red-600 dark:text-red-500">
+          {{ t(errorMessage()) }}
+        </p>
+      }
+
+    </div>
+
+    <!-- Footer -->
+    <div class="flex shrink-0 justify-end gap-4 border-t bg-white p-5 dark:border-gray-600 dark:bg-gray-800">
+
+      <button
+        type="submit"
+        class="inline-flex w-56 items-center justify-center gap-2 rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+
+        <app-icon
+          name="circle-plus"
+          class="h-6 w-6">
+        </app-icon>
+
+        @if (this.data?.fromTransaction?.id) {
+          {{ t('transactions.updateLoanPayment') }}
+        } @else {
+          {{ t('transactions.addLoanPayment') }}
+        }
+
+        @if (loanPaymentForm().submitting()) {
+          <!-- spinner -->
+        }
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
