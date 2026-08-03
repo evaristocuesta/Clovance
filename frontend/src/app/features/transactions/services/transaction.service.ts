@@ -52,6 +52,20 @@ export interface SaveTransferResult {
     toTransaction: Transaction;
 }
 
+export interface SaveLoanPaymentCommand {
+    date: string;
+    description: string;
+    amount: number;
+    principalAmount: number;
+    fromAccountId: string;
+    toAccountId: string;
+}
+
+export interface SaveLoanPaymentResult {
+    fromTransaction: Transaction;
+    toTransaction: Transaction;
+}
+
 @Service()
 export class TransactionService {
     private http = inject(HttpClient);
@@ -121,6 +135,14 @@ export class TransactionService {
 
     updateTransfer(transactionId: string, command: SaveTransferCommand) : Observable<SaveTransferResult> {
         return this.http.put<SaveTransferResult>(`/api/transactions/transfer/${transactionId}`, command);
+    }
+
+    createLoanPayment(command: SaveLoanPaymentCommand) : Observable<SaveLoanPaymentResult> {
+        return this.http.post<SaveLoanPaymentResult>('/api/transactions/loan-payment', command);
+    }
+
+    updateLoanPayment(transactionId: string, command: SaveLoanPaymentCommand) : Observable<SaveLoanPaymentResult> {
+        return this.http.put<SaveLoanPaymentResult>(`/api/transactions/loan-payment/${transactionId}`, command);
     }
 
     private mapGetTransactionsPageResponseDtoToTransactionPage(responseDto: GetTransactionsPageResponseDto): TransactionPage {

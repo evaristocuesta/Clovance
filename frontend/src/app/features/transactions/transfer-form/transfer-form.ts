@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Transfer } from '../models/transfer.model';
 import { Account } from '@features/accounts/models/account.model';
 import { Transaction } from '../models/transaction.model';
-import { SaveTransactionDto, SaveTransferCommand, TransactionService } from '../services/transaction.service';
+import { SaveTransferCommand, TransactionService } from '../services/transaction.service';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -97,8 +97,6 @@ export class TransferForm implements OnInit {
           try {
             const formValue = field().value();
 
-            
-
             if (this.data?.toTransaction?.id) {
               const dto: SaveTransferCommand = {
                 date: toDateOnlyString(formValue.date),
@@ -120,15 +118,15 @@ export class TransferForm implements OnInit {
 
               await firstValueFrom(this.transactionService.createTransfer(dto));
             }
+            
             this.dialogRef.close(true);
           } catch (err: HttpErrorResponse | any) {
               const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
               const key = errorCode ? errorCode : 'transactions.serverError';
               this.errorMessage.set(key);
-            }
+          }
+        } 
       }
-    },
     }
   );
-
 }
