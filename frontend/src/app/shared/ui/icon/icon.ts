@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ICONS } from './icon.registry';
 import { IconName } from './icon-name';
@@ -14,11 +14,9 @@ export class Icon {
 
   private sanitizer = inject(DomSanitizer);
 
-  @Input({ required: true })
-  name!: IconName;
+  readonly name = input.required<IconName>();
 
-  @Input()
-  class = 'w-5 h-5';
+  readonly className = input('w-5 h-5', { alias: 'class' });
 
-  protected svg = computed(() => this.sanitizer.bypassSecurityTrustHtml(ICONS[this.name]));
+  protected svg = computed(() => this.sanitizer.bypassSecurityTrustHtml(ICONS[this.name()]));
 }
