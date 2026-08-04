@@ -45,8 +45,8 @@ export class LoanPaymentForm implements OnInit {
       this.loanPayment.set({
         date: this.data.fromTransaction.date,
         description: this.data.fromTransaction.description,
-        amount: this.data.toTransaction.amount,
-        principalAmount: this.data.fromTransaction.principalAmount || 0,
+        amount: -this.data.fromTransaction.amount,
+        principalAmount: -(this.data.fromTransaction.principalAmount || 0),
         fromAccountId: this.data.fromTransaction.accountId,
         toAccountId: this.data.toTransaction.accountId
       });
@@ -67,6 +67,19 @@ export class LoanPaymentForm implements OnInit {
         const amount = value();
 
         if (amount <= 0) {
+          return {
+            kind: 'amountGreaterThanZero',
+            message: 'transactions.amountGreaterThanZero',
+          };
+        }
+
+        return null;
+      });
+      required(schemaPath.principalAmount, { message: 'transactions.amountRequired' });
+      validate(schemaPath.principalAmount, ({ value }) => {
+        const principalAmount = value();
+
+        if (principalAmount <= 0) {
           return {
             kind: 'amountGreaterThanZero',
             message: 'transactions.amountGreaterThanZero',

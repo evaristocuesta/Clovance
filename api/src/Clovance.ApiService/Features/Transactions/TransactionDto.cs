@@ -7,6 +7,7 @@ public sealed record TransactionDto(
     DateOnly Date,
     string Description,
     decimal Amount,
+    decimal? PrincipalAmount,
     TransactionType Type,
     Guid AccountId, 
     string AccountName,

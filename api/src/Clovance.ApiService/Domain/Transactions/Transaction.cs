@@ -30,6 +30,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
         Id = TransactionId.New();
         Amount = amount;
+        PrincipalAmount = principalAmount;
         Type = type;
         Description = description;
         AccountId = accountId;
@@ -200,7 +201,7 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
             throw new InvalidOperationException($"Principal amount can only be set for transaction type '{TransactionType.LoanPayment.GetType().Name}'.");
         }
 
-        if (principalAmount.Value < 0 || principalAmount.Value > Amount.Value)
+        if (principalAmount.Value > 0 || principalAmount.Value < Amount.Value)
         {
             throw new ArgumentException("Principal amount must be greater than or equal to 0 and less than or equal to the total amount.", nameof(principalAmount));
         }

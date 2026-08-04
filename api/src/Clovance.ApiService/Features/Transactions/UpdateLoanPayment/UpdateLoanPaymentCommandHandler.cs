@@ -61,7 +61,7 @@ public class UpdateLoanPaymentCommandHandler : IHandler<UpdateLoanPaymentCommand
         var toTransaction = transaction.Amount.Value < 0 ? relatedTransaction : transaction;
 
         toTransaction.ChangeDate(TransactionDate.Create(command.Date), userId);
-        toTransaction.ChangeAmount(TransactionAmount.Create(Math.Abs(command.Amount)), userId);
+        toTransaction.ChangeAmount(TransactionAmount.Create(Math.Abs(command.PrincipalAmount)), userId);
         toTransaction.ChangeDescription(TransactionDescription.Create(command.Description), userId);
         toTransaction.MoveToAccount(AccountId.Create(command.ToAccountId), userId);
 
