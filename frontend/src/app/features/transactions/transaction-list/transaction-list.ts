@@ -189,6 +189,8 @@ export class TransactionList {
   onEdit(transaction: Transaction): void {
     if (transaction.type === 'Transfer') {
       this.editTransfer(transaction);
+    } else if (transaction.type === 'LoanPayment') {
+      this.editLoanPayment(transaction);
     } else {
       this.editTransaction(transaction);
     }
@@ -226,6 +228,26 @@ export class TransactionList {
     });
   }
 
+  private buildTransferDialogData(transaction: Transaction, relatedTransaction?: Transaction): TransferFormData {
+    return {
+      accounts: this.accounts(),
+      ...(relatedTransaction ? {
+        toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
+        fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
+      } : {}),
+    };
+  } 
+
+  private buildLoanPaymentDialogData(transaction: Transaction, relatedTransaction?: Transaction): LoanPaymentFormData {
+    return {
+      accounts: this.accounts(),
+      ...(relatedTransaction ? {
+        toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
+        fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
+      } : {}),
+    };
+  }
+
   private editTransaction(transaction: Transaction) {
     const dialogData: TransactionFormData = {
       transaction,
@@ -257,25 +279,48 @@ export class TransactionList {
       this.transactionService.getTransactionById(transaction.relatedTransactionId).subscribe({
         next: (fetchedRelatedTransaction) => {
           relatedTransaction = fetchedRelatedTransaction;
-
-          dialogData = {
-            toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
-            fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
-            accounts: this.accounts(),
-          };
+          dialogData = this.buildTransferDialogData(transaction, relatedTransaction);
         }
       });
     } else {
-      dialogData = {
-        toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
-        fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
-        accounts: this.accounts(),
-      };
+      dialogData = this.buildTransferDialogData(transaction, relatedTransaction);
     }
 
     const dialogRef = this.dialog.open<boolean>(TransferForm, {
       width: '640px',
       height: 'auto',
+      data: dialogData,
+    });
+
+    this.refreshOnDialogSuccess(dialogRef);
+  }
+
+  private editLoanPayment(transaction: Transaction) {
+    if (!transaction.relatedTransactionId) {
+      return;
+    }
+
+    let dialogData: TransferFormData = {
+      accounts: this.accounts(),
+    };
+
+    const relatedTransaction = this.transactions()?.find((t) => t.id === transaction.relatedTransactionId);
+
+    if (!relatedTransaction) {
+      this.transactionService.getTransactionById(transaction.relatedTransactionId).subscribe({
+        next: (fetchedRelatedTransaction) => {
+          dialogData = this.buildLoanPaymentDialogData(transaction, fetchedRelatedTransaction);
+        }
+      });
+
+      return;
+    } else {
+      dialogData = this.buildLoanPaymentDialogData(transaction, relatedTransaction);
+    } 
+
+    const dialogRef = this.dialog.open<boolean>(LoanPaymentForm, {
+      width: '640px',
+      maxHeight: '90vh',
       data: dialogData,
     });
 

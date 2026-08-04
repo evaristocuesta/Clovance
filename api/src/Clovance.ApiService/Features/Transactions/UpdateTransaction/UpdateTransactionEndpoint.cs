@@ -19,6 +19,7 @@ public class UpdateTransactionEndpoint : IApiEndPoint
                     Date: request.Date,
                     Description: request.Description,
                     Amount: request.Amount,
+                    PrincipalAmount: null,
                     Type: request.Type,
                     AccountId: request.AccountId,
                     AccountName: string.Empty,
