@@ -208,7 +208,8 @@
         "openingBalanceLabel": "Opening Balance",
         "openingBalancePlaceholder": "Enter the opening balance (negative for credit card, loan, or mortgage)", 
         "openingDateLabel": "Opening Balance Date",
-        "openingDatePlaceholder": "Select the opening balance date"
+        "openingDatePlaceholder": "Select the opening balance date", 
+        "accountTypeInvalid": "Invalid account type. Please select a valid account type."
     },
     "transactions": {
         "title": "Transactions", 

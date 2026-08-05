@@ -208,7 +208,8 @@
         "openingBalanceLabel": "Saldo inicial",
         "openingBalancePlaceholder": "Introduce el saldo inicial (negativo para tarjeta de crédito, préstamo o hipoteca)",
         "openingDateLabel": "Fecha del saldo inicial",
-        "openingDatePlaceholder": "Selecciona la fecha del saldo inicial"
+        "openingDatePlaceholder": "Selecciona la fecha del saldo inicial", 
+        "accountTypeInvalid": "Tipo de cuenta inválido. Por favor, selecciona un tipo de cuenta válido."
     },
     "transactions": {
         "title": "Transacciones", 

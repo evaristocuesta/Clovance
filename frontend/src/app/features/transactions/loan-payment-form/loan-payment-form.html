@@ -127,7 +127,7 @@
                 [class.dark:border-red-500]="loanPaymentForm.fromAccountId().invalid() && loanPaymentForm.fromAccountId().touched()" 
                 [class.dark:border-gray-600]="!loanPaymentForm.fromAccountId().invalid() || !loanPaymentForm.fromAccountId().touched()">
                 <option value="">{{ t('transactions.accountPlaceholder') }}</option>
-                @for (account of this.data?.accounts; track account.id) {
+                @for (account of this.fromAccounts(); track account.id) {
                     <option [value]="account.id">{{ account.name }}</option>
                 }
             </select>
@@ -150,7 +150,7 @@
                 [class.dark:border-red-500]="loanPaymentForm.toAccountId().invalid() && loanPaymentForm.toAccountId().touched()" 
                 [class.dark:border-gray-600]="!loanPaymentForm.toAccountId().invalid() || !loanPaymentForm.toAccountId().touched()">
                 <option value="">{{ t('transactions.accountPlaceholder') }}</option>
-                @for (account of this.data?.accounts; track account.id) {
+                @for (account of this.toAccounts(); track account.id) {
                     <option [value]="account.id">{{ account.name }}</option>
                 }
             </select>

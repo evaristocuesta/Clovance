@@ -40,6 +40,11 @@ public class CreateTransferCommandHandler : IHandler<CreateTransferCommand, Resu
             return Result<CreateTransferResult>.Failure(AppErrors.Accounts.AccountNotFound());
         }
 
+        if (accountFrom.CanBeUsedForTransfer is false)
+        {
+            return Result<CreateTransferResult>.Failure(AppErrors.Accounts.InvalidAccount());
+        }
+
         var accountTo = await _context
             .Accounts
             .AsNoTracking()
@@ -48,6 +53,11 @@ public class CreateTransferCommandHandler : IHandler<CreateTransferCommand, Resu
         if (accountTo is null)
         {
             return Result<CreateTransferResult>.Failure(AppErrors.Accounts.AccountNotFound());
+        }
+
+        if (accountTo.CanBeUsedForTransfer is false)
+        {
+            return Result<CreateTransferResult>.Failure(AppErrors.Accounts.InvalidAccount());
         }
 
         var transfer = Transaction.CreateTransfer(

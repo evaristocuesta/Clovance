@@ -1,9 +1,7 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
-using Clovance.ApiService.Features.Accounts.UpdateAccount;
 using Clovance.ApiService.Features.Shared;
-using Clovance.ApiService.Features.Transactions.GetTransactionById;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +37,12 @@ public class UpdateTransactionCommandHandler : IHandler<UpdateTransactionCommand
         if (account is null)
         {
             return Result<UpdateTransactionResult>.Failure(AppErrors.Accounts.AccountNotFound());
+        }
+
+        if (account.CanBeUsedForIncomeOrExpense is false 
+            || (command.Transaction.Type == TransactionType.OpeningBalance && command.Transaction.AccountId != transaction.AccountId.Value))
+        {
+            return Result<UpdateTransactionResult>.Failure(AppErrors.Accounts.InvalidAccount());
         }
 
         var userId = Guid.TryParse(

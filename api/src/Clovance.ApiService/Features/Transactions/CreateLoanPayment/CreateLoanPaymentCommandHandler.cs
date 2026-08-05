@@ -40,6 +40,11 @@ public class CreateLoanPaymentCommandHandler : IHandler<CreateLoanPaymentCommand
             return Result<CreateLoanPaymentResult>.Failure(AppErrors.Accounts.AccountNotFound());
         }
 
+        if (accountFrom.CanBeUsedForFromLoanPayment is false)
+        {
+            return Result<CreateLoanPaymentResult>.Failure(AppErrors.Accounts.InvalidAccount());
+        }
+
         var accountTo = await _context
             .Accounts
             .AsNoTracking()
@@ -48,6 +53,11 @@ public class CreateLoanPaymentCommandHandler : IHandler<CreateLoanPaymentCommand
         if (accountTo is null)
         {
             return Result<CreateLoanPaymentResult>.Failure(AppErrors.Accounts.AccountNotFound());
+        }
+
+        if (accountTo.CanBeUsedForToLoanPayment is false)
+        {
+            return Result<CreateLoanPaymentResult>.Failure(AppErrors.Accounts.InvalidAccount());
         }
 
         var loanPayment = Transaction.CreateLoanPayment(

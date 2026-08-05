@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Transfer } from '../models/transfer.model';
 import { Account } from '@features/accounts/models/account.model';
 import { Transaction } from '../models/transaction.model';
@@ -25,6 +25,9 @@ export interface TransferFormData {
 })
 export class TransferForm implements OnInit {
   errorMessage = signal('');
+
+  fromAccounts = computed(() => this.data?.accounts.filter(Account.canBeUsedForTransfer) || []);
+  toAccounts = computed(() => this.data?.accounts.filter(Account.canBeUsedForTransfer) || []);
 
   transfer = signal<Transfer>({
     date: new Date(),

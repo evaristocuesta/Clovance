@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Account } from '@features/accounts/models/account.model';
 import { Transaction } from '../models/transaction.model';
@@ -25,6 +25,9 @@ export interface LoanPaymentFormData {
 })
 export class LoanPaymentForm implements OnInit {
   errorMessage = signal('');
+
+  fromAccounts = computed(() => this.data?.accounts.filter(Account.canBeUsedForFromLoanPayment) || []);
+  toAccounts = computed(() => this.data?.accounts.filter(Account.canBeUsedForToLoanPayment) || []);
 
   loanPayment = signal<LoanPayment>({
     date: new Date(),
