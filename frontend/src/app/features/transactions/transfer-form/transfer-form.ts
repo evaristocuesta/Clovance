@@ -26,8 +26,8 @@ export interface TransferFormData {
 export class TransferForm implements OnInit {
   errorMessage = signal('');
 
-  fromAccounts = computed(() => this.data?.accounts.filter(Account.canBeUsedForTransfer) || []);
-  toAccounts = computed(() => this.data?.accounts.filter(Account.canBeUsedForTransfer) || []);
+  fromAccounts = computed(() => this.data?.accounts?.filter(Account.canBeUsedForTransfer) ?? []);
+  toAccounts = computed(() => this.data?.accounts?.filter(Account.canBeUsedForTransfer) ?? []);
 
   transfer = signal<Transfer>({
     date: new Date(),
