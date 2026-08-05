@@ -100,6 +100,9 @@ public static class AppErrors
 
         public static Error AccountNameRequired() =>
             CreateBadRequest(ErrorCodes.Accounts.AccountNameRequired, "Account name is required.");
+
+        public static Error InvalidAccount() =>
+            CreateBadRequest(ErrorCodes.Accounts.AccountTypeInvalid, "Invalid Account type");
     }
 
     public static class Transactions

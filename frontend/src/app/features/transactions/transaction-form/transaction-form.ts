@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { SaveTransactionDto, TransactionService } from '../services/transaction.service';
@@ -24,6 +24,9 @@ export interface TransactionFormData {
 })
 export class TransactionForm implements OnInit {
   errorMessage = signal('');
+
+  accounts = computed(() => this.data?.type === 'OpeningBalance' && this.data?.transaction?.id ? 
+    this.data?.accounts.filter(a => a.id === this.data?.transaction?.accountId) || [] : this.data?.accounts.filter(Account.canBeUsedForIncomeOrExpense) || []);
 
   transaction = signal<Transaction>({
     id: '',

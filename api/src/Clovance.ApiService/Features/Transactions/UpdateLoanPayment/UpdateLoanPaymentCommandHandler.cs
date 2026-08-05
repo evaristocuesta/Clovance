@@ -2,8 +2,8 @@
 using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
 using Clovance.ApiService.Features.Shared;
-using Clovance.ApiService.Features.Transactions.UpdateTransfer;
 using Clovance.ApiService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Transactions.UpdateLoanPayment;
 
@@ -46,6 +46,36 @@ public class UpdateLoanPaymentCommandHandler : IHandler<UpdateLoanPaymentCommand
         if (userId == Guid.Empty)
         {
             return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
+        }
+
+        var accountFrom = await _context
+            .Accounts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == AccountId.Create(command.FromAccountId), cancellationToken);
+
+        if (accountFrom is null)
+        {
+            return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Accounts.AccountNotFound());
+        }
+
+        if (accountFrom.CanBeUsedForFromLoanPayment is false)
+        {
+            return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Accounts.InvalidAccount());
+        }
+
+        var accountTo = await _context
+            .Accounts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == AccountId.Create(command.ToAccountId), cancellationToken);
+
+        if (accountTo is null)
+        {
+            return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Accounts.AccountNotFound());
+        }
+
+        if (accountTo.CanBeUsedForToLoanPayment is false)
+        {
+            return Result<UpdateLoanPaymentResult>.Failure(AppErrors.Accounts.InvalidAccount());
         }
 
         var fromTransaction = transaction.Amount.Value < 0 ? transaction : relatedTransaction;

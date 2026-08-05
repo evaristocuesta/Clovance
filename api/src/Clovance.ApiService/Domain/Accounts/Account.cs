@@ -79,4 +79,12 @@ public sealed class Account : SoftDeletableAuditableEntityBase<AccountId>
     public bool IsLiability => Type == AccountType.CreditCard || Type == AccountType.Loan || Type == AccountType.Mortgage;
 
     public bool IsAsset => !IsLiability;
+
+    public bool CanBeUsedForIncomeOrExpense => IsAsset || Type == AccountType.CreditCard;
+
+    public bool CanBeUsedForTransfer => IsAsset;
+
+    public bool CanBeUsedForFromLoanPayment => IsAsset || Type == AccountType.CreditCard;
+
+    public bool CanBeUsedForToLoanPayment => IsLiability;
 }
