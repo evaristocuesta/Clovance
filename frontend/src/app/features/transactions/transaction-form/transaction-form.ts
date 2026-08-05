@@ -25,8 +25,9 @@ export interface TransactionFormData {
 export class TransactionForm implements OnInit {
   errorMessage = signal('');
 
-  accounts = computed(() => this.data?.type === 'OpeningBalance' && this.data?.transaction?.id ? 
-    this.data?.accounts.filter(a => a.id === this.data?.transaction?.accountId) || [] : this.data?.accounts.filter(Account.canBeUsedForIncomeOrExpense) || []);
+  accounts = computed(() => this.data?.type === 'OpeningBalance' && this.data?.transaction?.id
+    ? this.data?.accounts?.filter(a => a.id === this.data?.transaction?.accountId) ?? []
+    : this.data?.accounts?.filter(Account.canBeUsedForIncomeOrExpense) ?? []);
 
   transaction = signal<Transaction>({
     id: '',

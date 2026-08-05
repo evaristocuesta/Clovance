@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 
 import { TransferForm } from './transfer-form';
 
@@ -9,6 +10,7 @@ describe('TransferForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TransferForm],
+      providers: [{ provide: DIALOG_DATA, useValue: { accounts: [] } }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TransferForm);

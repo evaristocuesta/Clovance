@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 
 import { LoanPaymentForm } from './loan-payment-form';
 
@@ -9,6 +10,7 @@ describe('LoanPaymentForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoanPaymentForm],
+      providers: [{ provide: DIALOG_DATA, useValue: { accounts: [] } }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoanPaymentForm);
