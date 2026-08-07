@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Summary.GetDailyBalance;
 
@@ -20,10 +21,11 @@ public class GetDailyBalanceQueryHandler : IHandler<GetDailyBalanceQuery, Result
         var monthEnd = monthStart.AddMonths(1).AddDays(-1);
 
         var baseQuery = _context.Transactions
+            .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, monthStart, cancellationToken);
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, cancellationToken);
+        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, monthStart, query.AccountId == null, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, query.AccountId == null, cancellationToken);
 
         var netsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Daily(f.Date))

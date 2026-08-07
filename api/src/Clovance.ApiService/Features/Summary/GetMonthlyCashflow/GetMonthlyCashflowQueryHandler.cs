@@ -26,9 +26,10 @@ public class GetMonthlyCashflowQueryHandler : IHandler<GetMonthlyCashflowQuery, 
         var windowEnd = anchor.AddMonths(1).AddDays(-1);
 
         var baseQuery = _context.Transactions
+            .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, query.AccountId == null, cancellationToken);
 
         var rowsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Monthly(f.Date.Year, f.Date.Month))

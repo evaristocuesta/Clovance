@@ -10,13 +10,24 @@ public static class TransactionSummaryQueries
         IQueryable<Transaction> baseQuery,
         DateOnly from,
         DateOnly to,
+        bool excludeLiabilityAccounts,
         CancellationToken ct)
     {
         var fromDate = TransactionDate.Create(from);
         var toDate = TransactionDate.Create(to);
 
-        var raw = await baseQuery
-            .Where(t => t.Date >= fromDate && t.Date <= toDate)
+        var query = baseQuery
+            .Where(t => t.Date >= fromDate && t.Date <= toDate);
+
+        if (excludeLiabilityAccounts)
+        {
+            query = query.Where(t => 
+                t.Account.Type != AccountType.CreditCard && 
+                t.Account.Type != AccountType.Loan && 
+                t.Account.Type != AccountType.Mortgage);
+        }
+
+        var raw = await query
             .Select(t => new { t.Date, t.AccountId, t.Amount, t.Type })
             .ToListAsync(ct);
 
@@ -35,12 +46,22 @@ public static class TransactionSummaryQueries
     public static async Task<Dictionary<AccountId, decimal>> GetOpeningBalancesAsync(
         IQueryable<Transaction> baseQuery,
         DateOnly before,
+        bool excludeLiabilityAccounts,
         CancellationToken ct)
     {
         var beforeDate = TransactionDate.Create(before);
 
-        var raw = await baseQuery
-            .Where(t => t.Date < beforeDate)
+        var query = baseQuery.Where(t => t.Date < beforeDate);
+
+        if (excludeLiabilityAccounts)
+        {
+            query = query.Where(t => 
+                t.Account.Type != AccountType.CreditCard && 
+                t.Account.Type != AccountType.Loan && 
+                t.Account.Type != AccountType.Mortgage);
+        }
+
+        var raw = await query
             .Select(t => new { t.AccountId, t.Amount })
             .ToListAsync(ct);
 
