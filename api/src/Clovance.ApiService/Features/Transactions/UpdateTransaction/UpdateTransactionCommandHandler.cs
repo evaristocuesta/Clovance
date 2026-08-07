@@ -39,8 +39,8 @@ public class UpdateTransactionCommandHandler : IHandler<UpdateTransactionCommand
             return Result<UpdateTransactionResult>.Failure(AppErrors.Accounts.AccountNotFound());
         }
 
-        if (account.CanBeUsedForIncomeOrExpense is false 
-            || (command.Transaction.Type == TransactionType.OpeningBalance && command.Transaction.AccountId != transaction.AccountId.Value))
+        if ((account.CanBeUsedForIncomeOrExpense is false && command.Transaction.Type != TransactionType.OpeningBalance)
+            || (command.Transaction.Type == TransactionType.OpeningBalance && !command.Transaction.AccountId.Equals(transaction.AccountId.Value)))
         {
             return Result<UpdateTransactionResult>.Failure(AppErrors.Accounts.InvalidAccount());
         }
