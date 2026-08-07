@@ -26,8 +26,13 @@ export interface LoanPaymentFormData {
 export class LoanPaymentForm implements OnInit {
   errorMessage = signal('');
 
-  fromAccounts = computed(() => this.data?.accounts?.filter(Account.canBeUsedForFromLoanPayment) ?? []);
-  toAccounts = computed(() => this.data?.accounts?.filter(Account.canBeUsedForToLoanPayment) ?? []);
+  fromAccounts = computed(() => this.data?.accounts?.filter(a => 
+    (Account.canBeUsedForFromLoanPayment(a) && !a.isDeleted)
+    || (a.id === this.data?.fromTransaction?.accountId && a.isDeleted)) ?? []);
+  
+  toAccounts = computed(() => this.data?.accounts?.filter(a => 
+    (Account.canBeUsedForToLoanPayment(a) && !a.isDeleted)
+    || (a.id === this.data?.toTransaction?.accountId && a.isDeleted)) ?? []);
 
   loanPayment = signal<LoanPayment>({
     date: new Date(),
