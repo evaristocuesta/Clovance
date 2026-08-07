@@ -27,7 +27,7 @@ export class TransactionForm implements OnInit {
 
   accounts = computed(() => this.data?.type === 'OpeningBalance' && this.data?.transaction?.id
     ? this.data?.accounts?.filter(a => a.id === this.data?.transaction?.accountId) ?? []
-    : this.data?.accounts?.filter(Account.canBeUsedForIncomeOrExpense) ?? []);
+    : this.data?.accounts?.filter(a => (Account.canBeUsedForIncomeOrExpense(a) && !a.isDeleted) || (a.id === this.data?.transaction?.accountId && a.isDeleted)) ?? []);
 
   transaction = signal<Transaction>({
     id: '',
