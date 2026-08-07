@@ -41,10 +41,12 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
     public TransactionAmount Amount { get; private set; } = null!;
 
     public TransactionPrincipalAmount PrincipalAmount {  get; private set; } = null!;
-    
+
     public TransactionType Type { get; private set; }
 
     public AccountId AccountId { get; private set; }
+
+    public Account Account { get; private set; } = null!;
 
     public TransactionDescription Description { get; private set; } = null!;
 

@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Summary.GetDailyCashflow;
 
@@ -20,9 +21,10 @@ public class GetDailyCashflowQueryHandler : IHandler<GetDailyCashflowQuery, Resu
         var monthEnd = monthStart.AddMonths(1).AddDays(-1);
 
         var baseQuery = _context.Transactions
+            .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, query.AccountId == null, cancellationToken);
 
         var rowsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Daily(f.Date))

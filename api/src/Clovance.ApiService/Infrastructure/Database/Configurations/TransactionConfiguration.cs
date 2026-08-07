@@ -76,7 +76,7 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
             .HasMethod("gin")
             .HasOperators("gin_trgm_ops");
 
-        builder.HasOne<Account>()
+        builder.HasOne(x => x.Account)
             .WithMany()
             .HasForeignKey(x => x.AccountId)
             .OnDelete(DeleteBehavior.Restrict);
