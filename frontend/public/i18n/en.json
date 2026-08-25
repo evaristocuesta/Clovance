@@ -165,7 +165,28 @@
         "user": "User"
     }, 
     "summary": {
-        "title": "Summary"
+        "title": "Summary",
+        "periodNavigator": {
+            "previousMonth": "Previous month",
+            "nextMonth": "Next month",
+            "monthly": "Monthly",
+            "daily": "Daily",
+            "account": "Account",
+            "allAccounts": "All accounts"
+        },
+        "kpis": {
+            "netWorth": "Net Worth",
+            "income": "Income",
+            "expenses": "Expenses",
+            "vsPreviousPeriod": "vs previous period"
+        },
+        "charts": {
+            "balanceTitle": "Balance Over Time",
+            "cashflowTitle": "Income & Expenses",
+            "rankingTitle": "Account Ranking",
+            "rankingByBalance": "By Balance",
+            "rankingByCashflow": "By Expenses"
+        }
     },
     "accounts": {
         "title": "Accounts",

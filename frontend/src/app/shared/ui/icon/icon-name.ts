@@ -29,4 +29,6 @@ export type IconName =
   | 'loan'
   | 'mortgage'
   | 'investment'
+  | 'chevron-left'
+  | 'chevron-right'
 ;
