@@ -13,8 +13,19 @@ public static class CashflowAggregator
         {
             var rows = rowsByPeriod.GetValueOrDefault(period) ?? [];
 
-            var totalIncome = rows.Sum(r => r.Income);
-            var totalExpenses = rows.Sum(r => r.Expenses);
+            decimal totalIncome;
+            decimal totalExpenses;
+
+            if (includeByAccount)
+            {
+                totalIncome = rows.Sum(r => r.Income);
+                totalExpenses = rows.Sum(r => r.Expenses);
+            }
+            else
+            {
+                totalIncome = rows.Sum(r => r.AccountIncome);
+                totalExpenses = rows.Sum(r => r.AccountExpenses);
+            }
 
             List<AccountCashflowBreakdown>? byAccount = includeByAccount
                 ? rows.Select(r => new AccountCashflowBreakdown(r.AccountId.Value, r.AccountIncome, r.AccountExpenses)).ToList()
