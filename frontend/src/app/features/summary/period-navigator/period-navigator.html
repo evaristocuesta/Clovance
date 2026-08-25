@@ -1,0 +1,56 @@
+<div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800" *transloco="let t">
+	<div class="flex items-center gap-2">
+		<button
+			type="button"
+			(click)="previousMonth()"
+			[attr.aria-label]="t('summary.periodNavigator.previousMonth')"
+			class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+			<app-icon name="chevron-left" class="h-4 w-4"></app-icon>
+		</button>
+		<span class="min-w-32 text-center text-sm font-semibold capitalize text-gray-800 dark:text-white">
+			{{ periodLabel() }}
+		</span>
+		<button
+			type="button"
+			(click)="nextMonth()"
+			[attr.aria-label]="t('summary.periodNavigator.nextMonth')"
+			class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+			<app-icon name="chevron-right" class="h-4 w-4"></app-icon>
+		</button>
+	</div>
+
+	<div class="flex flex-wrap items-center gap-2">
+		<div class="inline-flex rounded-lg border border-gray-300 px-1 py-0.5 dark:border-gray-600" role="group">
+			<button
+				type="button"
+				(click)="setViewMode('monthly')"
+				class="rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer"
+				[class.bg-primary-700]="viewMode() === 'monthly'"
+				[class.text-white]="viewMode() === 'monthly'"
+				[class.text-gray-600]="viewMode() !== 'monthly'"
+				[class.dark:text-gray-300]="viewMode() !== 'monthly'">
+				{{ t('summary.periodNavigator.monthly') }}
+			</button>
+			<button
+				type="button"
+				(click)="setViewMode('daily')"
+				class="rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer"
+				[class.bg-primary-700]="viewMode() === 'daily'"
+				[class.text-white]="viewMode() === 'daily'"
+				[class.text-gray-600]="viewMode() !== 'daily'"
+				[class.dark:text-gray-300]="viewMode() !== 'daily'">
+				{{ t('summary.periodNavigator.daily') }}
+			</button>
+		</div>
+
+		<select
+			[attr.aria-label]="t('summary.periodNavigator.account')"
+			(change)="onAccountChange($any($event.target).value)"
+			class="block rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+			<option value="">{{ t('summary.periodNavigator.allAccounts') }}</option>
+			@for (account of activeAccounts(); track account.id) {
+				<option [value]="account.id">{{ account.name }}</option>
+			}
+		</select>
+	</div>
+</div>

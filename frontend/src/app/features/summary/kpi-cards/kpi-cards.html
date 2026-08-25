@@ -1,0 +1,41 @@
+<div
+	class="grid grid-cols-1 gap-3"
+	[class.sm:grid-cols-3]="layout() === 'horizontal'"
+	*transloco="let t">
+	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+			{{ t('summary.kpis.netWorth') }}
+		</p>
+		<p class="mt-0.5 text-xl font-bold text-gray-900 dark:text-white">
+			{{ netWorth() ?? 0 | number: '1.2-2' }}
+		</p>
+	</div>
+
+	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+			{{ t('summary.kpis.income') }}
+		</p>
+		<p class="mt-0.5 text-xl font-bold text-green-600 dark:text-green-400">
+			{{ income() ?? 0 | number: '1.2-2' }}
+		</p>
+		@if (incomeVariation(); as variation) {
+			<p class="text-xs font-medium" [class.text-green-600]="variation >= 0" [class.text-red-600]="variation < 0">
+				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
+			</p>
+		}
+	</div>
+
+	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+			{{ t('summary.kpis.expenses') }}
+		</p>
+		<p class="mt-0.5 text-xl font-bold text-red-600 dark:text-red-400">
+			{{ expenses() ?? 0 | number: '1.2-2' }}
+		</p>
+		@if (expensesVariation(); as variation) {
+			<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-green-600]="variation <= 0">
+				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
+			</p>
+		}
+	</div>
+</div>

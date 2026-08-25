@@ -165,7 +165,28 @@
         "user": "Usuario"
     }, 
     "summary": {
-        "title": "Resumen"
+        "title": "Resumen",
+        "periodNavigator": {
+            "previousMonth": "Mes anterior",
+            "nextMonth": "Mes siguiente",
+            "monthly": "Mensual",
+            "daily": "Diario",
+            "account": "Cuenta",
+            "allAccounts": "Todas las cuentas"
+        },
+        "kpis": {
+            "netWorth": "Patrimonio Neto",
+            "income": "Ingresos",
+            "expenses": "Gastos",
+            "vsPreviousPeriod": "vs periodo anterior"
+        },
+        "charts": {
+            "balanceTitle": "Saldo en el Tiempo",
+            "cashflowTitle": "Ingresos y Gastos",
+            "rankingTitle": "Ranking por Cuenta",
+            "rankingByBalance": "Por Saldo",
+            "rankingByCashflow": "Por Gastos"
+        }
     },
     "accounts": {
         "title": "Cuentas", 
