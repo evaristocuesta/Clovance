@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, switchMap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, switchMap } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { AccountService } from '@features/accounts/services/account.service';
 import { SummaryService } from '../services/summary.service';
@@ -33,9 +33,16 @@ export class Summary {
     accountId: null,
   });
 
+  // PeriodNavigator emits its initial value on init too, so dedupe to avoid a duplicate first fetch
+  private readonly period$ = toObservable(this.period).pipe(
+    distinctUntilChanged(
+      (a, b) => a.year === b.year && a.month === b.month && a.viewMode === b.viewMode && a.accountId === b.accountId,
+    ),
+  );
+
   // Monthly data always fetched: feeds KPIs, ranking, and the charts in monthly view
   private readonly monthlyData = toSignal(
-    toObservable(this.period).pipe(
+    this.period$.pipe(
       switchMap((period) =>
         combineLatest([
           this.summaryService.getMonthlyBalance({ accountId: period.accountId ?? undefined, month: period.month, year: period.year }),
@@ -48,7 +55,7 @@ export class Summary {
 
   // Daily data only fetched for the daily view, feeds the balance/cashflow charts
   private readonly dailyData = toSignal(
-    toObservable(this.period).pipe(
+    this.period$.pipe(
       switchMap((period) => {
         if (period.viewMode !== 'daily') return [null];
 
