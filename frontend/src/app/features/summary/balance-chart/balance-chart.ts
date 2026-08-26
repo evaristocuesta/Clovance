@@ -44,9 +44,10 @@ export class BalanceChart {
     return {
       tooltip: {
         trigger: 'axis',
+        order: 'seriesDesc',
         valueFormatter: (value) => formatCurrency(Number(value), this.currency(), this.currencyOptions(), this.language()),
       },
-      legend: { top: 0 },
+      legend: { top: 0, data: series.map((entry) => entry.name).reverse() },
       grid: { left: 48, right: 24, top: 40, bottom: 72 },
       xAxis: { type: 'category', data: labels, boundaryGap: false },
       yAxis: {
@@ -84,6 +85,7 @@ export class BalanceChart {
         areaStyle: {},
         emphasis: { focus: 'series' as const },
         data,
-      }));
+      }))
+      .reverse();
   }
 }
