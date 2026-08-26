@@ -71,13 +71,19 @@ export class BalanceChart {
 
     const nameById = this.accountNameById();
 
-    return Array.from(accountIds).map((accountId) => ({
-      name: nameById[accountId] ?? accountId,
-      type: 'line' as const,
-      stack: 'balance',
-      areaStyle: {},
-      emphasis: { focus: 'series' as const },
-      data: points.map((point) => point.byAccount?.find((entry) => entry.accountId === accountId)?.balance ?? 0),
-    }));
+    return Array.from(accountIds)
+      .map((accountId) => ({
+        accountId,
+        data: points.map((point) => point.byAccount?.find((entry) => entry.accountId === accountId)?.balance ?? 0),
+      }))
+      .filter(({ data }) => data.some((balance) => balance !== 0))
+      .map(({ accountId, data }) => ({
+        name: nameById[accountId] ?? accountId,
+        type: 'line' as const,
+        stack: 'balance',
+        areaStyle: {},
+        emphasis: { focus: 'series' as const },
+        data,
+      }));
   }
 }
