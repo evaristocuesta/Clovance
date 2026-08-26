@@ -2,6 +2,7 @@ import { Component, computed, ElementRef, inject, input, output, signal } from '
 import { Transaction } from '../models/transaction.model';
 import { Icon } from "@shared/ui/icon/icon";
 import { TranslocoDirective } from '@jsverse/transloco';
+import { formatCurrency } from '@shared/utils/currency-utils';
 
 @Component({
   selector: 'app-transaction-card',
@@ -17,6 +18,7 @@ export class TransactionCard {
 
   readonly transaction = input.required<Transaction>();
   readonly currencySymbolMap = input.required<Record<string, string>>();
+  readonly language = input('en');
   readonly editTransaction = output<Transaction>();
   readonly deleteTransaction = output<string>();
   protected isActionsMenuOpen = signal(false);
@@ -32,13 +34,8 @@ export class TransactionCard {
   });
 
   protected signedAmount = computed(() => {
-    const amount = this.transaction().amount;
-    const formattedAmount = new Intl.NumberFormat(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(Math.abs(amount));
-
-    return amount >= 0 ? `+${formattedAmount}` : `-${formattedAmount}`;
+    const transaction = this.transaction();
+    return formatCurrency(transaction.amount, transaction.currency, this.currencySymbolMap(), this.language(), true);
   });
 
   protected formattedDate = computed(() => {
@@ -64,11 +61,6 @@ export class TransactionCard {
 
     return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
   }
-
-  protected currencyLabel = computed(() => 
-    this.currencySymbolMap()[this.transaction().currency.toUpperCase()] ?
-    `${this.transaction().currency.toUpperCase()} ${this.currencySymbolMap()[this.transaction().currency.toUpperCase()]}` 
-    : this.transaction().currency.toUpperCase());
 
   protected onEdit(): void {
     this.isActionsMenuOpen.set(false);

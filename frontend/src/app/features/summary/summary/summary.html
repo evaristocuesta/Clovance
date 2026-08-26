@@ -2,9 +2,12 @@
 	<div class="sticky top-14 z-10 flex flex-col gap-3 bg-gray-50 pb-3 dark:bg-gray-900">
 		<h1 class="text-md font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">{{ t('summary.title') }}</h1>
 
-		<app-period-navigator [accounts]="accounts()" (periodChange)="onPeriodChange($event)"></app-period-navigator>
+		<app-period-navigator [accounts]="accounts()" [currencyOptions]="currencies()" (periodChange)="onPeriodChange($event)"></app-period-navigator>
 
 		<app-kpi-cards
+			[language]="language()"
+			[currencyOptions]="currencies()"
+			[currency]="period().currency"
 			[netWorth]="netWorth()"
 			[income]="currentIncome()"
 			[previousIncome]="previousIncome()"
@@ -16,16 +19,19 @@
 	<div class="flex flex-col gap-3">
 		<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
 			<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.charts.balanceTitle') }}</h3>
-			<app-balance-chart [points]="balancePoints()" [accounts]="accounts()" [selectedAccountId]="selectedAccountId()"></app-balance-chart>
+			<app-balance-chart [points]="balancePoints()" [accounts]="accounts()" [selectedAccountId]="selectedAccountId()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()"></app-balance-chart>
 		</div>
 
 		<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
 			<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.charts.cashflowTitle') }}</h3>
-			<app-cashflow-chart [points]="cashflowPoints()"></app-cashflow-chart>
+			<app-cashflow-chart [points]="cashflowPoints()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()"></app-cashflow-chart>
 		</div>
 
 		@if (!selectedAccountId()) {
 			<app-account-ranking
+				[language]="language()"
+				[currency]="period().currency"
+				[currencyOptions]="currencies()"
 				[balanceByAccount]="rankingBalanceByAccount()"
 				[cashflowByAccount]="rankingCashflowByAccount()"
 				[accounts]="accounts()">

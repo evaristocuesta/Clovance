@@ -7,7 +7,7 @@
 			{{ t('summary.kpis.netWorth') }}
 		</p>
 		<p class="mt-0.5 text-xl font-bold text-gray-900 dark:text-white">
-			{{ netWorth() ?? 0 | number: '1.2-2' }}
+			{{ formattedNetWorth() }}
 		</p>
 	</div>
 
@@ -16,7 +16,7 @@
 			{{ t('summary.kpis.income') }}
 		</p>
 		<p class="mt-0.5 text-xl font-bold text-primary-600 dark:text-primary-400">
-			{{ income() ?? 0 | number: '1.2-2' }}
+			{{ formattedIncome() }}
 		</p>
 		@if (incomeVariation(); as variation) {
 			<p class="text-xs font-medium" [class.text-primary-600]="variation >= 0" [class.text-red-600]="variation < 0">
@@ -30,7 +30,7 @@
 			{{ t('summary.kpis.expenses') }}
 		</p>
 		<p class="mt-0.5 text-xl font-bold text-red-600 dark:text-red-400">
-			{{ expenses() ?? 0 | number: '1.2-2' }}
+			{{ formattedExpenses() }}
 		</p>
 		@if (expensesVariation(); as variation) {
 			<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-primary-600]="variation <= 0">

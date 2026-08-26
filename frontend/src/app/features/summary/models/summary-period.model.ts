@@ -3,4 +3,5 @@ export interface SummaryPeriod {
   month: number;
   viewMode: 'monthly' | 'daily';
   accountId: string | null;
+  currency: string;
 }

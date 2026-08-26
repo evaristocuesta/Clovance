@@ -57,4 +57,5 @@ export interface SummaryQueryParams {
   accountId?: string;
   month?: number;
   year?: number;
+  currency?: string;
 }
