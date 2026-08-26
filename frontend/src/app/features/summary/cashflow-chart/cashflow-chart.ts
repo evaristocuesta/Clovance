@@ -27,14 +27,14 @@ export class CashflowChart {
           name: 'Income',
           type: 'bar',
           stack: 'cashflow',
-          itemStyle: { color: '#16a34a' },
+          itemStyle: { color: '#677821' }, // primary-600
           data: points.map((point) => point.income),
         },
         {
           name: 'Expenses',
           type: 'bar',
           stack: 'cashflow',
-          itemStyle: { color: '#dc2626' },
+          itemStyle: { color: '#fb2c36' }, // red-500
           data: points.map((point) => point.expenses),
         },
         {
