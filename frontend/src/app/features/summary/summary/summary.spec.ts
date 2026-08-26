@@ -17,6 +17,7 @@ describe('Summary', () => {
           provide: AccountService,
           useValue: {
             getAccounts: () => of([]),
+            getCurrencies: () => of([]),
           },
         },
         {
