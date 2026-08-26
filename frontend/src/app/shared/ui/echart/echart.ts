@@ -27,6 +27,7 @@ export class EChart {
   private readonly destroyRef = inject(DestroyRef);
   private readonly ready = signal(false);
   private chart: echarts.ECharts | null = null;
+  private chartTheme: 'light' | 'dark' | null = null;
 
   constructor() {
     afterNextRender(() => {
@@ -49,9 +50,14 @@ export class EChart {
 
       if (!this.ready()) return;
 
-      this.chart?.dispose();
-      this.chart = echarts.init(this.container().nativeElement, isDark ? 'dark' : undefined);
-      this.chart.setOption(options);
+      const theme = isDark ? 'dark' : 'light';
+      if (!this.chart || this.chartTheme !== theme) {
+        this.chart?.dispose();
+        this.chart = echarts.init(this.container().nativeElement, isDark ? 'dark' : undefined);
+        this.chartTheme = theme;
+      }
+
+      this.chart.setOption(options, { notMerge: true });
     });
   }
 }
