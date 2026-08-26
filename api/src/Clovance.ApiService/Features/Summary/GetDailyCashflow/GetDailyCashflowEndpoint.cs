@@ -7,6 +7,7 @@ public class GetDailyCashflowEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("/daily-cashflow", async (
+            string currency,
             Guid? accountId,
             int? month,
             int? year,
@@ -17,7 +18,8 @@ public class GetDailyCashflowEndpoint : IApiEndPoint
             var query = new GetDailyCashflowQuery(
                 AccountId: accountId,
                 Month: month,
-                Year: year);
+                Year: year,
+                Currency: currency);
 
             var result = await handler.HandleAsync(query, cancellationToken);
 
@@ -31,6 +33,6 @@ public class GetDailyCashflowEndpoint : IApiEndPoint
         .RequireAuthorization()
         .WithName("GetDailyCashflow")
         .WithSummary("Get Daily Cashflow")
-        .WithDescription("Get Daily Cashflow for a given month/year with optional account filter.");
+        .WithDescription("Get Daily Cashflow for a given month/year with optional account filter, converted to the specified currency.");
     }
 }

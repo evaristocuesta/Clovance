@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.ExternalServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Summary.GetMonthlyBalance;
@@ -9,10 +10,12 @@ namespace Clovance.ApiService.Features.Summary.GetMonthlyBalance;
 public sealed class GetMonthlyBalanceQueryHandler : IHandler<GetMonthlyBalanceQuery, Result<GetMonthlyBalanceResult>>
 {
     private readonly ClovanceDbContext _context;
+    private readonly ICurrencyConverter _currencyConverter;
 
-    public GetMonthlyBalanceQueryHandler(ClovanceDbContext context)
+    public GetMonthlyBalanceQueryHandler(ClovanceDbContext context, ICurrencyConverter currencyConverter)
     {
         _context = context;
+        _currencyConverter = currencyConverter;
     }
 
     public async Task<Result<GetMonthlyBalanceResult>> HandleAsync(GetMonthlyBalanceQuery query, CancellationToken cancellationToken)
@@ -29,8 +32,8 @@ public sealed class GetMonthlyBalanceQueryHandler : IHandler<GetMonthlyBalanceQu
             .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, windowStart, query.AccountId == null, cancellationToken);
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, query.AccountId == null, cancellationToken);
+        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, windowStart, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
 
         var netsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Monthly(f.Date.Year, f.Date.Month))

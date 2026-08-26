@@ -7,6 +7,7 @@ public class GetDailyBalanceEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("/daily-balance", async (
+            string currency,
             Guid? accountId,
             int? month,
             int? year,
@@ -17,7 +18,8 @@ public class GetDailyBalanceEndpoint : IApiEndPoint
             var query = new GetDailyBalanceQuery(
                 AccountId: accountId,
                 Month: month,
-                Year: year);
+                Year: year,
+                Currency: currency);
 
             var result = await handler.HandleAsync(query, cancellationToken);
 
@@ -31,6 +33,6 @@ public class GetDailyBalanceEndpoint : IApiEndPoint
         .RequireAuthorization()
         .WithName("GetDailyBalance")
         .WithSummary("Get Daily Balance")
-        .WithDescription("Get Daily Balance for a given month/year with optional account filter.");
+        .WithDescription("Get Daily Balance for a given month/year with optional account filter, converted to the specified currency.");
     }
 }
