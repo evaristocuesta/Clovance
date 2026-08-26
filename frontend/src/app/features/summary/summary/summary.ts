@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, distinctUntilChanged, switchMap } from 'rxjs';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { AccountService } from '@features/accounts/services/account.service';
+import { Currency } from '@features/accounts/models/currency.model';
 import { SummaryService } from '../services/summary.service';
 import { PeriodNavigator } from '../period-navigator/period-navigator';
 import { KpiCards } from '../kpi-cards/kpi-cards';
@@ -20,10 +21,17 @@ import { BalanceChartPoint, CashflowChartPoint } from '../models/summary-chart.m
   styleUrl: './summary.css',
 })
 export class Summary {
+  private static readonly CURRENCY_KEY = 'summary-currency';
+
   private readonly accountService = inject(AccountService);
   private readonly summaryService = inject(SummaryService);
+  private readonly translocoService = inject(TranslocoService);
 
   protected readonly accounts = toSignal(this.accountService.getAccounts(), { initialValue: [] });
+  protected readonly currencies = toSignal(this.accountService.getCurrencies(), { initialValue: [] as Currency[] });
+  protected readonly language = toSignal(this.translocoService.langChanges$, {
+    initialValue: this.translocoService.getActiveLang(),
+  });
 
   private readonly today = new Date();
   protected readonly period = signal<SummaryPeriod>({
@@ -31,12 +39,13 @@ export class Summary {
     month: this.today.getMonth() + 1,
     viewMode: 'monthly',
     accountId: null,
+    currency: this.getStoredCurrency(),
   });
 
   // PeriodNavigator emits its initial value on init too, so dedupe to avoid a duplicate first fetch
   private readonly period$ = toObservable(this.period).pipe(
     distinctUntilChanged(
-      (a, b) => a.year === b.year && a.month === b.month && a.viewMode === b.viewMode && a.accountId === b.accountId,
+      (a, b) => a.year === b.year && a.month === b.month && a.viewMode === b.viewMode && a.accountId === b.accountId && a.currency === b.currency,
     ),
   );
 
@@ -45,8 +54,8 @@ export class Summary {
     this.period$.pipe(
       switchMap((period) =>
         combineLatest([
-          this.summaryService.getMonthlyBalance({ accountId: period.accountId ?? undefined, month: period.month, year: period.year }),
-          this.summaryService.getMonthlyCashflow({ accountId: period.accountId ?? undefined, month: period.month, year: period.year }),
+          this.summaryService.getMonthlyBalance({ accountId: period.accountId ?? undefined, month: period.month, year: period.year, currency: period.currency }),
+          this.summaryService.getMonthlyCashflow({ accountId: period.accountId ?? undefined, month: period.month, year: period.year, currency: period.currency }),
         ]),
       ),
     ),
@@ -60,8 +69,8 @@ export class Summary {
         if (period.viewMode !== 'daily') return [null];
 
         return combineLatest([
-          this.summaryService.getDailyBalance({ accountId: period.accountId ?? undefined, month: period.month, year: period.year }),
-          this.summaryService.getDailyCashflow({ accountId: period.accountId ?? undefined, month: period.month, year: period.year }),
+          this.summaryService.getDailyBalance({ accountId: period.accountId ?? undefined, month: period.month, year: period.year, currency: period.currency }),
+          this.summaryService.getDailyCashflow({ accountId: period.accountId ?? undefined, month: period.month, year: period.year, currency: period.currency }),
         ]);
       }),
     ),
@@ -131,5 +140,9 @@ export class Summary {
 
   protected onPeriodChange(period: SummaryPeriod): void {
     this.period.set(period);
+  }
+
+  private getStoredCurrency(): string {
+    return globalThis.localStorage?.getItem(Summary.CURRENCY_KEY)?.toUpperCase() || 'EUR';
   }
 }

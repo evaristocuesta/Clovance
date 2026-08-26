@@ -37,6 +37,9 @@ export class TransactionList {
   private readonly activeFilters = signal<TransactionFilters>({});
 
   readonly currencies = toSignal(this.accountService.getCurrencies(), { initialValue: [] });
+  readonly language = toSignal(this.translocoService.langChanges$, {
+    initialValue: this.translocoService.getActiveLang(),
+  });
   readonly accounts = toSignal(this.accountService.getAccounts(), { initialValue: [] });
   protected readonly transactions = signal<Transaction[] | null>(null);
   

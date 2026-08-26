@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Account } from '@features/accounts/models/account.model';
+import { Currency } from '@features/accounts/models/currency.model';
 import { EChart, EChartsOption } from '@shared/ui/echart/echart';
+import { formatCurrency } from '@shared/utils/currency-utils';
 import { BalanceChartPoint } from '../models/summary-chart.model';
 
 @Component({
@@ -15,6 +17,9 @@ export class BalanceChart {
   readonly points = input<BalanceChartPoint[]>([]);
   readonly accounts = input<Account[]>([]);
   readonly selectedAccountId = input<string | null>(null);
+  readonly currency = input('EUR');
+  readonly currencyOptions = input<Currency[]>([]);
+  readonly language = input('en');
 
   private readonly accountNameById = computed(() =>
     Object.fromEntries(this.accounts().map((account) => [account.id, account.name])),
@@ -37,11 +42,17 @@ export class BalanceChart {
       : this.buildAccountSeries(points);
 
     return {
-      tooltip: { trigger: 'axis' },
+      tooltip: {
+        trigger: 'axis',
+        valueFormatter: (value) => formatCurrency(Number(value), this.currency(), this.currencyOptions(), this.language()),
+      },
       legend: { top: 0 },
       grid: { left: 48, right: 24, top: 40, bottom: 72 },
       xAxis: { type: 'category', data: labels, boundaryGap: false },
-      yAxis: { type: 'value' },
+      yAxis: {
+        type: 'value',
+        axisLabel: { formatter: (value) => formatCurrency(Number(value), this.currency(), this.currencyOptions(), this.language()) },
+      },
       dataZoom: [
         { type: 'slider', start: 0, end: 100, bottom: 16, height: 24 },
         { type: 'inside' },
