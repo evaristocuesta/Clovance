@@ -39,10 +39,13 @@ export class BalanceChart {
     return {
       tooltip: { trigger: 'axis' },
       legend: { top: 0 },
-      grid: { left: 48, right: 24, top: 40, bottom: 56 },
+      grid: { left: 48, right: 24, top: 40, bottom: 72 },
       xAxis: { type: 'category', data: labels, boundaryGap: false },
       yAxis: { type: 'value' },
-      dataZoom: [{ type: 'slider', start: 0, end: 100 }, { type: 'inside' }],
+      dataZoom: [
+        { type: 'slider', start: 0, end: 100, bottom: 16, height: 24 },
+        { type: 'inside' },
+      ],
       series,
     };
   });
