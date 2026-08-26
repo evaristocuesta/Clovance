@@ -34,9 +34,11 @@ export class AccountRanking {
       this.metric() === 'balance'
         ? (this.balanceByAccount() ?? [])
             .map((entry) => ({ name: nameById[entry.accountId] ?? entry.accountId, value: entry.balance }))
+            .filter((entry) => entry.value > 0)
             .sort((a, b) => b.value - a.value)
         : (this.cashflowByAccount() ?? [])
             .map((entry) => ({ name: nameById[entry.accountId] ?? entry.accountId, value: Math.abs(entry.expenses) }))
+            .filter((entry) => entry.value > 0)
             .sort((a, b) => b.value - a.value);
 
     return {
