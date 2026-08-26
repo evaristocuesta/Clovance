@@ -7,6 +7,7 @@ public class GetMonthlyCashflowEndpoint : IApiEndPoint
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("/monthly-cashflow", async (
+            string currency,
             Guid? accountId,
             int? month,
             int? year,
@@ -16,6 +17,7 @@ public class GetMonthlyCashflowEndpoint : IApiEndPoint
         {
             var query = new GetMonthlyCashflowQuery(
                 AccountId: accountId,
+                Currency: currency,
                 AnchorYear: year,
                 AnchorMonth: month);
 
@@ -31,6 +33,6 @@ public class GetMonthlyCashflowEndpoint : IApiEndPoint
         .RequireAuthorization()
         .WithName("GetMonthlyCashflow")
         .WithSummary("Get Monthly Cashflow")
-        .WithDescription("Get Monthly Cashflow for a given month/year with optional account filter.");
+        .WithDescription("Get Monthly Cashflow for a given month/year with optional account filter, converted to the specified currency.");
     }
 }

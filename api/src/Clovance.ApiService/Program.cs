@@ -3,6 +3,7 @@ using Clovance.ApiService.Exceptions;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.ExternalServices;
 using Clovance.ApiService.Infrastructure.HttpRequest;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,8 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddProblemDetails();
 builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<ICurrencyConverter, FrankfurterCurrencyConverter>();
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>()
     .AddProblemDetails();

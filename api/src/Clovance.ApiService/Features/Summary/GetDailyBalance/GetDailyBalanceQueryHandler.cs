@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.ExternalServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Summary.GetDailyBalance;
@@ -9,10 +10,12 @@ namespace Clovance.ApiService.Features.Summary.GetDailyBalance;
 public class GetDailyBalanceQueryHandler : IHandler<GetDailyBalanceQuery, Result<GetDailyBalanceResult>>
 {
     private readonly ClovanceDbContext _context;
+    private readonly ICurrencyConverter _currencyConverter;
 
-    public GetDailyBalanceQueryHandler(ClovanceDbContext context)
+    public GetDailyBalanceQueryHandler(ClovanceDbContext context, ICurrencyConverter currencyConverter)
     {
         _context = context;
+        _currencyConverter = currencyConverter;
     }
 
     public async Task<Result<GetDailyBalanceResult>> HandleAsync(GetDailyBalanceQuery query, CancellationToken cancellationToken)
@@ -24,8 +27,8 @@ public class GetDailyBalanceQueryHandler : IHandler<GetDailyBalanceQuery, Result
             .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, monthStart, query.AccountId == null, cancellationToken);
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, query.AccountId == null, cancellationToken);
+        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, monthStart, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
 
         var netsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Daily(f.Date))

@@ -2,7 +2,7 @@
 
 namespace Clovance.ApiService.Features.Summary.GetMonthlyCashflow;
 
-public sealed record GetMonthlyCashflowQuery(Guid? AccountId, int MonthsBack = 12, int? AnchorYear = null, int? AnchorMonth = null);
+public sealed record GetMonthlyCashflowQuery(Guid? AccountId, string Currency, int MonthsBack = 12, int? AnchorYear = null, int? AnchorMonth = null);
 
 public sealed record GetMonthlyCashflowResult(List<MonthlyCashflowPoint> Points);
 

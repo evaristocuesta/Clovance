@@ -2,7 +2,7 @@
 
 namespace Clovance.ApiService.Features.Summary.GetDailyCashflow;
 
-public sealed record GetDailyCashflowQuery(Guid? AccountId, int? Year, int? Month);
+public sealed record GetDailyCashflowQuery(Guid? AccountId, int? Year, int? Month, string Currency);
 
 public sealed record GetDailyCashflowResult(List<DailyCashflowPoint> DailyClashFlow);
 

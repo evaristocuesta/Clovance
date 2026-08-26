@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Features.Summary.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.ExternalServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Summary.GetMonthlyCashflow;
@@ -9,10 +10,12 @@ namespace Clovance.ApiService.Features.Summary.GetMonthlyCashflow;
 public class GetMonthlyCashflowQueryHandler : IHandler<GetMonthlyCashflowQuery, Result<GetMonthlyCashflowResult>>
 {
     private readonly ClovanceDbContext _context;
+    private readonly ICurrencyConverter _currencyConverter;
 
-    public GetMonthlyCashflowQueryHandler(ClovanceDbContext context)
+    public GetMonthlyCashflowQueryHandler(ClovanceDbContext context, ICurrencyConverter currencyConverter)
     {
         _context = context;
+        _currencyConverter = currencyConverter;
     }
 
     public async Task<Result<GetMonthlyCashflowResult>> HandleAsync(GetMonthlyCashflowQuery query, CancellationToken cancellationToken)
@@ -29,7 +32,7 @@ public class GetMonthlyCashflowQueryHandler : IHandler<GetMonthlyCashflowQuery, 
             .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, query.AccountId == null, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
 
         var rowsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Monthly(f.Date.Year, f.Date.Month))
