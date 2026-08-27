@@ -27,7 +27,7 @@ public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
         var httpContext = _httpContextAccessor.HttpContext
             ?? throw new InvalidOperationException("HttpContext is not available.");
 
-        var refreshToken = httpContext.Request.Cookies["refreshToken"];
+        var refreshToken = httpContext.Request.GetRefreshTokenCookie();
 
         if (refreshToken is not null)
         {
@@ -41,7 +41,7 @@ public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
             {
                 _dbContext.RefreshTokens.Remove(token);
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                httpContext.Response.Cookies.Delete("refreshToken");
+                httpContext.Response.DeleteRefreshTokenCookie();
             }
         }
 
