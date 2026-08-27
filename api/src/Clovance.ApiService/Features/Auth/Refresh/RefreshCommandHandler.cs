@@ -32,7 +32,7 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
         var httpContext = _httpContextAccessor.HttpContext
                 ?? throw new InvalidOperationException("HttpContext is not available.");
 
-        var refreshTokenValue = httpContext.Request.Cookies["refreshToken"];
+        var refreshTokenValue = httpContext.Request.GetRefreshTokenCookie();
 
         if (string.IsNullOrEmpty(refreshTokenValue))
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
@@ -64,6 +64,7 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
         var roles = await _userManager.GetRolesAsync(user);
         var newAccessToken = _jwtTokenService.GenerateToken(userId, user.Email!, roles);
         var newRefreshToken = _jwtTokenService.GenerateToken();
+        var refreshTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
 
         await _dbContext
             .RefreshTokens
@@ -71,18 +72,13 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
                 RefreshToken.Create(
                     userId,
                     _jwtTokenService.HashToken(newRefreshToken),
-                    DateTime.UtcNow.AddDays(7)),
+                    refreshTokenExpiresAt),
                 cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        httpContext.Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddDays(7)
-        });
+        
+        httpContext.Response.SetRefreshTokenCookie(newRefreshToken, refreshTokenExpiresAt);
 
         return Result<RefreshResult>.Success(new RefreshResult(Token: newAccessToken.Token, ExpiresAt: newAccessToken.ExpiresAt));
     }

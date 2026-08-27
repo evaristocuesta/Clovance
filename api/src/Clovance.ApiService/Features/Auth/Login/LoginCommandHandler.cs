@@ -59,6 +59,7 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
             roles);
 
         var refreshToken = _jwtTokenService.GenerateToken();
+        var refreshTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
 
         await _dbContext
             .RefreshTokens
@@ -66,19 +67,12 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
                 RefreshToken.Create(
                     user.Id,
                     _jwtTokenService.HashToken(refreshToken),
-                    expiresAt.AddDays(7))
+                    refreshTokenExpiresAt)
                 , cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-
-        httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = expiresAt.AddDays(7).UtcDateTime
-        });
+        httpContext.Response.SetRefreshTokenCookie(refreshToken, refreshTokenExpiresAt);
 
         return Result<LoginResult>.Success(new LoginResult(token, expiresAt));
     }
