@@ -186,7 +186,10 @@
             "cashflowTitle": "Income & Expenses",
             "rankingTitle": "Account Ranking",
             "rankingByBalance": "By Balance",
-            "rankingByCashflow": "By Expenses"
+            "rankingByCashflow": "By Expenses",
+            "income": "Income",
+            "expenses": "Expenses",
+            "net": "Net"
         }
     },
     "accounts": {
