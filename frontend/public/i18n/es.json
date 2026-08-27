@@ -183,6 +183,7 @@
         },
         "charts": {
             "balanceTitle": "Saldo en el Tiempo",
+            "totalBalance": "Saldo total",
             "cashflowTitle": "Ingresos y Gastos",
             "rankingTitle": "Ranking por Cuenta",
             "rankingByBalance": "Por Saldo",

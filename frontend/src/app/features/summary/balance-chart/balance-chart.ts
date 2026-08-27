@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Account } from '@features/accounts/models/account.model';
 import { Currency } from '@features/accounts/models/currency.model';
 import { EChart, EChartsOption } from '@shared/ui/echart/echart';
@@ -14,6 +14,8 @@ import { BalanceChartPoint } from '../models/summary-chart.model';
   styleUrl: './balance-chart.css',
 })
 export class BalanceChart {
+  private readonly translocoService = inject(TranslocoService);
+
   readonly points = input<BalanceChartPoint[]>([]);
   readonly accounts = input<Account[]>([]);
   readonly selectedAccountId = input<string | null>(null);
@@ -45,6 +47,21 @@ export class BalanceChart {
       tooltip: {
         trigger: 'axis',
         order: 'seriesDesc',
+        formatter: accountId
+          ? undefined
+          : (params) => {
+              const entries = Array.isArray(params) ? params : [params];
+              const point = points[entries[0]?.dataIndex ?? 0];
+              const totalLabel = this.translocoService.translate('summary.charts.totalBalance', {}, this.language());
+              const totalLine = `<strong>${entries[0]?.marker ?? ''}${totalLabel}: ${formatCurrency(point?.total ?? 0, this.currency(), this.currencyOptions(), this.language())}</strong><br/>`;
+              const accountLines = [];
+
+              for (const entry of [...entries].reverse()) {
+                accountLines.push(`${entry.marker ?? ''}${entry.seriesName}: ${formatCurrency(Number(entry.value), this.currency(), this.currencyOptions(), this.language())}`);
+              }
+
+              return [point?.label ?? '', `${totalLine}${accountLines.join('<br/>')}`].join('<br/>');
+            },
         valueFormatter: (value) => formatCurrency(Number(value), this.currency(), this.currencyOptions(), this.language()),
       },
       legend: { top: 0, data: series.map((entry) => entry.name).reverse() },
