@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Currency } from '@features/accounts/models/currency.model';
 import { EChart, EChartsOption } from '@shared/ui/echart/echart';
 import { formatCurrency } from '@shared/utils/currency-utils';
@@ -13,6 +13,8 @@ import { CashflowChartPoint } from '../models/summary-chart.model';
   styleUrl: './cashflow-chart.css',
 })
 export class CashflowChart {
+  private readonly translocoService = inject(TranslocoService);
+
   readonly points = input<CashflowChartPoint[]>([]);
   readonly currency = input('EUR');
   readonly currencyOptions = input<Currency[]>([]);
@@ -35,21 +37,21 @@ export class CashflowChart {
       },
       series: [
         {
-          name: 'Income',
+          name: this.translocoService.translate('summary.charts.income', {}, this.language()),
           type: 'bar',
           stack: 'cashflow',
           itemStyle: { color: '#677821' }, // primary-600
           data: points.map((point) => point.income),
         },
         {
-          name: 'Expenses',
+          name: this.translocoService.translate('summary.charts.expenses', {}, this.language()),
           type: 'bar',
           stack: 'cashflow',
           itemStyle: { color: '#fb2c36' }, // red-500
           data: points.map((point) => point.expenses),
         },
         {
-          name: 'Net',
+          name: this.translocoService.translate('summary.charts.net', {}, this.language()),
           type: 'line',
           itemStyle: { color: '#2563eb' },
           data: points.map((point) => point.income + point.expenses),

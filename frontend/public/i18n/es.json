@@ -186,7 +186,10 @@
             "cashflowTitle": "Ingresos y Gastos",
             "rankingTitle": "Ranking por Cuenta",
             "rankingByBalance": "Por Saldo",
-            "rankingByCashflow": "Por Gastos"
+            "rankingByCashflow": "Por Gastos", 
+            "income": "Ingresos",
+            "expenses": "Gastos",
+            "net": "Neto"
         }
     },
     "accounts": {
