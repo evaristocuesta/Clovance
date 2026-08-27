@@ -5,9 +5,9 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { LanguageSelection } from '@shared/components/language-selection/language-selection';
 import { ThemeToggle } from '@shared/components/theme-toggle/theme-toggle';
 import { initFlowbite } from 'flowbite';
+import instances from 'flowbite/lib/esm/dom/instances';
 import { Logo } from "@shared/components/logo/logo";
 import { LogoFull } from "@shared/components/logo-full/logo-full";
-import { AccountSettings } from "@features/auth/account-settings/account-settings";
 import { Icon } from "@shared/ui/icon/icon";
 
 @Component({
@@ -37,6 +37,10 @@ export class MainLayout implements AfterViewInit {
     setTimeout(() => {
       initFlowbite();
     }, 100);
+  }
+
+  closeUserMenu(): void {
+    instances.getInstance('Dropdown', 'dropdown')?.hide();
   }
 
   logout() {
