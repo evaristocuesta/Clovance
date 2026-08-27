@@ -183,6 +183,7 @@
         },
         "charts": {
             "balanceTitle": "Balance Over Time",
+            "totalBalance": "Total Balance",
             "cashflowTitle": "Income & Expenses",
             "rankingTitle": "Account Ranking",
             "rankingByBalance": "By Balance",
