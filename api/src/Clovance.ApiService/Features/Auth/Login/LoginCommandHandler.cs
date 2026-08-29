@@ -59,7 +59,7 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
             roles);
 
         var refreshToken = _jwtTokenService.GenerateToken();
-        var refreshTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
+        var refreshTokenExpiresAt = expiresAt.AddDays(7);
 
         await _dbContext
             .RefreshTokens

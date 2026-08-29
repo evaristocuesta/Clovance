@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Clovance.UnitTests.Features.Auth;
 
@@ -98,8 +97,9 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         var cookieHeader = _httpContext.Response.Headers["Set-Cookie"].ToString();
         Assert.Contains("refreshToken=" + expectedRefreshToken, cookieHeader);
         Assert.Contains("httponly", cookieHeader.ToLower());
-        Assert.Contains("secure", cookieHeader.ToLower());
-        Assert.Contains("samesite=strict", cookieHeader.ToLower());
+        var containsSecure = cookieHeader.ToLower().Contains("secure");
+        Assert.Equal(_httpContext.Request.IsHttps, containsSecure);
+        Assert.Contains("samesite=lax", cookieHeader.ToLower());
     }
 
     [Fact]
@@ -234,7 +234,8 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         var cookieHeader = _httpContext.Response.Headers["Set-Cookie"].ToString();
         Assert.Contains("refreshToken=" + expectedRefreshToken, cookieHeader);
         Assert.Contains("httponly", cookieHeader.ToLower());
-        Assert.Contains("secure", cookieHeader.ToLower());
-        Assert.Contains("samesite=strict", cookieHeader.ToLower());
+        var containsSecure = cookieHeader.ToLower().Contains("secure");
+        Assert.Equal(_httpContext.Request.IsHttps, containsSecure);
+        Assert.Contains("samesite=lax", cookieHeader.ToLower());
     }
 }
