@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Clovance.ApiService.Infrastructure.Authentication;
@@ -14,13 +15,12 @@ public interface IJwtTokenService
     string HashToken(string token);
 }
 
-public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
+public sealed class JwtTokenService(IOptions<JwtOptions> jwtOptions) : IJwtTokenService
 {
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+
     public (string Token, DateTimeOffset ExpiresAt) GenerateToken(Guid userId, string email, IEnumerable<string> roles)
     {
-        var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-            ?? throw new InvalidOperationException("Jwt options are not configured.");
-
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, userId.ToString()),
@@ -31,13 +31,13 @@ public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenSer
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key));
+        var key = new SymmetricSecurityKey(Convert.FromBase64String(_jwtOptions.Key));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expiresAt = DateTimeOffset.UtcNow.AddMinutes(jwtOptions.ExpirationMinutes);
+        var expiresAt = DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes);
 
         var token = new JwtSecurityToken(
-            issuer: jwtOptions.Issuer,
-            audience: jwtOptions.Audience,
+            issuer: _jwtOptions.Issuer,
+            audience: _jwtOptions.Audience,
             claims: claims,
             expires: expiresAt.UtcDateTime,
             signingCredentials: credentials);
@@ -60,11 +60,7 @@ public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenSer
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
     {
-        var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-            ?? throw new InvalidOperationException("Jwt options are not configured.");
-
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtOptions.Key));
+        var key = new SymmetricSecurityKey(Convert.FromBase64String(_jwtOptions.Key));
 
         var validation = new TokenValidationParameters
         {
@@ -72,8 +68,8 @@ public sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenSer
             ValidateAudience = true,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidAudience = jwtOptions.Audience,
+            ValidIssuer = _jwtOptions.Issuer,
+            ValidAudience = _jwtOptions.Audience,
             IssuerSigningKey = key
         };
 

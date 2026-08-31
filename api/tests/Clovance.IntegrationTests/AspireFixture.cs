@@ -1,10 +1,8 @@
 ﻿using Aspire.Hosting;
 using Aspire.Hosting.Testing;
 using Clovance.ApiService.Infrastructure.Authentication;
-using Clovance.ApiService.Infrastructure.Database;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Clovance.IntegrationTests;
 
@@ -31,23 +29,27 @@ public class AspireFixture : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        // Set environment before creating the app host so it's picked up during build
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Testing");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+        var jwtKeyFilePath = Path.Combine(
+            Path.GetTempPath(), $"clovance-tests-{Guid.NewGuid()}", "jwt.key");
+        Directory.CreateDirectory(Path.GetDirectoryName(jwtKeyFilePath)!);
 
-        // Create and start Aspire application
         var appHost = await DistributedApplicationTestingBuilder
-            .CreateAsync<Projects.Clovance_AppHost>();
+            .CreateAsync<Projects.Clovance_AppHost>(
+                args:
+                [
+                    "--environment=Testing",
+                    $"--Jwt:KeyFilePath={jwtKeyFilePath}"
+                ]);
 
         _app = await appHost.BuildAsync();
 
         using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
         await _app.StartAsync(cts.Token);
 
-        // Create HTTP client for the API service
         Client = _app.CreateHttpClient("clovance-apiservice");
 
-        // Initialize JWT token service with configuration from API project
+        var jwtKey = await File.ReadAllTextAsync(jwtKeyFilePath, cts.Token);
+
         var apiProjectPath = Path.Combine(
             Directory.GetCurrentDirectory(),
             "..", "..", "..", "..", "..",
@@ -59,9 +61,13 @@ public class AspireFixture : IAsyncLifetime
             .AddJsonFile("appsettings.Testing.json", optional: true)
             .Build();
 
-        _jwtTokenService = new JwtTokenService(configuration);
+        var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+            ?? throw new InvalidOperationException("Jwt configuration section is missing.");
 
-        // Wait for the service to be fully ready
+        jwtOptions.Key = jwtKey;
+
+        _jwtTokenService = new JwtTokenService(Options.Create(jwtOptions));
+
         await Task.Delay(3000);
     }
 
@@ -73,9 +79,5 @@ public class AspireFixture : IAsyncLifetime
         {
             await _app.DisposeAsync();
         }
-
-        // Clean up environment variables
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", null);
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
     }
 }

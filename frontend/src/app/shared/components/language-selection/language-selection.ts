@@ -31,7 +31,7 @@ export class LanguageSelection {
     }
     
     // Save language preference to localStorage
-    localStorage.setItem('transloco-lang', lang);
+    localStorage.setItem('clovance-lang', lang);
     this.translocoService.setActiveLang(lang);
   }
 

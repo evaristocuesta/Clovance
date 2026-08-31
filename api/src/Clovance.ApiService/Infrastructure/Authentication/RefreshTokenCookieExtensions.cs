@@ -4,7 +4,7 @@ namespace Clovance.ApiService.Infrastructure.Authentication;
 
 public static class RefreshTokenCookieExtensions
 {
-    private const string RefreshTokenCookieName = "refreshToken";
+    private const string RefreshTokenCookieName = "clovance-refresh-token";
 
     /// <summary>
     /// Sets the refresh token cookie with secure configuration.
@@ -23,9 +23,9 @@ public static class RefreshTokenCookieExtensions
         {
             HttpOnly = true,
             Secure = httpContext.Request.IsHttps,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.Strict,
             Expires = expiresAt,
-            Path = "/"
+            Path = "/api/auth/refresh"
         };
 
         response.Cookies.Append(RefreshTokenCookieName, refreshToken, cookieOptions);
@@ -49,7 +49,7 @@ public static class RefreshTokenCookieExtensions
     {
         response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions
         {
-            Path = "/"
+            Path = "/api/auth/refresh"
         });
     }
 }

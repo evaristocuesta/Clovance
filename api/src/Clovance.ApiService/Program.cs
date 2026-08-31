@@ -24,7 +24,15 @@ builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>()
     .AddProblemDetails();
 
-builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.Configure<JwtOptions>(
+    builder.Configuration.GetSection(JwtOptions.SectionName));
+
+var keyFilePath = builder.Configuration["Jwt:KeyFilePath"] ?? "/home/app/jwt.key";
+var jwtSecret = JwtSigningKeyLoader.LoadOrGenerate(keyFilePath);
+
+builder.Services.PostConfigure<JwtOptions>(options => options.Key = jwtSecret);
+
+builder.Services.AddJwtAuthentication();
 builder.Services.AddAuthorization();
 
 // Add FluentValidation

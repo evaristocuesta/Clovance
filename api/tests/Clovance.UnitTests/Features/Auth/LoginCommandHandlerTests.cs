@@ -95,11 +95,11 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         // Verify cookie was set
         Assert.True(_httpContext.Response.Headers.ContainsKey("Set-Cookie"));
         var cookieHeader = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        Assert.Contains("refreshToken=" + expectedRefreshToken, cookieHeader);
+        Assert.Contains("clovance-refresh-token=" + expectedRefreshToken, cookieHeader);
         Assert.Contains("httponly", cookieHeader.ToLower());
         var containsSecure = cookieHeader.ToLower().Contains("secure");
         Assert.Equal(_httpContext.Request.IsHttps, containsSecure);
-        Assert.Contains("samesite=lax", cookieHeader.ToLower());
+        Assert.Contains("samesite=strict", cookieHeader.ToLower());
     }
 
     [Fact]
@@ -232,10 +232,10 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         // Assert - Verify cookie was set with correct properties
         Assert.True(_httpContext.Response.Headers.ContainsKey("Set-Cookie"));
         var cookieHeader = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        Assert.Contains("refreshToken=" + expectedRefreshToken, cookieHeader);
+        Assert.Contains("clovance-refresh-token=" + expectedRefreshToken, cookieHeader);
         Assert.Contains("httponly", cookieHeader.ToLower());
         var containsSecure = cookieHeader.ToLower().Contains("secure");
         Assert.Equal(_httpContext.Request.IsHttps, containsSecure);
-        Assert.Contains("samesite=lax", cookieHeader.ToLower());
+        Assert.Contains("samesite=strict", cookieHeader.ToLower());
     }
 }

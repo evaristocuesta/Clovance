@@ -26,7 +26,7 @@ export class MainLayout implements AfterViewInit {
   
   constructor() {
     // Load saved language preference
-    const savedLang = localStorage.getItem('transloco-lang');
+    const savedLang = localStorage.getItem('clovance-lang');
     if (savedLang && (savedLang === 'es' || savedLang === 'en')) {
       this.translocoService.setActiveLang(savedLang);
     }

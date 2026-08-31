@@ -208,7 +208,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         var setCookieHeader = setCookieValues.FirstOrDefault();
         Assert.NotNull(setCookieHeader);
 
-        var refreshToken = ExtractCookieValue(setCookieHeader, "refreshToken");
+        var refreshToken = ExtractCookieValue(setCookieHeader, "clovance-refresh-token");
         Assert.NotNull(refreshToken);
 
         return (result!.AccessToken, refreshToken);
