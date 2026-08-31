@@ -4,7 +4,7 @@ export type Theme = 'light' | 'dark';
 
 @Service()
 export class ThemeService {  
-  private readonly THEME_KEY = 'color-theme';
+  private readonly THEME_KEY = 'clovance-color-theme';
 
   theme = signal<Theme>(this.getInitialTheme());
   private themeToggleBtn: HTMLElement | null = null;

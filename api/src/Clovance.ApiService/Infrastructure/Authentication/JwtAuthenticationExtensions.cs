@@ -3,6 +3,7 @@ using System.Text;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Clovance.ApiService.Infrastructure.Authentication;
@@ -10,17 +11,18 @@ namespace Clovance.ApiService.Infrastructure.Authentication;
 public static class JwtAuthenticationExtensions
 {
     public static IServiceCollection AddJwtAuthentication(
-        this IServiceCollection services,
-        IConfiguration configuration)
+        this IServiceCollection services)
     {
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-                    ?? throw new InvalidOperationException("Jwt configuration section is missing.");
+            .AddJwtBearer();
 
-                options.TokenValidationParameters = new TokenValidationParameters
+        services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+            .Configure<IOptions<JwtOptions>>((bearerOptions, jwtOptionsAccessor) =>
+            {
+                var jwtOptions = jwtOptionsAccessor.Value;
+
+                bearerOptions.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
@@ -28,11 +30,11 @@ public static class JwtAuthenticationExtensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtOptions.Issuer,
                     ValidAudience = jwtOptions.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtOptions.Key)),
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
 
-                options.Events = new JwtBearerEvents
+                bearerOptions.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
                     {

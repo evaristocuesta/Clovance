@@ -68,7 +68,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        _httpContext.Request.Headers.Cookie = "refreshToken=token";
+        _httpContext.Request.Headers.Cookie = "clovance-refresh-token=token";
 
         _jwtTokenService
             .GetPrincipalFromExpiredToken(Arg.Any<string>())
