@@ -8,13 +8,13 @@ Create a `.env` file by filling in the api service image, api service port, fron
 
 ```
 # Container image name for clovance-apiservice
-CLOVANCE_APISERVICE_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-beta2
+CLOVANCE_APISERVICE_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-beta3
 
 # Default container port for clovance-apiservice
 CLOVANCE_APISERVICE_PORT=8080
 
 # Container image name for clovance-frontend
-CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0-beta2
+CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0-beta3
 
 # Parameter postgres-password
 POSTGRES_PASSWORD=your_postgres_password
@@ -28,7 +28,7 @@ Create a `docker-compose.yml` file to run the complete application:
 ```yaml
 services:
   env-dashboard:
-    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
+    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:13.5"
     ports:
       - "18888"
     expose:
@@ -68,11 +68,18 @@ services:
       CLOVANCE_DATABASE_URI: "postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@clovance-postgres:5432/clovance-database"
       CLOVANCE_DATABASE_JDBCCONNECTIONSTRING: "jdbc:postgresql://clovance-postgres:5432/clovance-database"
       CLOVANCE_DATABASE_DATABASENAME: "clovance-database"
+      ASPNETCORE_ENVIRONMENT: "Production"
+      Jwt__KeyFilePath: "/home/app/jwt.key"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-apiservice"
     ports:
       - "${CLOVANCE_APISERVICE_PORT}"
+    volumes:
+      - type: "volume"
+        target: "/home/app"
+        source: "clovance-jwt-keys"
+        read_only: false
     depends_on:
       clovance-postgres:
         condition: "service_started"
@@ -107,6 +114,8 @@ networks:
     driver: "bridge"
 volumes:
   clovance.apphost-f8d48ee71c-clovance-postgres-data:
+    driver: "local"
+  clovance-jwt-keys:
     driver: "local"
 ```
 
