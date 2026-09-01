@@ -73,7 +73,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-apiservice"
-    ports:
+    expose:
       - "${CLOVANCE_APISERVICE_PORT}"
     volumes:
       - type: "volume"
@@ -98,12 +98,12 @@ services:
       CLOVANCE_APISERVICE_HTTP: "http://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
       services__clovance-apiservice__http__0: "http://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
       CLOVANCE_APISERVICE_HTTPS: "https://clovance-apiservice:${CLOVANCE_APISERVICE_PORT}"
-      PORT: "8000"
+      PORT: "7000"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-frontend"
     ports:
-      - "8000"
+      - "7000:7000"
     depends_on:
       clovance-apiservice:
         condition: "service_started"

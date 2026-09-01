@@ -1,6 +1,6 @@
 server {
-    listen       8000;
-    listen  [::]:8000;
+    listen       7000;
+    listen  [::]:7000;
     server_name  localhost;
 
     root   /usr/share/nginx/html;

@@ -47,7 +47,6 @@ var apiService = builder.AddProject<Projects.Clovance_ApiService>("clovance-apis
     .WithEnvironment("Jwt__KeyFilePath", jwtKeyFilePath)
     .WaitFor(database)
     .WithHttpHealthCheck("/health")
-    .WithExternalHttpEndpoints()
     .PublishAsDockerComposeService((resource, service) =>
     {
         var volume = new Aspire.Hosting.Docker.Resources.ServiceNodes.Volume
@@ -66,7 +65,7 @@ builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName
     .WithPnpm(installArgs: ["--frozen-lockfile", "--ignore-scripts"])
     .WithReference(apiService)
     .WaitFor(apiService)
-    .WithHttpEndpoint(env: "PORT")
+    .WithHttpEndpoint(port: 7000, env: "PORT")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile(container => container
         .WithEntrypoint("/docker-entrypoint.sh")

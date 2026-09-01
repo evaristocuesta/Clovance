@@ -23,6 +23,6 @@ COPY --from=build /app/dist/clovance/browser /usr/share/nginx/html
 COPY --from=build /app/default.conf.template /etc/nginx/templates/default.conf.template
 
 # Expose the default nginx port
-EXPOSE 8000
+EXPOSE 7000
 
 CMD ["nginx", "-g", "daemon off;"]
