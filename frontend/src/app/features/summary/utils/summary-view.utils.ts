@@ -5,7 +5,7 @@ export type SummaryTab = 'assets' | 'liabilities';
 
 export function getSummaryAccounts(accounts: Account[], tab: SummaryTab): Account[] {
   const isMatchingType = tab === 'assets' ? Account.isAsset : Account.isLiability;
-  return accounts.filter((account) => !account.isDeleted && isMatchingType(account));
+  return accounts.filter((account) => isMatchingType(account));
 }
 
 export function toBalanceViewPoints(points: BalanceChartPoint[], tab: SummaryTab): BalanceChartPoint[] {
