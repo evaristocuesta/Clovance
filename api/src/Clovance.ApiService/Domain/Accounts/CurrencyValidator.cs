@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace Clovance.ApiService.Domain.Accounts;
+﻿namespace Clovance.ApiService.Domain.Accounts;
 
 public static class CurrencyValidator
 {

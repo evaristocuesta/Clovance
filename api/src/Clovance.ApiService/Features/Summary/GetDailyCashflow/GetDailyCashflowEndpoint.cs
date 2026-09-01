@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Features.Summary.Shared;
 
 namespace Clovance.ApiService.Features.Summary.GetDailyCashflow;
 
@@ -11,15 +12,23 @@ public class GetDailyCashflowEndpoint : IApiEndPoint
             Guid? accountId,
             int? month,
             int? year,
+            string? accountType,
             IHandler<GetDailyCashflowQuery, Result<GetDailyCashflowResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
+            AccountTypeFilter? parsedAccountType = string.IsNullOrWhiteSpace(accountType)
+                ? null
+                : Enum.TryParse<AccountTypeFilter>(accountType, ignoreCase: true, out var parsed)
+                    ? parsed
+                    : null;
+
             var query = new GetDailyCashflowQuery(
                 AccountId: accountId,
                 Month: month,
                 Year: year,
-                Currency: currency);
+                Currency: currency,
+                AccountType: parsedAccountType);
 
             var result = await handler.HandleAsync(query, cancellationToken);
 
@@ -33,6 +42,6 @@ public class GetDailyCashflowEndpoint : IApiEndPoint
         .RequireAuthorization()
         .WithName("GetDailyCashflow")
         .WithSummary("Get Daily Cashflow")
-        .WithDescription("Get Daily Cashflow for a given month/year with optional account filter, converted to the specified currency.");
+        .WithDescription("Get Daily Cashflow for a given month/year with optional account filter and account type filter (asset or liability), converted to the specified currency.");
     }
 }

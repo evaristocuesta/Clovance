@@ -27,8 +27,8 @@ public class GetDailyBalanceQueryHandler : IHandler<GetDailyBalanceQuery, Result
             .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, monthStart, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
+        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, monthStart, query.AccountType, query.Currency, _currencyConverter, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, monthStart, monthEnd, query.AccountType, query.Currency, _currencyConverter, cancellationToken);
 
         var netsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Daily(f.Date))

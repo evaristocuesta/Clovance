@@ -2,7 +2,7 @@
 
 namespace Clovance.ApiService.Features.Summary.GetDailyBalance;
 
-public sealed record GetDailyBalanceQuery(Guid? AccountId, int? Year, int? Month, string Currency);
+public sealed record GetDailyBalanceQuery(Guid? AccountId, int? Year, int? Month, string Currency, AccountTypeFilter? AccountType = null);
 
 public sealed record GetDailyBalanceResult(List<DailyBalancePoint> DailyBalance);
 

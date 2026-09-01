@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Features.Summary.Shared;
 
 namespace Clovance.ApiService.Features.Summary.GetMonthlyCashflow;
 
@@ -11,15 +12,23 @@ public class GetMonthlyCashflowEndpoint : IApiEndPoint
             Guid? accountId,
             int? month,
             int? year,
+            string? accountType,
             IHandler<GetMonthlyCashflowQuery, Result<GetMonthlyCashflowResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
+            AccountTypeFilter? parsedAccountType = string.IsNullOrWhiteSpace(accountType)
+                ? null
+                : Enum.TryParse<AccountTypeFilter>(accountType, ignoreCase: true, out var parsed)
+                    ? parsed
+                    : null;
+
             var query = new GetMonthlyCashflowQuery(
                 AccountId: accountId,
                 Currency: currency,
                 AnchorYear: year,
-                AnchorMonth: month);
+                AnchorMonth: month,
+                AccountType: parsedAccountType);
 
             var result = await handler.HandleAsync(query, cancellationToken);
 
@@ -33,6 +42,6 @@ public class GetMonthlyCashflowEndpoint : IApiEndPoint
         .RequireAuthorization()
         .WithName("GetMonthlyCashflow")
         .WithSummary("Get Monthly Cashflow")
-        .WithDescription("Get Monthly Cashflow for a given month/year with optional account filter, converted to the specified currency.");
+        .WithDescription("Get Monthly Cashflow for a given month/year with optional account filter and account type filter (asset or liability), converted to the specified currency.");
     }
 }

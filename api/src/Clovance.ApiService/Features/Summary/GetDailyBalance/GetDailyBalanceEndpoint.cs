@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Features.Summary.Shared;
 
 namespace Clovance.ApiService.Features.Summary.GetDailyBalance;
 
@@ -11,15 +12,23 @@ public class GetDailyBalanceEndpoint : IApiEndPoint
             Guid? accountId,
             int? month,
             int? year,
+            string? accountType,
             IHandler<GetDailyBalanceQuery, Result<GetDailyBalanceResult>> handler,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>
         {
+            AccountTypeFilter? parsedAccountType = string.IsNullOrWhiteSpace(accountType)
+                ? null
+                : Enum.TryParse<AccountTypeFilter>(accountType, ignoreCase: true, out var parsed)
+                    ? parsed
+                    : null;
+
             var query = new GetDailyBalanceQuery(
                 AccountId: accountId,
                 Month: month,
                 Year: year,
-                Currency: currency);
+                Currency: currency,
+                AccountType: parsedAccountType);
 
             var result = await handler.HandleAsync(query, cancellationToken);
 
@@ -33,6 +42,6 @@ public class GetDailyBalanceEndpoint : IApiEndPoint
         .RequireAuthorization()
         .WithName("GetDailyBalance")
         .WithSummary("Get Daily Balance")
-        .WithDescription("Get Daily Balance for a given month/year with optional account filter, converted to the specified currency.");
+        .WithDescription("Get Daily Balance for a given month/year with optional account filter and account type filter (asset or liability), converted to the specified currency.");
     }
 }

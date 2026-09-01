@@ -32,8 +32,8 @@ public sealed class GetMonthlyBalanceQueryHandler : IHandler<GetMonthlyBalanceQu
             .AsNoTracking()
             .Where(t => query.AccountId == null || t.AccountId == AccountId.Create(query.AccountId.Value));
 
-        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, windowStart, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
-        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, query.AccountId == null, query.Currency, _currencyConverter, cancellationToken);
+        var openingByAccount = await TransactionSummaryQueries.GetOpeningBalancesAsync(baseQuery, windowStart, query.AccountType, query.Currency, _currencyConverter, cancellationToken);
+        var dailyFlows = await TransactionSummaryQueries.GetDailyFlowsAsync(baseQuery, windowStart, windowEnd, query.AccountType, query.Currency, _currencyConverter, cancellationToken);
 
         var netsByPeriod = dailyFlows
             .GroupBy(f => PeriodKey.Monthly(f.Date.Year, f.Date.Month))
