@@ -11,7 +11,7 @@ public static class TransactionSummaryQueries
         IQueryable<Transaction> baseQuery,
         DateOnly from,
         DateOnly to,
-        bool excludeLiabilityAccounts,
+        AccountTypeFilter? accountTypeFilter,
         string targetCurrency,
         ICurrencyConverter currencyConverter,
         CancellationToken ct)
@@ -22,13 +22,7 @@ public static class TransactionSummaryQueries
         var query = baseQuery
             .Where(t => t.Date >= fromDate && t.Date <= toDate);
 
-        if (excludeLiabilityAccounts)
-        {
-            query = query.Where(t => 
-                t.Account.Type != AccountType.CreditCard && 
-                t.Account.Type != AccountType.Loan && 
-                t.Account.Type != AccountType.Mortgage);
-        }
+        query = ApplyAccountTypeFilter(query, accountTypeFilter);
 
         var raw = await query
             .Select(t => new { t.Date, t.AccountId, t.Amount, t.Type, t.Account.Currency })
@@ -58,7 +52,7 @@ public static class TransactionSummaryQueries
     public static async Task<Dictionary<AccountId, decimal>> GetOpeningBalancesAsync(
         IQueryable<Transaction> baseQuery,
         DateOnly before,
-        bool excludeLiabilityAccounts,
+        AccountTypeFilter? accountTypeFilter,
         string targetCurrency,
         ICurrencyConverter currencyConverter,
         CancellationToken ct)
@@ -67,13 +61,7 @@ public static class TransactionSummaryQueries
 
         var query = baseQuery.Where(t => t.Date < beforeDate);
 
-        if (excludeLiabilityAccounts)
-        {
-            query = query.Where(t => 
-                t.Account.Type != AccountType.CreditCard && 
-                t.Account.Type != AccountType.Loan && 
-                t.Account.Type != AccountType.Mortgage);
-        }
+        query = ApplyAccountTypeFilter(query, accountTypeFilter);
 
         var raw = await query
             .Select(t => new { t.AccountId, t.Amount, t.Account.Currency })
@@ -125,5 +113,23 @@ public static class TransactionSummaryQueries
         }
 
         return result;
+    }
+
+    private static IQueryable<Transaction> ApplyAccountTypeFilter(
+        IQueryable<Transaction> query,
+        AccountTypeFilter? accountTypeFilter)
+    {
+        return accountTypeFilter switch
+        {
+            AccountTypeFilter.Asset => query.Where(t =>
+                t.Account.Type != AccountType.CreditCard &&
+                t.Account.Type != AccountType.Loan &&
+                t.Account.Type != AccountType.Mortgage),
+            AccountTypeFilter.Liability => query.Where(t =>
+                t.Account.Type == AccountType.CreditCard ||
+                t.Account.Type == AccountType.Loan ||
+                t.Account.Type == AccountType.Mortgage),
+            _ => query
+        };
     }
 }
