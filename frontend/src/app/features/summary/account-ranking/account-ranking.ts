@@ -22,7 +22,7 @@ export class AccountRanking {
   readonly language = input('en');
   readonly liabilityMode = input(false);
 
-  protected readonly metric = signal<'balance' | 'cashflow'>('balance');
+  protected readonly metric = signal<'balance' | 'income' | 'expenses'>('balance');
 
   private readonly accountNameById = computed(() =>
     Object.fromEntries(this.accounts().map((account) => [account.id, account.name])),
@@ -31,16 +31,18 @@ export class AccountRanking {
   protected readonly options = computed<EChartsOption>(() => {
     const nameById = this.accountNameById();
 
-    const entries =
-      this.metric() === 'balance'
-        ? (this.balanceByAccount() ?? [])
-            .map((entry) => ({ name: nameById[entry.accountId] ?? entry.accountId, value: entry.balance }))
-            .filter((entry) => entry.value > 0)
-            .sort((a, b) => b.value - a.value)
-        : (this.cashflowByAccount() ?? [])
-            .map((entry) => ({ name: nameById[entry.accountId] ?? entry.accountId, value: Math.abs(entry.expenses) }))
-            .filter((entry) => entry.value > 0)
-            .sort((a, b) => b.value - a.value);
+    const rawEntries = this.metric() === 'balance'
+      ? (this.balanceByAccount() ?? [])
+          .map((entry) => ({ name: nameById[entry.accountId] ?? entry.accountId, value: entry.balance }))
+      : (this.cashflowByAccount() ?? [])
+          .map((entry) => ({
+            name: nameById[entry.accountId] ?? entry.accountId,
+            value: Math.abs(this.metric() === 'income' ? entry.income : entry.expenses),
+          }));
+
+    const entries = rawEntries
+      .filter((entry) => entry.value > 0)
+      .sort((a, b) => b.value - a.value);
 
     return {
       tooltip: {
@@ -64,7 +66,7 @@ export class AccountRanking {
     };
   });
 
-  protected setMetric(metric: 'balance' | 'cashflow'): void {
+  protected setMetric(metric: 'balance' | 'income' | 'expenses'): void {
     this.metric.set(metric);
   }
 }

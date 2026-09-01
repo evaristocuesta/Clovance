@@ -192,6 +192,9 @@
             "debtOverTimeTitle": "Evolución de la deuda",
             "debtActivityTitle": "Actividad de deuda",
             "debtRankingTitle": "Deuda por cuenta",
+            "rankingByDebt": "Por deuda",
+            "rankingByPrincipalPaid": "Por principal amortizado",
+            "rankingByNewDebt": "Por nueva deuda",
             "principalPaid": "Principal amortizado",
             "newDebt": "Nueva deuda",
             "netDebtChange": "Variación neta de deuda"
@@ -203,7 +206,8 @@
             "cashflowTitle": "Ingresos y Gastos",
             "rankingTitle": "Ranking por Cuenta",
             "rankingByBalance": "Por Saldo",
-            "rankingByCashflow": "Por Gastos", 
+            "rankingByIncome": "Por ingresos",
+            "rankingByExpenses": "Por gastos", 
             "income": "Ingresos",
             "expenses": "Gastos",
             "net": "Neto"
