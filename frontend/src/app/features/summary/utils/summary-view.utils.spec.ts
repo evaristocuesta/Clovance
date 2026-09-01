@@ -8,9 +8,9 @@ const accounts: Account[] = [
 ];
 
 describe('summary view utilities', () => {
-  it('filters active accounts by summary category', () => {
+  it('filters accounts by summary category', () => {
     expect(getSummaryAccounts(accounts, 'assets').map((account) => account.id)).toEqual(['checking']);
-    expect(getSummaryAccounts(accounts, 'liabilities').map((account) => account.id)).toEqual(['loan']);
+    expect(getSummaryAccounts(accounts, 'liabilities').map((account) => account.id)).toEqual(['loan', 'deleted-card']);
   });
 
   it('keeps asset points unchanged', () => {
