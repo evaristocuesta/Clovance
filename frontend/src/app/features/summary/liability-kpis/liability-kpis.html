@@ -1,46 +1,44 @@
-<div
-	class="grid grid-cols-1 gap-3"
-	[class.sm:grid-cols-3]="layout() === 'horizontal'"
-	*transloco="let t">
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-3" *transloco="let t">
 	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
 		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-			{{ t('summary.kpis.netWorth') }}
-		</p>
-		<p class="mt-0.5 text-xl font-bold text-gray-900 dark:text-white">
-			{{ formattedNetWorth() }}
-		</p>
-		@if (netWorthVariation(); as variation) {
-			<p class="text-xs font-medium" [class.text-primary-600]="variation >= 0" [class.text-red-600]="variation < 0">
-				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
-			</p>
-		}
-	</div>
-
-	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-			{{ t('summary.kpis.income') }}
-		</p>
-		<p class="mt-0.5 text-xl font-bold text-primary-600 dark:text-primary-400">
-			{{ formattedIncome() }}
-		</p>
-		@if (incomeVariation(); as variation) {
-			<p class="text-xs font-medium" [class.text-primary-600]="variation >= 0" [class.text-red-600]="variation < 0">
-				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
-			</p>
-		}
-	</div>
-
-	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-			{{ t('summary.kpis.expenses') }}
+			{{ t('summary.liabilities.totalDebt') }}
 		</p>
 		<p class="mt-0.5 text-xl font-bold text-red-600 dark:text-red-400">
-			{{ formattedExpenses() }}
+			{{ formattedDebt() }}
 		</p>
-		@if (expensesVariation(); as variation) {
+		@if (debtVariation(); as variation) {
 			<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-primary-600]="variation <= 0">
 				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
 			</p>
 		}
 	</div>
+
+	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+			{{ t('summary.liabilities.principalPaid') }}
+		</p>
+		<p class="mt-0.5 text-xl font-bold text-primary-600 dark:text-primary-400">
+			{{ formattedPrincipalPaid() }}
+		</p>
+		@if (principalPaidVariation(); as variation) {
+			<p class="text-xs font-medium" [class.text-primary-600]="variation >= 0" [class.text-red-600]="variation < 0">
+				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
+			</p>
+		}
+	</div>
+
+	<div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+		<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+			{{ t('summary.liabilities.newDebt') }}
+		</p>
+		<p class="mt-0.5 text-xl font-bold text-red-600 dark:text-red-400">
+			{{ formattedNewDebt() }}
+		</p>
+		@if (newDebtVariation(); as variation) {
+			<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-primary-600]="variation <= 0">
+				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
+			</p>
+		}
+	</div>
+
 </div>

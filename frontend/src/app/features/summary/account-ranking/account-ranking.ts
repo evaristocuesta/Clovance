@@ -20,6 +20,7 @@ export class AccountRanking {
   readonly currency = input('EUR');
   readonly currencyOptions = input<Currency[]>([]);
   readonly language = input('en');
+  readonly liabilityMode = input(false);
 
   protected readonly metric = signal<'balance' | 'cashflow'>('balance');
 

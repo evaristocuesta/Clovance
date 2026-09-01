@@ -2,40 +2,109 @@
 	<div class="sticky top-14 z-10 flex flex-col gap-3 bg-gray-50 pb-3 dark:bg-gray-900">
 		<h1 class="text-md font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">{{ t('summary.title') }}</h1>
 
-		<app-period-navigator [accounts]="accounts()" [currencyOptions]="currencies()" (periodChange)="onPeriodChange($event)"></app-period-navigator>
-
-		<app-kpi-cards
-			[language]="language()"
-			[currencyOptions]="currencies()"
-			[currency]="period().currency"
-			[netWorth]="netWorth()"
-			[income]="currentIncome()"
-			[previousIncome]="previousIncome()"
-			[expenses]="currentExpenses()"
-			[previousExpenses]="previousExpenses()">
-		</app-kpi-cards>
-	</div>
-
-	<div class="flex flex-col gap-3">
-		<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-			<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.charts.balanceTitle') }}</h3>
-			<app-balance-chart [points]="balancePoints()" [accounts]="accounts()" [selectedAccountId]="selectedAccountId()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()"></app-balance-chart>
+		<div class="inline-flex w-fit rounded-lg border border-gray-300 p-0.5 dark:border-gray-600" role="tablist" [attr.aria-label]="t('summary.tabs.label')">
+			<button
+				type="button"
+				role="tab"
+				id="summary-assets-tab"
+				[attr.aria-selected]="activeTab() === 'assets'"
+				aria-controls="summary-content"
+				(click)="selectTab('assets')"
+				class="rounded-lg px-2.5 py-1 text-xs font-medium cursor-pointer"
+				[class.bg-primary-700]="activeTab() === 'assets'"
+				[class.text-white]="activeTab() === 'assets'"
+				[class.text-gray-600]="activeTab() !== 'assets'"
+				[class.dark:text-gray-300]="activeTab() !== 'assets'">
+				{{ t('summary.tabs.assets') }}
+			</button>
+			<button
+				type="button"
+				role="tab"
+				id="summary-liabilities-tab"
+				[attr.aria-selected]="activeTab() === 'liabilities'"
+				aria-controls="summary-content"
+				(click)="selectTab('liabilities')"
+				class="rounded-lg px-2.5 py-1 text-xs font-medium cursor-pointer"
+				[class.bg-primary-700]="activeTab() === 'liabilities'"
+				[class.text-white]="activeTab() === 'liabilities'"
+				[class.text-gray-600]="activeTab() !== 'liabilities'"
+				[class.dark:text-gray-300]="activeTab() !== 'liabilities'">
+				{{ t('summary.tabs.liabilities') }}
+			</button>
 		</div>
 
-		<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-			<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.charts.cashflowTitle') }}</h3>
-			<app-cashflow-chart [points]="cashflowPoints()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()"></app-cashflow-chart>
-		</div>
+		<app-period-navigator [accounts]="summaryAccounts()" [currencyOptions]="currencies()" (periodChange)="onPeriodChange($event)"></app-period-navigator>
 
-		@if (!selectedAccountId()) {
-			<app-account-ranking
+		@if (activeTab() === 'assets') {
+			<app-kpi-cards
 				[language]="language()"
+				[currencyOptions]="currencies()"
+				[currency]="period().currency"
+				[netWorth]="netWorth()"
+				[previousNetWorth]="previousNetWorth()"
+				[income]="currentIncome()"
+				[previousIncome]="previousIncome()"
+				[expenses]="currentExpenses()"
+				[previousExpenses]="previousExpenses()">
+			</app-kpi-cards>
+		} @else {
+			<app-liability-kpis
+				[debt]="debt()"
+				[previousDebt]="previousDebt()"
+				[principalPaid]="principalPaid()"
+				[previousPrincipalPaid]="previousPrincipalPaid()"
+				[newDebt]="newDebt()"
+				[previousNewDebt]="previousNewDebt()"
 				[currency]="period().currency"
 				[currencyOptions]="currencies()"
-				[balanceByAccount]="rankingBalanceByAccount()"
-				[cashflowByAccount]="rankingCashflowByAccount()"
-				[accounts]="accounts()">
-			</app-account-ranking>
+				[language]="language()">
+			</app-liability-kpis>
+		}
+	</div>
+
+	<div id="summary-content" role="tabpanel" [attr.aria-labelledby]="activeTab() === 'assets' ? 'summary-assets-tab' : 'summary-liabilities-tab'" class="flex flex-col gap-3">
+		@if (activeTab() === 'assets') {
+			<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+				<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.charts.assetBalanceTitle') }}</h3>
+				<app-balance-chart [points]="balancePoints()" [accounts]="summaryAccounts()" [selectedAccountId]="selectedAccountId()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()"></app-balance-chart>
+			</div>
+
+			<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+				<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.charts.cashflowTitle') }}</h3>
+				<app-cashflow-chart [points]="cashflowPoints()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()"></app-cashflow-chart>
+			</div>
+
+			@if (!selectedAccountId()) {
+				<app-account-ranking
+					[language]="language()"
+					[currency]="period().currency"
+					[currencyOptions]="currencies()"
+					[balanceByAccount]="rankingBalanceByAccount()"
+					[cashflowByAccount]="rankingCashflowByAccount()"
+					[accounts]="summaryAccounts()">
+				</app-account-ranking>
+			}
+		} @else {
+			<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+				<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.liabilities.debtOverTimeTitle') }}</h3>
+				<app-balance-chart [points]="balancePoints()" [accounts]="summaryAccounts()" [selectedAccountId]="selectedAccountId()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()" totalLabelKey="summary.liabilities.totalDebt"></app-balance-chart>
+			</div>
+
+			<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+				<h3 class="mb-3 text-sm font-semibold text-gray-800 dark:text-white">{{ t('summary.liabilities.debtActivityTitle') }}</h3>
+				<app-cashflow-chart [points]="cashflowPoints()" [currency]="period().currency" [currencyOptions]="currencies()" [language]="language()" [liabilityMode]="true"></app-cashflow-chart>
+			</div>
+
+			@if (!selectedAccountId()) {
+				<app-account-ranking
+					[liabilityMode]="true"
+					[language]="language()"
+					[currency]="period().currency"
+					[currencyOptions]="currencies()"
+					[balanceByAccount]="rankingBalanceByAccount()"
+					[accounts]="summaryAccounts()">
+				</app-account-ranking>
+			}
 		}
 	</div>
 </div>

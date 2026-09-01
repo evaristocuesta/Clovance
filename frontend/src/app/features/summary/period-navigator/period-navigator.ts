@@ -48,6 +48,12 @@ export class PeriodNavigator {
 
   constructor() {
     effect(() => {
+      const activeAccounts = this.activeAccounts();
+      if (this.accountId() && !activeAccounts.some((account) => account.id === this.accountId())) {
+        this.accountId.set(null);
+        return;
+      }
+
       const availableCurrencies = this.currencies();
       const firstAvailableCurrency = availableCurrencies[0];
       if (firstAvailableCurrency && !availableCurrencies.includes(this.currency())) {

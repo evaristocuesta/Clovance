@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, AfterViewInit, inject } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { LanguageSelection } from '@shared/components/language-selection/language-selection';
@@ -12,7 +12,7 @@ import { Icon } from "@shared/ui/icon/icon";
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, ThemeToggle, LanguageSelection, TranslocoDirective, Logo, LogoFull, RouterLink, Icon],
+  imports: [RouterOutlet, ThemeToggle, LanguageSelection, TranslocoDirective, Logo, LogoFull, RouterLink, RouterLinkActive, Icon],
   templateUrl: './main-layout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './main-layout.css',

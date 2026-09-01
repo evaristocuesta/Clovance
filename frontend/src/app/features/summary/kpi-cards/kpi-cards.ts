@@ -13,6 +13,7 @@ import { formatCurrency } from '@shared/utils/currency-utils';
 })
 export class KpiCards {
   readonly netWorth = input<number | null>(null);
+  readonly previousNetWorth = input<number | null>(null);
   readonly income = input<number | null>(null);
   readonly previousIncome = input<number | null>(null);
   readonly expenses = input<number | null>(null);
@@ -26,6 +27,7 @@ export class KpiCards {
   protected readonly formattedIncome = computed(() => formatCurrency(this.income() ?? 0, this.currency(), this.currencyOptions(), this.language()));
   protected readonly formattedExpenses = computed(() => formatCurrency(this.expenses() ?? 0, this.currency(), this.currencyOptions(), this.language()));
 
+  protected readonly netWorthVariation = computed(() => this.variation(this.netWorth(), this.previousNetWorth()));
   protected readonly incomeVariation = computed(() => this.variation(this.income(), this.previousIncome()));
   protected readonly expensesVariation = computed(() => this.variation(this.expenses(), this.previousExpenses()));
 

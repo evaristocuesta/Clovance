@@ -55,6 +55,7 @@ export interface GetMonthlyCashflowResult {
 
 export interface SummaryQueryParams {
   accountId?: string;
+  accountType?: 'asset' | 'liability';
   month?: number;
   year?: number;
   currency?: string;

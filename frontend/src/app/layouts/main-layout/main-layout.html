@@ -107,16 +107,33 @@
           </button>
         </li>
         <li>
-          <button type="button"
-                  routerLink="/summary"
-                  data-drawer-hide="drawer-navigation"
-                  class="flex items-center p-2 w-full cursor-pointer text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+          <div class="flex items-center p-2 text-base font-medium text-gray-900 dark:text-white">
             <app-icon
                 name="chart-line-up"
                 class="w-6 h-6 text-gray-800 dark:text-white">
             </app-icon>
             <span class="flex-1 ml-3 text-left whitespace-nowrap">{{ t('mainLayout.sidebar.summary') }}</span>
-          </button>
+          </div>
+          <div class="ml-9 mt-1 grid gap-1">
+            <a
+                routerLink="/summary"
+                [queryParams]="{ tab: 'assets' }"
+                routerLinkActive="bg-gray-100 text-primary-700 dark:bg-gray-700 dark:text-primary-400"
+                [routerLinkActiveOptions]="{ queryParams: 'exact' }"
+                data-drawer-hide="drawer-navigation"
+                class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+              {{ t('summary.tabs.assets') }}
+            </a>
+            <a
+                routerLink="/summary"
+                [queryParams]="{ tab: 'liabilities' }"
+                routerLinkActive="bg-gray-100 text-primary-700 dark:bg-gray-700 dark:text-primary-400"
+                [routerLinkActiveOptions]="{ queryParams: 'exact' }"
+                data-drawer-hide="drawer-navigation"
+                class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+              {{ t('summary.tabs.liabilities') }}
+            </a>
+          </div>
         </li>
         <li>
           <button type="button"

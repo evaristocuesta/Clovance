@@ -22,6 +22,7 @@ export class BalanceChart {
   readonly currency = input('EUR');
   readonly currencyOptions = input<Currency[]>([]);
   readonly language = input('en');
+  readonly totalLabelKey = input('summary.charts.totalBalance');
 
   private readonly accountNameById = computed(() =>
     Object.fromEntries(this.accounts().map((account) => [account.id, account.name])),
@@ -52,7 +53,7 @@ export class BalanceChart {
           : (params) => {
               const entries = Array.isArray(params) ? params : [params];
               const point = points[entries[0]?.dataIndex ?? 0];
-              const totalLabel = this.translocoService.translate('summary.charts.totalBalance', {}, this.language());
+              const totalLabel = this.translocoService.translate(this.totalLabelKey(), {}, this.language());
               const totalLine = `<strong>${entries[0]?.marker ?? ''}${totalLabel}: ${formatCurrency(point?.total ?? 0, this.currency(), this.currencyOptions(), this.language())}</strong><br/>`;
               const accountLines = [];
 

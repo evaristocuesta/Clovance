@@ -37,10 +37,11 @@ export class SummaryService {
         });
     }
 
-    private buildParams({ accountId, month, year, currency }: SummaryQueryParams): HttpParams {
+    private buildParams({ accountId, accountType, month, year, currency }: SummaryQueryParams): HttpParams {
         let params = new HttpParams();
 
         if (accountId) params = params.set('accountId', accountId);
+        if (!accountId && accountType) params = params.set('accountType', accountType);
         if (month != null) params = params.set('month', month);
         if (year != null) params = params.set('year', year);
         if (currency) params = params.set('currency', currency);
