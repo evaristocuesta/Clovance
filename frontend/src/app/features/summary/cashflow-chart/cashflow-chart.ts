@@ -19,9 +19,13 @@ export class CashflowChart {
   readonly currency = input('EUR');
   readonly currencyOptions = input<Currency[]>([]);
   readonly language = input('en');
+  readonly liabilityMode = input(false);
 
   protected readonly options = computed<EChartsOption>(() => {
     const points = this.points();
+    const incomeLabel = this.liabilityMode() ? 'summary.liabilities.principalPaid' : 'summary.charts.income';
+    const expenseLabel = this.liabilityMode() ? 'summary.liabilities.newDebt' : 'summary.charts.expenses';
+    const netLabel = this.liabilityMode() ? 'summary.liabilities.netDebtChange' : 'summary.charts.net';
 
     return {
       tooltip: {
@@ -37,21 +41,21 @@ export class CashflowChart {
       },
       series: [
         {
-          name: this.translocoService.translate('summary.charts.income', {}, this.language()),
+          name: this.translocoService.translate(incomeLabel, {}, this.language()),
           type: 'bar',
           stack: 'cashflow',
           itemStyle: { color: '#677821' }, // primary-600
           data: points.map((point) => point.income),
         },
         {
-          name: this.translocoService.translate('summary.charts.expenses', {}, this.language()),
+          name: this.translocoService.translate(expenseLabel, {}, this.language()),
           type: 'bar',
           stack: 'cashflow',
           itemStyle: { color: '#fb2c36' }, // red-500
           data: points.map((point) => point.expenses),
         },
         {
-          name: this.translocoService.translate('summary.charts.net', {}, this.language()),
+          name: this.translocoService.translate(netLabel, {}, this.language()),
           type: 'line',
           itemStyle: { color: '#2563eb' },
           data: points.map((point) => point.income + point.expenses),

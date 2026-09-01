@@ -20,11 +20,11 @@
 	</div>
 
 	<div class="flex flex-wrap items-center gap-2">
-		<div class="inline-flex rounded-lg border border-gray-300 px-1 py-0.5 dark:border-gray-600" role="group">
+		<div class="inline-flex rounded-lg border border-gray-300 p-0.5 dark:border-gray-600" role="group">
 			<button
 				type="button"
 				(click)="setViewMode('monthly')"
-				class="rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer"
+				class="rounded-lg px-2.5 py-1 text-xs font-medium cursor-pointer"
 				[class.bg-primary-700]="viewMode() === 'monthly'"
 				[class.text-white]="viewMode() === 'monthly'"
 				[class.text-gray-600]="viewMode() !== 'monthly'"
@@ -34,7 +34,7 @@
 			<button
 				type="button"
 				(click)="setViewMode('daily')"
-				class="rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer"
+				class="rounded-lg px-2.5 py-1 text-xs font-medium cursor-pointer"
 				[class.bg-primary-700]="viewMode() === 'daily'"
 				[class.text-white]="viewMode() === 'daily'"
 				[class.text-gray-600]="viewMode() !== 'daily'"

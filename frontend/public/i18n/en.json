@@ -166,6 +166,11 @@
     }, 
     "summary": {
         "title": "Summary",
+        "tabs": {
+            "label": "Summary category",
+            "assets": "Assets",
+            "liabilities": "Liabilities"
+        },
         "periodNavigator": {
             "previousMonth": "Previous month",
             "nextMonth": "Next month",
@@ -176,13 +181,24 @@
             "allAccounts": "All accounts"
         },
         "kpis": {
-            "netWorth": "Net Worth",
+            "netWorth": "Total Assets",
             "income": "Income",
             "expenses": "Expenses",
             "vsPreviousPeriod": "vs previous period"
         },
+        "liabilities": {
+            "totalDebt": "Total Debt",
+            "debtChange": "Debt Change",
+            "debtOverTimeTitle": "Debt Over Time",
+            "debtActivityTitle": "Debt Activity",
+            "debtRankingTitle": "Debt by Account",
+            "principalPaid": "Principal Paid",
+            "newDebt": "New Debt",
+            "netDebtChange": "Net Debt Change"
+        },
         "charts": {
             "balanceTitle": "Balance Over Time",
+            "assetBalanceTitle": "Assets Over Time",
             "totalBalance": "Total Balance",
             "cashflowTitle": "Income & Expenses",
             "rankingTitle": "Account Ranking",
