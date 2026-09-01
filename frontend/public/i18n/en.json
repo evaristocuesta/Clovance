@@ -192,6 +192,9 @@
             "debtOverTimeTitle": "Debt Over Time",
             "debtActivityTitle": "Debt Activity",
             "debtRankingTitle": "Debt by Account",
+            "rankingByDebt": "By Debt",
+            "rankingByPrincipalPaid": "By Principal Paid",
+            "rankingByNewDebt": "By New Debt",
             "principalPaid": "Principal Paid",
             "newDebt": "New Debt",
             "netDebtChange": "Net Debt Change"
@@ -203,7 +206,8 @@
             "cashflowTitle": "Income & Expenses",
             "rankingTitle": "Account Ranking",
             "rankingByBalance": "By Balance",
-            "rankingByCashflow": "By Expenses",
+            "rankingByIncome": "By Income",
+            "rankingByExpenses": "By Expenses",
             "income": "Income",
             "expenses": "Expenses",
             "net": "Net"
