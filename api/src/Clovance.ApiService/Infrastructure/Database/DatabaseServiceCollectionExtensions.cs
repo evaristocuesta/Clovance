@@ -12,17 +12,24 @@ public static class DatabaseServiceCollectionExtensions
 
         var connectionString = configuration.GetConnectionString("clovance-database");
 
-        services.AddDbContext<ClovanceDbContext>(options =>
+        Action<DbContextOptionsBuilder> configureDbContext = options =>
         {
             options
                 .UseNpgsql(
-                    connectionString, 
+                    connectionString,
                     npgsqlOptions =>
                     {
                         npgsqlOptions.MigrationsHistoryTable("ef_migrations_history");
                     })
                 .UseSnakeCaseNamingConvention();
-        });
+        };
+
+        services.AddDbContext<ClovanceDbContext>(
+            configureDbContext,
+            contextLifetime: ServiceLifetime.Scoped,
+            optionsLifetime: ServiceLifetime.Singleton);
+
+        services.AddDbContextFactory<ClovanceDbContext>(configureDbContext);
 
         services
           .AddIdentityCore<ApplicationUser>(options =>
