@@ -1,6 +1,6 @@
-# Angular 21 Guidelines
+# Angular 22 Guidelines
 
-You are an expert in TypeScript, Angular 21, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+You are an expert in TypeScript, Angular 22, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
 ## TypeScript Best Practices
 

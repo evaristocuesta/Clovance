@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Clovance.ApiService.Infrastructure.Authentication;
+﻿namespace Clovance.ApiService.Infrastructure.Authentication;
 
 public static class RefreshTokenCookieExtensions
 {
@@ -13,7 +11,7 @@ public static class RefreshTokenCookieExtensions
     /// <param name="refreshToken">The refresh token value</param>
     /// <param name="expiresAt">When the cookie should expire</param>
     public static void SetRefreshTokenCookie(
-        this Microsoft.AspNetCore.Http.HttpResponse response,
+        this HttpResponse response,
         string refreshToken,
         DateTimeOffset expiresAt)
     {
@@ -25,7 +23,7 @@ public static class RefreshTokenCookieExtensions
             Secure = httpContext.Request.IsHttps,
             SameSite = SameSiteMode.Strict,
             Expires = expiresAt,
-            Path = "/api/auth/refresh"
+            Path = "/api/auth"
         };
 
         response.Cookies.Append(RefreshTokenCookieName, refreshToken, cookieOptions);
@@ -49,7 +47,7 @@ public static class RefreshTokenCookieExtensions
     {
         response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions
         {
-            Path = "/api/auth/refresh"
+            Path = "/api/auth"
         });
     }
 }

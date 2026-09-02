@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;

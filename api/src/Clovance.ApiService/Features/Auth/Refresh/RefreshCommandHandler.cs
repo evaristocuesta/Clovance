@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Clovance.ApiService.Domain.RefreshTokens;
+﻿using Clovance.ApiService.Domain.RefreshTokens;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Authentication;
 using Clovance.ApiService.Infrastructure.Database;
