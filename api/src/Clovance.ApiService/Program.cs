@@ -19,6 +19,7 @@ builder.AddServiceDefaults();
 builder.Services.AddProblemDetails();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddMemoryCache();
+builder.Services.AddRefreshTokenCleanup(builder.Configuration);
 builder.Services.AddHttpClient<ICurrencyConverter, FrankfurterCurrencyConverter>();
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>()
