@@ -14,7 +14,8 @@ import { CashflowChartPoint } from '../models/summary-chart.model';
 })
 export class CashflowChart {
   private readonly translocoService = inject(TranslocoService);
-
+  
+  readonly title = input('');
   readonly points = input<CashflowChartPoint[]>([]);
   readonly currency = input('EUR');
   readonly currencyOptions = input<Currency[]>([]);
