@@ -16,6 +16,7 @@ import { BalanceChartPoint } from '../models/summary-chart.model';
 export class BalanceChart {
   private readonly translocoService = inject(TranslocoService);
 
+  readonly title = input('');
   readonly points = input<BalanceChartPoint[]>([]);
   readonly accounts = input<Account[]>([]);
   readonly selectedAccountId = input<string | null>(null);
