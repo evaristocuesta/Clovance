@@ -41,8 +41,9 @@ public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
             {
                 _dbContext.RefreshTokens.Remove(token);
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                httpContext.Response.DeleteRefreshTokenCookie();
             }
+
+            httpContext.Response.DeleteRefreshTokenCookie();
         }
 
         return Result.Success();
