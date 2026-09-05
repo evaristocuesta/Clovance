@@ -23,7 +23,10 @@ describe('PeriodNavigator', () => {
   });
 
   it('clears a selected account when it is no longer available', async () => {
-    const accountSelect = fixture.nativeElement.querySelectorAll('select')[1] as HTMLSelectElement;
+    // The currency select is only rendered when there is more than one currency,
+    // so with a single currency the account select is the only/last one.
+    const selects = fixture.nativeElement.querySelectorAll('select') as NodeListOf<HTMLSelectElement>;
+    const accountSelect = selects[selects.length - 1];
     accountSelect.value = 'asset-account';
     accountSelect.dispatchEvent(new Event('change'));
     fixture.detectChanges();
