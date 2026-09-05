@@ -1,50 +1,39 @@
 <div class="relative" *transloco="let t">
-  <button type="button"
-          data-dropdown-toggle="language-dropdown"
-          data-tooltip-target="tooltip-language-selection"
-          class="inline-flex justify-center items-center p-2 text-sm text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+  <button type="button" data-dropdown-toggle="language-dropdown" data-tooltip-target="tooltip-language-selection"
+    class="inline-flex justify-center items-center p-2 text-sm text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
     <!-- Spanish Flag -->
     @if (getCurrentLanguage() === 'es') {
-      <app-icon
-          name="flag-es"
-          class="h-6 w-6">
-      </app-icon>
+    <app-icon name="flag-es" class="h-6 w-6">
+    </app-icon>
     }
     <!-- US Flag -->
     @if (getCurrentLanguage() === 'en') {
-      <app-icon
-          name="flag-en"
-          class="h-6 w-6">
-      </app-icon>
+    <app-icon name="flag-en" class="h-6 w-6">
+    </app-icon>
     }
   </button>
   <!-- Dropdown -->
-  <div class="hidden z-50 my-4 w-40 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700"
-       id="language-dropdown">
+  <div
+    class="hidden z-50 my-4 w-40 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700"
+    id="language-dropdown">
     <ul class="py-1" role="none">
       <li>
-        <button type="button"
-           (click)="changeLanguage('es')"
-           class="block py-2 px-4 w-full text-left cursor-pointer text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
-           role="menuitem">
+        <button type="button" (click)="changeLanguage('es')"
+          class="block py-2 px-4 w-full text-left cursor-pointer text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
+          role="menuitem">
           <div class="inline-flex items-center gap-2">
-            <app-icon
-                name="flag-es"
-                class="h-6 w-6">
+            <app-icon name="flag-es" class="h-6 w-6">
             </app-icon>
             {{ t('language.spanish') }}
           </div>
         </button>
       </li>
       <li>
-        <button type="button"
-           (click)="changeLanguage('en')"
-           class="block py-2 px-4 w-full text-left cursor-pointer text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
-           role="menuitem">
+        <button type="button" (click)="changeLanguage('en')"
+          class="block py-2 px-4 w-full text-left cursor-pointer text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-600"
+          role="menuitem">
           <div class="inline-flex items-center gap-2">
-            <app-icon
-                name="flag-en"
-                class="h-6 w-6">
+            <app-icon name="flag-en" class="h-6 w-6">
             </app-icon>
             {{ t('language.english') }}
           </div>
@@ -52,13 +41,12 @@
       </li>
     </ul>
   </div>
-  <div id="tooltip-language-selection" 
-       role="tooltip" 
-       class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white whitespace-nowrap transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+  <div id="tooltip-language-selection" role="tooltip"
+    class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white whitespace-nowrap transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
     @if (getCurrentLanguage() === 'es') {
-        Español
+    Español
     } @else {
-        English
+    English
     }
     <div class="tooltip-arrow" data-popper-arrow></div>
   </div>
