@@ -251,7 +251,7 @@
         "typePlaceholder": "Select a type",
         "typeRequired": "Type is required", 
         "openingBalanceDescription": "Opening balance",
-        "openingBalanceLabel": "Opening Balance",
+        "openingBalanceLabel": "Opening Balance (negative for credit card, loan, or mortgage)",
         "openingBalancePlaceholder": "Enter the opening balance (negative for credit card, loan, or mortgage)", 
         "openingDateLabel": "Opening Balance Date",
         "openingDatePlaceholder": "Select the opening balance date", 

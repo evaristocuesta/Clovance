@@ -251,7 +251,7 @@
         "typePlaceholder": "Selecciona un tipo",
         "typeRequired": "El tipo es obligatorio", 
         "openingBalanceDescription": "Saldo inicial",
-        "openingBalanceLabel": "Saldo inicial",
+        "openingBalanceLabel": "Saldo inicial (negativo para tarjeta de crédito, préstamo o hipoteca)",
         "openingBalancePlaceholder": "Introduce el saldo inicial (negativo para tarjeta de crédito, préstamo o hipoteca)",
         "openingDateLabel": "Fecha del saldo inicial",
         "openingDatePlaceholder": "Selecciona la fecha del saldo inicial", 
