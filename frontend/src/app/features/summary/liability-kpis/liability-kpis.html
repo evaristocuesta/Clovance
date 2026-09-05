@@ -7,9 +7,9 @@
 			{{ formattedDebt() }}
 		</p>
 		@if (debtVariation(); as variation) {
-			<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-primary-600]="variation <= 0">
-				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
-			</p>
+		<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-primary-600]="variation <= 0">
+			{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
+		</p>
 		}
 	</div>
 
@@ -21,9 +21,9 @@
 			{{ formattedPrincipalPaid() }}
 		</p>
 		@if (principalPaidVariation(); as variation) {
-			<p class="text-xs font-medium" [class.text-primary-600]="variation >= 0" [class.text-red-600]="variation < 0">
-				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
-			</p>
+		<p class="text-xs font-medium" [class.text-primary-600]="variation >= 0" [class.text-red-600]="variation < 0">
+			{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
+		</p>
 		}
 	</div>
 
@@ -35,9 +35,9 @@
 			{{ formattedNewDebt() }}
 		</p>
 		@if (newDebtVariation(); as variation) {
-			<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-primary-600]="variation <= 0">
-				{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
-			</p>
+		<p class="text-xs font-medium" [class.text-red-600]="variation > 0" [class.text-primary-600]="variation <= 0">
+			{{ variation >= 0 ? '+' : '' }}{{ variation | number: '1.1-1' }}% {{ t('summary.kpis.vsPreviousPeriod') }}
+		</p>
 		}
 	</div>
 
