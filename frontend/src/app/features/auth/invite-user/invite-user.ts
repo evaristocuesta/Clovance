@@ -7,10 +7,11 @@ import { Icon } from "@shared/ui/icon/icon";
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { DialogRef } from '@angular/cdk/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
+import { Dialog } from '@shared/ui/dialog/dialog';
 
 @Component({
   selector: 'app-invite-user',
-  imports: [Icon, FormRoot, FormField, TranslocoModule],
+  imports: [Icon, FormRoot, FormField, TranslocoModule, Dialog],
   templateUrl: './invite-user.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './invite-user.css',

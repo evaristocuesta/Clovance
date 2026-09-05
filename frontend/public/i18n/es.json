@@ -213,6 +213,9 @@
             "net": "Neto"
         }
     },
+    "common": {
+        "closeDialog": "Cerrar dialogo"
+    },
     "accounts": {
         "title": "Cuentas", 
         "account": "Cuenta",

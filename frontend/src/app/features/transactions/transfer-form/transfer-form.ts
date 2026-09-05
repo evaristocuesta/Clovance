@@ -10,6 +10,7 @@ import { Icon } from '@shared/ui/icon/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { toDateOnlyString } from '@shared/utils/date-utils';
+import { Dialog } from '@shared/ui/dialog/dialog';
 
 export interface TransferFormData {
   toTransaction?: Transaction;
@@ -19,7 +20,7 @@ export interface TransferFormData {
 
 @Component({
   selector: 'app-transfer-form',
-  imports: [TranslocoDirective, FormField, FormRoot, Icon],
+  imports: [TranslocoDirective, FormField, FormRoot, Icon, Dialog],
   templateUrl: './transfer-form.html',
   styleUrl: './transfer-form.css',
 })

@@ -3,7 +3,7 @@ import type { LoanPaymentFormData } from '../loan-payment-form/loan-payment-form
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Icon } from "@shared/ui/icon/icon";
 import { TransactionCard } from "../transaction-card/transaction-card";
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { DialogRef } from '@angular/cdk/dialog';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { auditTime, distinctUntilChanged, filter, finalize, fromEvent, map, take, tap } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
@@ -14,6 +14,7 @@ import { TransactionForm, TransactionFormData } from '../transaction-form/transa
 import { TransferForm, TransferFormData } from '../transfer-form/transfer-form';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
 import { LoanPaymentForm } from '../loan-payment-form/loan-payment-form';
+import { DialogService } from '@shared/ui/dialog/dialog.service';
 
 @Component({
   selector: 'app-transaction-list',
@@ -29,7 +30,7 @@ export class TransactionList {
   private readonly transactionService = inject(TransactionService);
   private readonly destroyRef = inject(DestroyRef);
   readonly translocoService = inject(TranslocoService);
-  readonly dialog = inject(Dialog);
+  private readonly dialogService = inject(DialogService);
   private readonly cursorDate = signal<string | null>(null);
   private readonly cursorId = signal<string | null>(null);
   protected readonly hasMoreTransactions = signal(true);
@@ -126,9 +127,7 @@ export class TransactionList {
       accounts: this.accounts(),
     };
 
-    const dialogRef = this.dialog.open<boolean>(LoanPaymentForm, {
-          width: '640px',
-          maxHeight: '90vh',
+    const dialogRef = this.dialogService.open<boolean>(LoanPaymentForm, {
           data: dialogData,
         });
     
@@ -140,8 +139,7 @@ export class TransactionList {
       accounts: this.accounts(),
     };
 
-    const dialogRef = this.dialog.open<boolean>(TransferForm, {
-          width: '640px',
+    const dialogRef = this.dialogService.open<boolean>(TransferForm, {
           height: 'auto', 
           data: dialogData,
         });
@@ -155,8 +153,7 @@ export class TransactionList {
       accounts: this.accounts(),
     };
 
-    const dialogRef = this.dialog.open<boolean>(TransactionForm, {
-          width: '640px',
+    const dialogRef = this.dialogService.open<boolean>(TransactionForm, {
           height: 'auto', 
           data: dialogData,
         });
@@ -170,8 +167,7 @@ export class TransactionList {
       accounts: this.accounts(),
     };
 
-    const dialogRef = this.dialog.open<boolean>(TransactionForm, {
-          width: '640px',
+    const dialogRef = this.dialogService.open<boolean>(TransactionForm, {
           height: 'auto', 
           data: dialogData,
         });
@@ -202,8 +198,7 @@ export class TransactionList {
   onDelete(transactionId: string): void {
     const description = this.transactions()?.find((transaction) => transaction.id === transactionId)?.description || '';
     
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      width: '640px',
+    const dialogRef = this.dialogService.open(ConfirmDialog, {
       height: 'auto',
       data: {
         title: this.translocoService.translate('transactions.confirmDeleteTitle'),
@@ -258,8 +253,7 @@ export class TransactionList {
       accounts: this.accounts(),
     };
 
-    const dialogRef = this.dialog.open<boolean>(TransactionForm, {
-      width: '640px',
+    const dialogRef = this.dialogService.open<boolean>(TransactionForm, {
       height: 'auto',
       data: dialogData,
     });
@@ -289,8 +283,7 @@ export class TransactionList {
       dialogData = this.buildTransferDialogData(transaction, relatedTransaction);
     }
 
-    const dialogRef = this.dialog.open<boolean>(TransferForm, {
-      width: '640px',
+    const dialogRef = this.dialogService.open<boolean>(TransferForm, {
       height: 'auto',
       data: dialogData,
     });
@@ -321,9 +314,7 @@ export class TransactionList {
       dialogData = this.buildLoanPaymentDialogData(transaction, relatedTransaction);
     } 
 
-    const dialogRef = this.dialog.open<boolean>(LoanPaymentForm, {
-      width: '640px',
-      maxHeight: '90vh',
+    const dialogRef = this.dialogService.open<boolean>(LoanPaymentForm, {
       data: dialogData,
     });
 

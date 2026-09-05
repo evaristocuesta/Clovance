@@ -11,10 +11,11 @@ import { Icon } from "@shared/ui/icon/icon";
 import { Currency } from '../models/currency.model';
 import { AccountOpeningBalance } from '../models/accountOpeningBalance';
 import { toDateOnlyString } from '@shared/utils/date-utils';
+import { Dialog } from '@shared/ui/dialog/dialog';
 
 @Component({
   selector: 'app-account-form',
-  imports: [TranslocoDirective, FormField, FormRoot, Icon],
+  imports: [TranslocoDirective, FormField, FormRoot, Icon, Dialog],
   templateUrl: './account-form.html',
   styleUrl: './account-form.css',
 })

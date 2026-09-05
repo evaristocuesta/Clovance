@@ -4,11 +4,12 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AccountCard } from '../account-card/account-card';
 import { AccountService } from '../services/account.service';
 import { Icon } from "@shared/ui/icon/icon";
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { DialogRef } from '@angular/cdk/dialog';
 import { AccountForm } from '../account-form/account-form';
 import { filter, map, startWith, switchMap, take, tap } from 'rxjs';
 import { Account } from '../models/account.model';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
+import { DialogService } from '@shared/ui/dialog/dialog.service';
 
 @Component({
   selector: 'app-accounts-list',
@@ -19,7 +20,7 @@ import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
 export class AccountsList {
   private readonly accountService = inject(AccountService);
   readonly translocoService = inject(TranslocoService);
-  readonly dialog = inject(Dialog);
+  private readonly dialogService = inject(DialogService);
   private readonly refreshTick = signal(0);
 
   readonly currencies = toSignal(this.accountService.getCurrencies(), { initialValue: [] });
@@ -52,8 +53,7 @@ export class AccountsList {
   }
 
   protected onEdit(accountId: string): void {
-    const dialogRef = this.dialog.open<boolean>(AccountForm, {
-      width: '640px',
+    const dialogRef = this.dialogService.open<boolean>(AccountForm, {
       height: 'auto',
       data: { id: accountId }
     });
@@ -65,8 +65,7 @@ export class AccountsList {
 
     const name = this.accounts()?.find((account) => account.id === accountId)?.name || '';
 
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      width: '640px',
+    const dialogRef = this.dialogService.open(ConfirmDialog, {
       height: 'auto',
       data: {
         title: this.translocoService.translate('accounts.confirmDeleteTitle'),
@@ -98,8 +97,7 @@ export class AccountsList {
 
     const name = this.accounts()?.find((account) => account.id === accountId)?.name || '';
 
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-          width: '640px',
+    const dialogRef = this.dialogService.open(ConfirmDialog, {
           height: 'auto',
           data: {
             title: this.translocoService.translate('accounts.confirmRestoreTitle'),
@@ -128,8 +126,7 @@ export class AccountsList {
   }
 
   protected onAdd(): void {
-    const dialogRef = this.dialog.open<boolean>(AccountForm, {
-      width: '640px',
+    const dialogRef = this.dialogService.open<boolean>(AccountForm, {
       height: 'auto',
     });
 

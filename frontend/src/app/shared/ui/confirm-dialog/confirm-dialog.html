@@ -1,25 +1,5 @@
-<div
-  aria-modal="true"
-  [attr.aria-labelledby]="'confirm-dialog-title'"
-  class="w-full max-w-md rounded-lg bg-white shadow-lg dark:bg-gray-800">
-
-  <div class="flex justify-between items-center p-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        {{ data?.title }}
-    </h3>
-    <button 
-        type="button" 
-        (click)="cancel()"
-        class="text-gray-400 cursor-pointer bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="inviteUserModal">
-        <app-icon
-            name="close"
-            class="w-5 h-5">
-        </app-icon>
-        <span class="sr-only">Close modal</span>
-    </button>
-  </div>
-
-  <div class="p-4">
+<app-dialog [title]="data?.title ?? ''">
+  <div dialog-body>
 
     <p class="text-gray-600 dark:text-gray-400">
       {{ data?.message }}
@@ -27,7 +7,7 @@
 
   </div>
 
-  <div class="flex justify-end gap-2 border-t p-4 dark:border-gray-600">
+  <div dialog-footer class="flex justify-end gap-2">
 
     <button
       type="button"
@@ -58,5 +38,4 @@
     </button>
 
   </div>
-
-</div>
+</app-dialog>
