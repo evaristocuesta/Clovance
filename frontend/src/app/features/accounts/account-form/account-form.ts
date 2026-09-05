@@ -106,7 +106,7 @@ export class AccountForm implements OnInit {
                 var accountToCreate: AccountOpeningBalance = field().value();
                 if (accountToCreate.openingBalance !== null) {
                   accountToCreate.openingDescription = this.translocoService.translate('accounts.openingBalanceDescription');
-                  accountToCreate.openingDate = toDateOnlyString(new Date());
+                  accountToCreate.openingDate = toDateOnlyString(accountToCreate.openingDate);
                 }
 
                 await firstValueFrom(this.accountService.createAccount(accountToCreate));
