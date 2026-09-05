@@ -43,15 +43,17 @@
 			</button>
 		</div>
 
-		<select
-			[value]="currency()"
-			[attr.aria-label]="t('summary.periodNavigator.currency')"
-			(change)="onCurrencyChange($any($event.target).value)"
-			class="block rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-			@for (option of currencies(); track option) {
-				<option [value]="option" [selected]="option === currency()">{{ option }} ({{ currencySymbol(option) }})</option>
-			}
-		</select>
+		@if (currencies().length > 1) {
+			<select
+				[value]="currency()"
+				[attr.aria-label]="t('summary.periodNavigator.currency')"
+				(change)="onCurrencyChange($any($event.target).value)"
+				class="block rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+				@for (option of currencies(); track option) {
+					<option [value]="option" [selected]="option === currency()">{{ option }} ({{ currencySymbol(option) }})</option>
+				}
+			</select>
+		}
 
 		<select
 			[attr.aria-label]="t('summary.periodNavigator.account')"
