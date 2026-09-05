@@ -5,7 +5,7 @@ import { Icon } from "@shared/ui/icon/icon";
 import { TransactionCard } from "../transaction-card/transaction-card";
 import { DialogRef } from '@angular/cdk/dialog';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { auditTime, distinctUntilChanged, filter, finalize, fromEvent, map, take, tap } from 'rxjs';
+import { Observable, auditTime, distinctUntilChanged, filter, finalize, fromEvent, map, of, take, tap } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 import { TransactionFilters, TransactionService } from '../services/transaction.service';
 import { AccountService } from '@features/accounts/services/account.service';
@@ -261,34 +261,27 @@ export class TransactionList {
     this.refreshOnDialogSuccess(dialogRef);
   }
 
+  private getRelatedTransaction(relatedTransactionId: string): Observable<Transaction> {
+    const relatedTransaction = this.transactions()?.find((t) => t.id === relatedTransactionId);
+
+    return relatedTransaction
+      ? of(relatedTransaction)
+      : this.transactionService.getTransactionById(relatedTransactionId);
+  }
+
   private editTransfer(transaction: Transaction) {
     if (!transaction.relatedTransactionId) {
       return;
     }
-    
-    var relatedTransaction = this.transactions()?.find((t) => t.id === transaction.relatedTransactionId);
 
-    let dialogData: TransferFormData = {
-      accounts: this.accounts(),
-    };
-
-    if (!relatedTransaction) {
-      this.transactionService.getTransactionById(transaction.relatedTransactionId).subscribe({
-        next: (fetchedRelatedTransaction) => {
-          relatedTransaction = fetchedRelatedTransaction;
-          dialogData = this.buildTransferDialogData(transaction, relatedTransaction);
-        }
+    this.getRelatedTransaction(transaction.relatedTransactionId).subscribe((relatedTransaction) => {
+      const dialogRef = this.dialogService.open<boolean>(TransferForm, {
+        height: 'auto',
+        data: this.buildTransferDialogData(transaction, relatedTransaction),
       });
-    } else {
-      dialogData = this.buildTransferDialogData(transaction, relatedTransaction);
-    }
 
-    const dialogRef = this.dialogService.open<boolean>(TransferForm, {
-      height: 'auto',
-      data: dialogData,
+      this.refreshOnDialogSuccess(dialogRef);
     });
-
-    this.refreshOnDialogSuccess(dialogRef);
   }
 
   private editLoanPayment(transaction: Transaction) {
@@ -296,28 +289,12 @@ export class TransactionList {
       return;
     }
 
-    let dialogData: TransferFormData = {
-      accounts: this.accounts(),
-    };
-
-    const relatedTransaction = this.transactions()?.find((t) => t.id === transaction.relatedTransactionId);
-
-    if (!relatedTransaction) {
-      this.transactionService.getTransactionById(transaction.relatedTransactionId).subscribe({
-        next: (fetchedRelatedTransaction) => {
-          dialogData = this.buildLoanPaymentDialogData(transaction, fetchedRelatedTransaction);
-        }
+    this.getRelatedTransaction(transaction.relatedTransactionId).subscribe((relatedTransaction) => {
+      const dialogRef = this.dialogService.open<boolean>(LoanPaymentForm, {
+        data: this.buildLoanPaymentDialogData(transaction, relatedTransaction),
       });
 
-      return;
-    } else {
-      dialogData = this.buildLoanPaymentDialogData(transaction, relatedTransaction);
-    } 
-
-    const dialogRef = this.dialogService.open<boolean>(LoanPaymentForm, {
-      data: dialogData,
+      this.refreshOnDialogSuccess(dialogRef);
     });
-
-    this.refreshOnDialogSuccess(dialogRef);
   }
 }
