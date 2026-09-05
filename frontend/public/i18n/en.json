@@ -213,6 +213,9 @@
             "net": "Net"
         }
     },
+    "common": {
+        "closeDialog": "Close dialog"
+    },
     "accounts": {
         "title": "Accounts",
         "account": "Account",

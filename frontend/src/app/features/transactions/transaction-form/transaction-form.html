@@ -1,25 +1,5 @@
-<div class="relative p-4 w-full max-w-2xl z-70" *transloco="let t">
-  <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
-    <!-- Modal content -->
-    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-      <!-- Modal header -->
-      <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ t(`transactions.title${transactionForm.type().value()}`) }}
-            </h3>
-          <button 
-              type="button" 
-              (click)="close()"
-              class="text-gray-400 cursor-pointer bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="inviteUserModal">
-              <app-icon
-                  name="close"
-                  class="w-5 h-5">
-              </app-icon>
-              <span class="sr-only">{{ t('transactions.closeModal') }}</span>
-          </button>
-      </div>
-      <!-- Modal body -->
-      <form [formRoot]="transactionForm" class="space-y-4 md:space-y-6" novalidate>
+<app-dialog [title]="t('transactions.title' + transactionForm.type().value())" *transloco="let t">
+      <form dialog-body id="transaction-form" [formRoot]="transactionForm" class="space-y-4 md:space-y-6" novalidate>
         <div class="pb-4">
           <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('transactions.typeLabel') }}</label>
           <select id="type" [formField]="transactionForm.type" class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" [class.border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.border-gray-300]="!transactionForm.type().invalid() || !transactionForm.type().touched()" [class.dark:border-red-500]="transactionForm.type().invalid() && transactionForm.type().touched()" [class.dark:border-gray-600]="!transactionForm.type().invalid() || !transactionForm.type().touched()">
@@ -69,9 +49,14 @@
             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(transactionForm.accountId().errors()[0].message!) }}</p>
           }
         </div>
-        <div class="flex pb-4 items-end justify-end space-x-4">
+        @if (errorMessage()) {
+          <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(errorMessage()) }}</p>
+        }
+      </form>
+      <div dialog-footer>
           <button
             type="submit"
+            form="transaction-form"
             class="inline-flex w-60 items-center justify-center gap-2 text-white cursor-pointer bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
             <app-icon
               [name]="this.data?.transaction?.id ? 'edit' : 'circle-plus'"
@@ -86,12 +71,6 @@
             ...
             }
           </button>
-        </div>
-        @if (errorMessage()) {
-          <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(errorMessage()) }}</p>
-        }
-      </form>
-    </div>
-  </div>
-</div>
+      </div>
+</app-dialog>
 

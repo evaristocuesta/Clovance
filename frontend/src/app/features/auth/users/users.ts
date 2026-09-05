@@ -3,11 +3,11 @@ import { CreateInvitationResult, UserInfo } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Icon } from "@shared/ui/icon/icon";
-import { Dialog } from '@angular/cdk/dialog';
 import { InviteUser } from '../invite-user/invite-user';
 import { ShowUserInvitation } from '../show-user-invitation/show-user-invitation';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
 import { UserCard } from "../user-card/user-card";
+import { DialogService } from '@shared/ui/dialog/dialog.service';
 
 @Component({
   selector: 'app-users',
@@ -20,7 +20,7 @@ export class Users implements OnInit {
   
   readonly authService = inject(AuthService);
   readonly translocoService = inject(TranslocoService);
-  readonly dialog = inject(Dialog);
+  private readonly dialogService = inject(DialogService);
 
   users = signal<UserInfo[]>([]);
 
@@ -43,8 +43,7 @@ export class Users implements OnInit {
   async deleteUser(id: string) {
     var name = this.users()?.find((user) => user.id === id)?.email || '';
 
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      width: '640px',
+    const dialogRef = this.dialogService.open(ConfirmDialog, {
       height: 'auto',
       data: {
         title: this.translocoService.translate('users.confirmDeleteTitle'),
@@ -73,8 +72,7 @@ export class Users implements OnInit {
   }
 
   openInviteUserModal() {
-    const dialogRef = this.dialog.open<CreateInvitationResult>(InviteUser, {
-      width: '640px',
+    const dialogRef = this.dialogService.open<CreateInvitationResult>(InviteUser, {
       height: 'auto',
     });
 
@@ -86,8 +84,7 @@ export class Users implements OnInit {
   }
 
   openResultModal(result: CreateInvitationResult) {
-    this.dialog.open<ShowUserInvitation, CreateInvitationResult, void>(ShowUserInvitation, {
-      width: '640px',
+    this.dialogService.open<ShowUserInvitation, CreateInvitationResult, void>(ShowUserInvitation, {
       height: 'auto',
       data: result
     });

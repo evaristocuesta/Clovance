@@ -10,6 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Icon } from '@shared/ui/icon/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { Dialog } from '@shared/ui/dialog/dialog';
 
 export interface LoanPaymentFormData {
   toTransaction?: Transaction;
@@ -19,7 +20,7 @@ export interface LoanPaymentFormData {
 
 @Component({
   selector: 'app-loan-payment-form',
-  imports: [TranslocoDirective, FormField, FormRoot, Icon],
+  imports: [TranslocoDirective, FormField, FormRoot, Icon, Dialog],
   templateUrl: './loan-payment-form.html',
   styleUrl: './loan-payment-form.css',
 })

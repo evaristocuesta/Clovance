@@ -4,10 +4,11 @@ import { Icon } from "../icon/icon";
 import { ConfirmDialogOptions } from './confirm-dialog-options';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { IconName } from '../icon/icon-name';
+import { Dialog } from '../dialog/dialog';
 
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [CommonModule, Icon],
+  imports: [CommonModule, Icon, Dialog],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.css',
   changeDetection: ChangeDetectionStrategy.OnPush

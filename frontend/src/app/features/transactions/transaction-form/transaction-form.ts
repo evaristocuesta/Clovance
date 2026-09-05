@@ -9,6 +9,7 @@ import { Icon } from '@shared/ui/icon/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Account } from '@features/accounts/models/account.model';
 import { toDateOnlyString } from '@shared/utils/date-utils';
+import { Dialog } from '@shared/ui/dialog/dialog';
 
 export interface TransactionFormData {
   transaction?: Transaction;
@@ -18,7 +19,7 @@ export interface TransactionFormData {
 
 @Component({
   selector: 'app-transaction-form',
-  imports: [TranslocoDirective, FormField, FormRoot, Icon],
+  imports: [TranslocoDirective, FormField, FormRoot, Icon, Dialog],
   templateUrl: './transaction-form.html',
   styleUrl: './transaction-form.css',
 })
