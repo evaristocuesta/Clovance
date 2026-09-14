@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Clovance.ApiService.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ClovanceDbContext))]
-    [Migration("20260909184427_AddPasswordResetToken")]
+    [Migration("20260914170701_AddPasswordResetToken")]
     partial class AddPasswordResetToken
     {
         /// <inheritdoc />
@@ -120,19 +120,19 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_password_reset_token");
+                        .HasName("pk_password_reset_tokens");
 
                     b.HasIndex("ExpiresAt")
-                        .HasDatabaseName("ix_password_reset_token_expires_at");
+                        .HasDatabaseName("ix_password_reset_tokens_expires_at");
 
                     b.HasIndex("TokenHash")
                         .IsUnique()
-                        .HasDatabaseName("ix_password_reset_token_token_hash");
+                        .HasDatabaseName("ix_password_reset_tokens_token_hash");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_password_reset_token_user_id");
+                        .HasDatabaseName("ix_password_reset_tokens_user_id");
 
-                    b.ToTable("password_reset_token", (string)null);
+                    b.ToTable("password_reset_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Clovance.ApiService.Domain.RefreshTokens.RefreshToken", b =>
