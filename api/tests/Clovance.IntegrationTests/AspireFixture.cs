@@ -1,6 +1,6 @@
 ﻿using Aspire.Hosting;
 using Aspire.Hosting.Testing;
-using Clovance.ApiService.Infrastructure.Authentication;
+using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
