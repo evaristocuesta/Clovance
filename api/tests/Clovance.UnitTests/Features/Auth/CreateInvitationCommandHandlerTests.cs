@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Auth.CreateInvitation;
-using Clovance.ApiService.Infrastructure.Authentication;
+using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Clovance.ApiService.Infrastructure.Database;
-using Clovance.ApiService.Infrastructure.UserInvitations;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

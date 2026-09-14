@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using Clovance.ApiService.Domain.RefreshTokens;
 using Clovance.ApiService.Features.Auth.Refresh;
-using Clovance.ApiService.Infrastructure.Authentication;
+using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;

@@ -6,7 +6,7 @@ using Clovance.ApiService.Features.Auth.GetUsers;
 using Clovance.ApiService.Features.Auth.Login;
 using Clovance.ApiService.Features.Auth.RegisterAdmin;
 using Clovance.ApiService.Features.Auth.RegisterWithInvitation;
-using Clovance.ApiService.Infrastructure.Authentication;
+using Clovance.ApiService.Infrastructure.Auth.Jwt;
 
 namespace Clovance.IntegrationTests;
 
