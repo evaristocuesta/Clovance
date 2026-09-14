@@ -2,16 +2,28 @@
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Clovance.ApiService.Infrastructure.Authentication;
+namespace Clovance.ApiService.Infrastructure.Auth.Jwt;
 
-public static class JwtAuthenticationExtensions
+public static class JwtAuthenticationServiceCollectionExtensions
 {
     public static IServiceCollection AddJwtAuthentication(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
+        services.Configure<JwtOptions>(
+            configuration.GetSection(JwtOptions.SectionName));
+
+        var keyFilePath = configuration["Jwt:KeyFilePath"] ?? "/home/app/jwt.key";
+        var jwtSecret = JwtSigningKeyLoader.LoadOrGenerate(keyFilePath);
+
+        services.PostConfigure<JwtOptions>(options => options.Key = jwtSecret);
+
+        services.AddSingleton<IJwtTokenService, JwtTokenService>();
+
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
