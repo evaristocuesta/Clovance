@@ -91,6 +91,9 @@ public static class AppErrors
         
         public static Error SetupIsNotCompleted() =>
             CreateConflict(ErrorCodes.Auth.SetupIsNotCompleted, "Setup is not completed.");
+
+        public static Error EmailNotConfigured() =>
+            CreateConflict(ErrorCodes.Auth.EmailNotConfigured, "Email service is not configured.");
     }
 
     public static class Accounts

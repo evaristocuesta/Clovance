@@ -11,6 +11,8 @@ public sealed class SmtpEmailSender(
 {
     private readonly SmtpOptions _options = options.Value;
 
+    public bool IsConfigured => !string.IsNullOrWhiteSpace(_options.Host);
+
     public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
     {
         var mimeMessage = new MimeMessage();
