@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Clovance.ApiService.Infrastructure.Authentication;
+namespace Clovance.ApiService.Infrastructure.Auth.Jwt;
 
 public interface IJwtTokenService
 {

@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace Clovance.ApiService.Infrastructure.Authentication;
+namespace Clovance.ApiService.Infrastructure.Auth.Jwt;
 
 public static class JwtSigningKeyLoader
 {

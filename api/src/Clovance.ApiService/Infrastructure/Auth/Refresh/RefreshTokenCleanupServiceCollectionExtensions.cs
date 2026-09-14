@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-namespace Clovance.ApiService.Infrastructure.Authentication;
+﻿namespace Clovance.ApiService.Infrastructure.Auth.Refresh;
 
 public static class RefreshTokenCleanupServiceCollectionExtensions
 {

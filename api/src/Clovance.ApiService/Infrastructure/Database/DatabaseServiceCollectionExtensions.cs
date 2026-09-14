@@ -1,4 +1,4 @@
-﻿using Clovance.ApiService.Infrastructure.UserInvitations;
+﻿using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +8,6 @@ public static class DatabaseServiceCollectionExtensions
 {
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<UserInvitationOptions>(configuration.GetSection(UserInvitationOptions.SectionName));
-
         var connectionString = configuration.GetConnectionString("clovance-database");
 
         Action<DbContextOptionsBuilder> configureDbContext = options =>

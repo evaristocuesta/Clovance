@@ -1,6 +1,6 @@
 ﻿using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Shared;
-using Clovance.ApiService.Infrastructure.Authentication;
+using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

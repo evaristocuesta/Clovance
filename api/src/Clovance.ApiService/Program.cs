@@ -1,7 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using Clovance.ApiService.Exceptions;
 using Clovance.ApiService.Features.Shared;
-using Clovance.ApiService.Infrastructure.Authentication;
+using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.PasswordReset;
+using Clovance.ApiService.Infrastructure.Auth.Refresh;
+using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.Email;
 using Clovance.ApiService.Infrastructure.ExternalServices;
@@ -22,20 +25,13 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddMemoryCache();
 builder.Services.AddSmtpEmailSender(builder.Configuration);
 builder.Services.AddRefreshTokenCleanup(builder.Configuration);
+builder.Services.AddUserInvitationService(builder.Configuration);
+builder.Services.AddPasswordReset(builder.Configuration);
 builder.Services.AddHttpClient<ICurrencyConverter, FrankfurterCurrencyConverter>();
-builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>()
     .AddProblemDetails();
 
-builder.Services.Configure<JwtOptions>(
-    builder.Configuration.GetSection(JwtOptions.SectionName));
-
-var keyFilePath = builder.Configuration["Jwt:KeyFilePath"] ?? "/home/app/jwt.key";
-var jwtSecret = JwtSigningKeyLoader.LoadOrGenerate(keyFilePath);
-
-builder.Services.PostConfigure<JwtOptions>(options => options.Key = jwtSecret);
-
-builder.Services.AddJwtAuthentication();
+builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 
 // Add FluentValidation

@@ -1,4 +1,4 @@
-﻿namespace Clovance.ApiService.Infrastructure.UserInvitations;
+﻿namespace Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 
 public sealed class UserInvitationOptions
 {

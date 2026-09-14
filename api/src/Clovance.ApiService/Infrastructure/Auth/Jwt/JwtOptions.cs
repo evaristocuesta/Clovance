@@ -1,4 +1,4 @@
-﻿namespace Clovance.ApiService.Infrastructure.Authentication;
+﻿namespace Clovance.ApiService.Infrastructure.Auth.Jwt;
 
 public sealed class JwtOptions
 {
