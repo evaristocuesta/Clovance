@@ -12,7 +12,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "password_reset_token",
+                name: "password_reset_tokens",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -24,23 +24,23 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_password_reset_token", x => x.id);
+                    table.PrimaryKey("pk_password_reset_tokens", x => x.id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_password_reset_token_expires_at",
-                table: "password_reset_token",
+                name: "ix_password_reset_tokens_expires_at",
+                table: "password_reset_tokens",
                 column: "expires_at");
 
             migrationBuilder.CreateIndex(
-                name: "ix_password_reset_token_token_hash",
-                table: "password_reset_token",
+                name: "ix_password_reset_tokens_token_hash",
+                table: "password_reset_tokens",
                 column: "token_hash",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_password_reset_token_user_id",
-                table: "password_reset_token",
+                name: "ix_password_reset_tokens_user_id",
+                table: "password_reset_tokens",
                 column: "user_id");
         }
 
@@ -48,7 +48,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "password_reset_token");
+                name: "password_reset_tokens");
         }
     }
 }
