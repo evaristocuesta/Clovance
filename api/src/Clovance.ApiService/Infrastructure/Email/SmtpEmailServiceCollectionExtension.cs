@@ -2,7 +2,7 @@
 
 namespace Clovance.ApiService.Infrastructure.Email;
 
-public static class SmtpEmailExtension
+public static class SmtpEmailServiceCollectionExtension
 {
     public static IServiceCollection AddSmtpEmailSender(
         this IServiceCollection services,

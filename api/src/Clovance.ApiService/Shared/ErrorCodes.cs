@@ -50,6 +50,8 @@ public static class ErrorCodes
         public const string PasswordMissingUppercase = "auth.password.missing_uppercase";
         public const string PasswordMissingNonAlphanumeric = "auth.password.missing_non_alphanumeric";
 
+        public const string EmailNotConfigured = "auth.email.not_configured";
+
         public static class FirstName
         {
             public const string Required = "auth.first_name.required";
