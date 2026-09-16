@@ -8,6 +8,7 @@ using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.Email;
 using Clovance.ApiService.Infrastructure.ExternalServices;
+using Clovance.ApiService.Infrastructure.Frontend;
 using Clovance.ApiService.Infrastructure.HttpRequest;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
+builder.Services.AddFrontend(builder.Configuration);
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddMemoryCache();
 builder.Services.AddSmtpEmailSender(builder.Configuration);
