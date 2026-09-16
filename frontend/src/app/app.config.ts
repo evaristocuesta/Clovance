@@ -9,6 +9,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
+import { languageInterceptor } from '@core/interceptors/language.interceptor';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { authInterceptor } from '@core/interceptors/auth.interceptor';
@@ -18,7 +19,7 @@ import { catchError, of } from 'rxjs';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withXhr(), withInterceptors([authInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([authInterceptor, languageInterceptor])),
     provideRouter(routes),
     provideTransloco({
       config: {
