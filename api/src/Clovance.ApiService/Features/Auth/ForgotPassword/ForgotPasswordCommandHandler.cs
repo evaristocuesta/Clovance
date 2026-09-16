@@ -7,6 +7,7 @@ using Clovance.ApiService.Infrastructure.Email;
 using Clovance.ApiService.Infrastructure.Frontend;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordCommand, Result>
@@ -17,6 +18,7 @@ public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordComman
     private readonly FrontendOptions _frontendOptions;
     private readonly PasswordResetOptions _passwordResetOptions;
     private readonly ILogger<ForgotPasswordCommandHandler> _logger;
+    private readonly IStringLocalizer<EmailResources> _localizer;
 
     public ForgotPasswordCommandHandler(
         UserManager<ApplicationUser> userManager,
@@ -24,7 +26,8 @@ public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordComman
         IEmailSender emailSender,
         IOptions<FrontendOptions> frontendOptions,
         IOptions<PasswordResetOptions> passwordResetOptions,
-        ILogger<ForgotPasswordCommandHandler> logger)
+        ILogger<ForgotPasswordCommandHandler> logger,
+        IStringLocalizer<EmailResources> localizer)
     {
         _userManager = userManager;
         _dbContext = dbContext;
@@ -32,6 +35,7 @@ public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordComman
         _frontendOptions = frontendOptions.Value;
         _passwordResetOptions = passwordResetOptions.Value;
         _logger = logger;
+        _localizer = localizer;
     }
 
     public async Task<Result> HandleAsync(ForgotPasswordCommand command, CancellationToken cancellationToken)
@@ -76,14 +80,18 @@ public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordComman
 
     private EmailMessage BuildResetEmail(string toEmail, string plainTextToken)
     {
-        var resetLink = $"{_frontendOptions.BaseUrl}/auth/reset-password?token={Uri.EscapeDataString(plainTextToken)}";
+        var resetLink = $"{_frontendOptions.BaseUrl}/reset-password?token={Uri.EscapeDataString(plainTextToken)}";
 
         var htmlBody = $"""
-            <p>Has solicitado restablecer tu contraseña en Clovance.</p>
-            <p><a href="{resetLink}">Haz clic aquí para restablecer tu contraseña</a></p>
-            <p>Este enlace caduca en {_passwordResetOptions.ExpirationMinutes} minutos. Si no has sido tú, ignora este correo.</p>
+            <p>{_localizer["PasswordReset_Intro"]}</p>
+            <p><a href="{resetLink}">{_localizer["PasswordReset_LinkText"]}</a></p>
+            <p>{_localizer["PasswordReset_Expiration", _passwordResetOptions.ExpirationMinutes]}</p>
+            <p>{_localizer["PasswordReset_Ignore"]}</p>
             """;
 
-        return new EmailMessage(To: toEmail, Subject: "Restablecer tu contraseña en Clovance", HtmlBody: htmlBody);
+        return new EmailMessage(
+            To: toEmail,
+            Subject: _localizer["PasswordReset_Subject"],
+            HtmlBody: htmlBody);
     }
 }
