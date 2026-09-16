@@ -76,7 +76,7 @@ public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordComman
 
     private EmailMessage BuildResetEmail(string toEmail, string plainTextToken)
     {
-        var resetLink = $"{_frontendOptions.BaseUrl}/reset-password?token={Uri.EscapeDataString(plainTextToken)}";
+        var resetLink = $"{_frontendOptions.BaseUrl}/auth/reset-password?token={Uri.EscapeDataString(plainTextToken)}";
 
         var htmlBody = $"""
             <p>Has solicitado restablecer tu contraseña en Clovance.</p>
