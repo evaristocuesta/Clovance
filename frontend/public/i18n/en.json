@@ -25,6 +25,19 @@
         "passwordRequired": "Password is required",
         "serverError": "An error occurred while trying to log in. Please try again later."
     }, 
+    "forgotPassword": {
+        "title": "Forgot your password?",
+        "subtitle": "Enter your email to reset your password.",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "submitButton": "Submit",
+        "confirmationTitle": "Check your email",
+        "confirmationMessage": "We have sent you an email with instructions to reset your password.",
+        "backToLogin": "Back to login",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "serverError": "An error occurred while trying to reset the password. Please try again later."
+    },
     "auth": {
         "invalid_credentials": "Invalid email or password",
         "setup": {
@@ -43,6 +56,9 @@
         }, 
         "password": {
             "change_failed": "Failed to change password"
+        }, 
+        "email": {
+            "not_configured": "Email is not configured to send emails"
         }
     }, 
     "setup": {

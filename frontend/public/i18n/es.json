@@ -25,6 +25,19 @@
         "passwordRequired": "La contraseña es obligatoria",
         "serverError": "Ocurrió un error al intentar iniciar sesión. Por favor, inténtalo de nuevo más tarde."
     }, 
+    "forgotPassword": {
+        "title": "¿Olvidaste tu contraseña?",
+        "subtitle": "Introduce tu email para restablecer tu contraseña.",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Introduce tu email",
+        "submitButton": "Enviar",
+        "confirmationTitle": "Revisa tu email",
+        "confirmationMessage": "Te hemos enviado un email con instrucciones para restablecer tu contraseña.",
+        "backToLogin": "Volver al inicio de sesión",
+        "emailRequired": "El email es obligatorio",
+        "emailInvalid": "Por favor, introduce una dirección de email válida",
+        "serverError": "Ocurrió un error al intentar restablecer la contraseña. Por favor, inténtalo de nuevo más tarde."
+    },
     "auth": {
         "invalid_credentials": "Email o contraseña inválidos",
         "setup": {
@@ -43,6 +56,9 @@
         }, 
         "password": {
             "change_failed": "No se pudo cambiar la contraseña"
+        }, 
+        "email": {
+            "not_configured": "El email no está configurado para poder enviar emails"
         }
     },
     "setup": {
