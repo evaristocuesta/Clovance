@@ -1,36 +1,32 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
-import { LoginRequest } from '@core/models/auth.models';
+import { ForgotPasswordRequest } from '@core/models/auth.models';
 import { form, required, email, FormField, FormRoot } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LogoFull } from "@shared/components/logo-full/logo-full";
+import { LogoFull } from '@shared/components/logo-full/logo-full';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-forgot-password',
   standalone: true,
   imports: [CommonModule, TranslocoDirective, FormField, FormRoot, LogoFull, RouterLink],
-  templateUrl: './login.html',
+  templateUrl: './forgot-password.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './login.css',
+  styleUrl: './forgot-password.css',
 })
-export class Login {
+export class ForgotPassword {
   errorMessage = signal('');
-  loginRequest = signal<LoginRequest>({ email: '', password: '' });
+  submitted = signal(false);
+  forgotPasswordRequest = signal<ForgotPasswordRequest>({ email: '' });
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-  
-  loginForm = form(
-    this.loginRequest,
+  forgotPasswordForm = form(
+    this.forgotPasswordRequest,
     (schema) => {
-      required(schema.email, { message: 'login.emailRequired' });
-      email(schema.email, { message: 'login.emailInvalid' });
-      required(schema.password, {
-        message: 'login.passwordRequired',
-      });
+      required(schema.email, { message: 'forgotPassword.emailRequired' });
+      email(schema.email, { message: 'forgotPassword.emailInvalid' });
     },
     {
       submission: {
@@ -38,11 +34,11 @@ export class Login {
           this.errorMessage.set('');
 
           try {
-            await firstValueFrom(this.authService.login(field().value()));
-            void this.router.navigateByUrl('/');
+            await firstValueFrom(this.authService.forgotPassword(field().value()));
+            this.submitted.set(true);
           } catch (err: HttpErrorResponse | any) {
             const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
-            const key = errorCode ? errorCode : 'login.serverError';
+            const key = errorCode ? errorCode : 'forgotPassword.serverError';
             this.errorMessage.set(key);
           }
         },
