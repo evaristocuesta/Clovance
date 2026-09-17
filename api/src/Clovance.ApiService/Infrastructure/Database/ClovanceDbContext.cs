@@ -1,5 +1,4 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
-using Clovance.ApiService.Domain.PasswordResetTokens;
 using Clovance.ApiService.Domain.RefreshTokens;
 using Clovance.ApiService.Domain.Transactions;
 using Clovance.ApiService.Domain.UserInvitations;
@@ -19,8 +18,6 @@ public sealed class ClovanceDbContext(DbContextOptions<ClovanceDbContext> option
     public DbSet<UserInvitation> UserInvitations => Set<UserInvitation>();
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-
-    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

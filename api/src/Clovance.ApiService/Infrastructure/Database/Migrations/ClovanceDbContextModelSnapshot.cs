@@ -87,51 +87,6 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Clovance.ApiService.Domain.PasswordResetTokens.PasswordResetToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTimeOffset>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_used");
-
-                    b.Property<string>("TokenHash")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("token_hash");
-
-                    b.Property<Guid>("UserId")
-                        .HasMaxLength(100)
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_password_reset_tokens");
-
-                    b.HasIndex("ExpiresAt")
-                        .HasDatabaseName("ix_password_reset_tokens_expires_at");
-
-                    b.HasIndex("TokenHash")
-                        .IsUnique()
-                        .HasDatabaseName("ix_password_reset_tokens_token_hash");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_password_reset_tokens_user_id");
-
-                    b.ToTable("password_reset_tokens", (string)null);
-                });
-
             modelBuilder.Entity("Clovance.ApiService.Domain.RefreshTokens.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -585,7 +540,7 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Clovance.ApiService.Domain.Transactions.Transaction", b =>
                 {
-                    b.HasOne("Clovance.ApiService.Domain.Accounts.Account", "Account")
+                    b.HasOne("Clovance.ApiService.Domain.Accounts.Account", null)
                         .WithMany()
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -596,8 +551,6 @@ namespace Clovance.ApiService.Infrastructure.Database.Migrations
                         .WithOne()
                         .HasForeignKey("Clovance.ApiService.Domain.Transactions.Transaction", "RelatedTransactionId")
                         .HasConstraintName("fk_transactions_transactions_related_transaction_id");
-
-                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
