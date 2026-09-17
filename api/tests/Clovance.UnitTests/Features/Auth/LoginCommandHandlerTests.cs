@@ -61,7 +61,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         var expectedToken = "jwt-token";
         var expectedRefreshToken = "refresh-token-12345";
         var expectedHashedToken = "hashed-refresh-token";
-        var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60);
+        var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
@@ -175,7 +175,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         var roles = new List<string> { "User" };
         var expectedRefreshToken = "refresh-token-abc123";
         var expectedHashedToken = "hashed-refresh-token";
-        var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60);
+        var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
@@ -221,7 +221,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
         _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
-            .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(60)));
+            .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(15)));
 
         _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
         _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashed-refresh-token");

@@ -60,7 +60,7 @@ public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordComman
 
     private EmailMessage BuildResetEmail(string toEmail, string token)
     {
-        var resetLink = $"{_frontendOptions.BaseUrl}/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(toEmail)}";
+        var resetLink = $"{_frontendOptions.BaseUrl}/auth/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(toEmail)}";
 
         var htmlBody = $"""
             <p>{_localizer["PasswordReset_Intro"]}</p>
