@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
-import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo, CreateInvitationCommand, CreateInvitationResult, RegisterWithInvitationRequest, RegisterWithInvitationResult, UpdateUserRequest, ChangePasswordRequest, UpdateUserResult, ForgotPasswordRequest } from '../models/auth.models';
+import { LoginRequest, LoginResponse, RefreshResult, SetupRequest, TokenPayload, UserInfo, CreateInvitationCommand, CreateInvitationResult, RegisterWithInvitationRequest, RegisterWithInvitationResult, UpdateUserRequest, ChangePasswordRequest, UpdateUserResult, ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth.models';
 
 @Service()
 export class AuthService {
@@ -138,6 +138,11 @@ export class AuthService {
   forgotPassword(request: ForgotPasswordRequest): Observable<void> {
     return this.http
       .post<void>('/api/auth/forgot-password', request);
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<void> {
+    return this.http
+      .post<void>('/api/auth/reset-password', request);
   }
 
   readonly isAdmin = computed((): boolean => {
