@@ -8,19 +8,37 @@ Create a `.env` file by filling in the api service image, api service port, fron
 
 ```
 # Container image name for clovance-apiservice
-CLOVANCE_APISERVICE_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-beta5
+CLOVANCE_APISERVICE_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-beta8
 
 # Default container port for clovance-apiservice
 CLOVANCE_APISERVICE_PORT=8080
 
 # Container image name for clovance-frontend
-CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0-beta5
+CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0-beta8
 
 # Parameter postgres-password
 POSTGRES_PASSWORD=your_postgres_password
 
 # Parameter postgres-username
 POSTGRES_USERNAME=your_postgres_username
+
+# Parameter smtp-from-address
+SMTP_FROM_ADDRESS=your_smtp_from_address@example.com
+
+# Parameter smtp-from-name
+SMTP_FROM_NAME=Clovance
+
+# Parameter smtp-host
+SMTP_HOST=smtp.example.com
+
+# Parameter smtp-password
+SMTP_PASSWORD=your_smtp_password
+
+# Parameter smtp-port
+SMTP_PORT=587
+
+# Parameter smtp-username
+SMTP_USERNAME=your_smtp_username
 ```
 
 Create a `docker-compose.yml` file to run the complete application:
@@ -70,6 +88,12 @@ services:
       CLOVANCE_DATABASE_DATABASENAME: "clovance-database"
       ASPNETCORE_ENVIRONMENT: "Production"
       Jwt__KeyFilePath: "/home/app/jwt.key"
+      Smtp__Host: "${SMTP_HOST}"
+      Smtp__Port: "${SMTP_PORT}"
+      Smtp__Username: "${SMTP_USERNAME}"
+      Smtp__Password: "${SMTP_PASSWORD}"
+      Smtp__FromAddress: "${SMTP_FROM_ADDRESS}"
+      Smtp__FromName: "${SMTP_FROM_NAME}"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-apiservice"
