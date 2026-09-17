@@ -38,6 +38,30 @@
         "emailInvalid": "Please enter a valid email address",
         "serverError": "An error occurred while trying to reset the password. Please try again later."
     },
+    "resetPassword": {
+        "title": "Reset your password",
+        "subtitle": "Enter your new password.",
+        "newPasswordLabel": "New Password",
+        "newPasswordPlaceholder": "Enter your new password",
+        "confirmNewPasswordLabel": "Confirm New Password",
+        "confirmNewPasswordPlaceholder": "Confirm your new password",
+        "submitButton": "Reset Password",
+        "newPasswordRequired": "New password is required",
+        "confirmNewPasswordRequired": "Confirm new password is required",
+        "passwordMismatch": "Passwords do not match",
+        "newPasswordMissingNonAlphanumeric": "New password must contain at least one non-alphanumeric character",
+        "serverError": "An error occurred while trying to reset the password. Please try again later.", 
+        "confirmationTitle": "Password Reset Successful", 
+        "confirmationMessage": "Your password has been successfully reset.",
+        "backToLogin": "Back to login", 
+        "invalidLinkTitle": "Invalid or Expired Link", 
+        "invalidLinkMessage": "The link you used to reset your password is invalid or has expired. Please request a new link.", 
+        "requestNewLink": "Request a new link", 
+        "newPasswordMinLength": "New password must be at least 12 characters long", 
+        "newPasswordMissingDigit": "New password must contain at least one digit",
+        "newPasswordMissingUppercase": "New password must contain at least one uppercase letter", 
+        "newPasswordMissingLowercase": "New password must contain at least one lowercase letter"
+    },
     "auth": {
         "invalid_credentials": "Invalid email or password",
         "setup": {
@@ -59,6 +83,9 @@
         }, 
         "email": {
             "not_configured": "Email is not configured to send emails"
+        }, 
+        "password_reset": {
+            "invalid_or_expired_reset_token": "Password reset link is invalid or has expired"
         }
     }, 
     "setup": {

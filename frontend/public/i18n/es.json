@@ -38,6 +38,30 @@
         "emailInvalid": "Por favor, introduce una dirección de email válida",
         "serverError": "Ocurrió un error al intentar restablecer la contraseña. Por favor, inténtalo de nuevo más tarde."
     },
+    "resetPassword": {
+        "title": "Restablece tu contraseña",
+        "subtitle": "Introduce tu nueva contraseña.",
+        "newPasswordLabel": "Nueva contraseña",
+        "newPasswordPlaceholder": "Introduce tu nueva contraseña",
+        "confirmNewPasswordLabel": "Confirma la nueva contraseña",
+        "confirmNewPasswordPlaceholder": "Confirma tu nueva contraseña",
+        "submitButton": "Restablecer contraseña",
+        "newPasswordRequired": "La nueva contraseña es obligatoria",
+        "confirmNewPasswordRequired": "Confirmar la nueva contraseña es obligatorio",
+        "passwordMismatch": "Las contraseñas no coinciden",
+        "newPasswordMissingNonAlphanumeric": "La nueva contraseña debe contener al menos un carácter no alfanumérico",
+        "serverError": "Ocurrió un error al intentar restablecer la contraseña. Por favor, inténtalo de nuevo más tarde.", 
+        "confirmationTitle": "Restablecimiento de contraseña exitoso",
+        "confirmationMessage": "Tu contraseña ha sido restablecida con éxito.",
+        "backToLogin": "Volver al inicio de sesión",
+        "invalidLinkTitle": "Enlace inválido o expirado",
+        "invalidLinkMessage": "El enlace que utilizaste para restablecer tu contraseña es inválido o ha expirado. Por favor, solicita un nuevo enlace.",
+        "requestNewLink": "Solicitar un nuevo enlace", 
+        "newPasswordMinLength": "La nueva contraseña debe tener al menos 12 caracteres",
+        "newPasswordMissingDigit": "La nueva contraseña debe contener al menos un dígito",
+        "newPasswordMissingUppercase": "La nueva contraseña debe contener al menos una letra mayúscula",
+        "newPasswordMissingLowercase": "La nueva contraseña debe contener al menos una letra minúscula"
+    },
     "auth": {
         "invalid_credentials": "Email o contraseña inválidos",
         "setup": {
@@ -59,6 +83,9 @@
         }, 
         "email": {
             "not_configured": "El email no está configurado para poder enviar emails"
+        }, 
+        "password_reset": {
+            "invalid_or_expired_reset_token": "El enlace para restablecer la contraseña es inválido o ha expirado"
         }
     },
     "setup": {
