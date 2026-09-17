@@ -65,6 +65,12 @@ public static class AppErrors
         public static Error InvitationInvalidOrExpired() =>
             CreateUnauthorized(ErrorCodes.Auth.InvitationInvalidOrExpired, "Invalid or expired invitation.");
 
+        public static Error PasswordResetFailed(string details) =>
+            CreateConflict(ErrorCodes.Auth.PasswordChangeFailed, $"Failed to reset password: {details}");
+
+        public static Error PasswordResetInvalidOrExpiredResetToken() =>
+            CreateBadRequest(ErrorCodes.Auth.PasswordResetInvalidOrExpiredResetToken, "Invalid or expired password reset token.");
+
         public static Error UserAlreadyExists() =>
             CreateConflict(ErrorCodes.Auth.UserAlreadyExists, "A user with this email already exists.");
 

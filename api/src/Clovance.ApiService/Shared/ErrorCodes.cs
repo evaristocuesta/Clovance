@@ -43,6 +43,9 @@ public static class ErrorCodes
         public const string EmailInvalid = "auth.email.invalid";
         public const string InvitationTokenRequired = "auth.invitation_token.required";
 
+        public const string PasswordResetTokenRequired = "auth.password_reset_token.required";
+        public const string PasswordResetInvalidOrExpiredResetToken = "auth.password_reset.invalid_or_expired_reset_token";
+
         public const string PasswordRequired = "auth.password.required";
         public const string PasswordMinLength = "auth.password.min_length";
         public const string PasswordMissingDigit = "auth.password.missing_digit";
