@@ -47,6 +47,9 @@ public static class AppErrors
 
     public static class Auth
     {
+        public static Error EmailSendFailed(string details) =>
+            CreateConflict(ErrorCodes.Auth.EmailSendFailed, $"Failed to send email: {details}");
+
         public static Error InvalidCredentials() =>
             CreateUnauthorized(ErrorCodes.Auth.InvalidCredentials, "Invalid credentials.");
 
