@@ -8,12 +8,6 @@
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
             </div>
             <div>
-                <label for="token" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{
-                    t('users.token') }}</label>
-                <input value="{{ data.token }}" id="token" disabled
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-            </div>
-            <div>
                 <label for="expiresAt" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{
                     t('users.expiresAt') }}</label>
                 <input value="{{ data.expiresAt | date:'dd/MM/yyyy HH:mm' }}" id="expiresAt" disabled

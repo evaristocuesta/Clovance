@@ -23,7 +23,6 @@ export class ResetPassword implements OnInit {
   linkInvalid = signal(false);
 
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   resetPasswordRequest = signal<ResetPasswordRequest & { confirmNewPassword: string }>({

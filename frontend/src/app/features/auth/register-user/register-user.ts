@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { email, form, FormField, FormRoot, maxLength, minLength, required, validate } from '@angular/forms/signals';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RegisterWithInvitationRequest } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
 import { TranslocoDirective } from '@jsverse/transloco';
@@ -16,21 +16,22 @@ import { firstValueFrom } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './register-user.css',
 })
-export class RegisterUser {
-
+export class RegisterUser implements OnInit {
   errorMessage = signal('');
+  linkInvalid = signal(false);
     
-    registerRequest = signal<RegisterWithInvitationRequest>({
-      firstName: '',
-      lastName: '',
-      email: '', 
-      password: '',
-      confirmPassword: '',
-      token: ''
-    });
-  
-    private readonly authService = inject(AuthService);
-    private readonly router = inject(Router);
+  registerRequest = signal<RegisterWithInvitationRequest>({
+    firstName: '',
+    lastName: '',
+    email: '', 
+    password: '',
+    confirmPassword: '',
+    token: ''
+  });
+
+  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   registerForm = form(
     this.registerRequest,
@@ -39,8 +40,6 @@ export class RegisterUser {
       required(schemaPath.firstName, { message: 'setup.firstNameRequired' });
       maxLength(schemaPath.lastName, 100, { message: 'setup.lastNameMaxLength' });
       required(schemaPath.lastName, { message: 'setup.lastNameRequired' });
-      required(schemaPath.email, { message: 'setup.emailRequired' });
-      email(schemaPath.email, { message: 'setup.emailInvalid' });
       required(schemaPath.password, {
         message: 'setup.passwordRequired',
       });
@@ -109,9 +108,6 @@ export class RegisterUser {
 
         return null;
       });
-      required(schemaPath.token, {
-        message: 'setup.tokenRequired',
-      });
     },
     {
       submission: {
@@ -130,4 +126,16 @@ export class RegisterUser {
       },
     },
   );
+
+  ngOnInit(): void {
+    const email = this.route.snapshot.queryParamMap.get('email');
+    const token = this.route.snapshot.queryParamMap.get('token');
+
+    if (!email || !token) {
+      this.linkInvalid.set(true);
+      return;
+    }
+
+    this.registerRequest.update((current) => ({ ...current, email, token }));
+  }
 }
