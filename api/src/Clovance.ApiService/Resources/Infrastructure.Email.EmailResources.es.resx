@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Invitation_Subject" xml:space="preserve">
+    <value>Te han invitado a unirte a Clovance</value>
+  </data>
+  <data name="Invitation_Intro" xml:space="preserve">
+    <value>Te han invitado a unirte a Clovance. Haz clic en el siguiente enlace para crear tu cuenta.</value>
+  </data>
+  <data name="Invitation_LinkText" xml:space="preserve">
+    <value>Aceptar invitación</value>
+  </data>
+  <data name="Invitation_Ignore" xml:space="preserve">
+    <value>Si no esperabas esta invitación, puedes ignorar este correo de forma segura.</value>
+  </data>
+  <data name="Invitation_Expiration" xml:space="preserve">
+    <value>Esta invitación caduca en {0} horas.</value>
+  </data>
   <data name="PasswordReset_Expiration" xml:space="preserve">
     <value>Este enlace caduca en {0} minutos.</value>
   </data>
