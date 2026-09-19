@@ -52,7 +52,7 @@ public sealed class ForgotPasswordCommandHandler : IHandler<ForgotPasswordComman
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send password reset email.");
+            return Result.Failure(AppErrors.Auth.EmailSendFailed(ex.Message));
         }
 
         return Result.Success();
