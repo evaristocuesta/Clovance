@@ -46,7 +46,6 @@ export interface CreateInvitationResult {
   id: string;
   email: string;
   expiresAt: Date;
-  token: string;
 }
 
 export interface RegisterWithInvitationRequest {

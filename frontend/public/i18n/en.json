@@ -1,7 +1,8 @@
 {
-   "common": {
+    "common": {
         "unexpected_error": "An unexpected error occurred.", 
-        "validation_failed": "Validation failed. Please check the input fields and try again."
+        "validation_failed": "Validation failed. Please check the input fields and try again.", 
+        "closeDialog": "Close dialog"
     },
     "language": {
         "english": "English",
@@ -82,7 +83,8 @@
             "change_failed": "Failed to change password"
         }, 
         "email": {
-            "not_configured": "Email is not configured to send emails"
+            "not_configured": "Email is not configured to send emails", 
+            "send_failed": "Failed to send email"
         }, 
         "password_reset": {
             "invalid_or_expired_reset_token": "Password reset link is invalid or has expired"
@@ -120,7 +122,10 @@
         "createAccount": "Create account", 
         "tokenRequired": "Token is required", 
         "tokenLabel": "Token",
-        "tokenPlaceholder": "Enter your token"
+        "tokenPlaceholder": "Enter your token", 
+        "invalidLinkTitle": "Invalid link",
+        "invalidLinkMessage": "The link you used is invalid or has expired.",
+        "requestNewLink": "Request a new link"
     },
     "updateUser": {
         "title": "Update your account",
@@ -255,9 +260,6 @@
             "expenses": "Expenses",
             "net": "Net"
         }
-    },
-    "common": {
-        "closeDialog": "Close dialog"
     },
     "accounts": {
         "title": "Accounts",

@@ -1,7 +1,8 @@
 {
     "common": {
         "unexpected_error": "Ocurrió un error inesperado.", 
-        "validation_failed": "La validación falló. Por favor, verifica los campos de entrada e inténtalo de nuevo."
+        "validation_failed": "La validación falló. Por favor, verifica los campos de entrada e inténtalo de nuevo.",
+        "closeDialog": "Cerrar dialogo"
     },
     "language": {
         "english": "English",
@@ -82,7 +83,8 @@
             "change_failed": "No se pudo cambiar la contraseña"
         }, 
         "email": {
-            "not_configured": "El email no está configurado para poder enviar emails"
+            "not_configured": "El email no está configurado para poder enviar emails", 
+            "send_failed": "No se pudo enviar el email"
         }, 
         "password_reset": {
             "invalid_or_expired_reset_token": "El enlace para restablecer la contraseña es inválido o ha expirado"
@@ -120,7 +122,10 @@
         "createAccount": "Crear cuenta", 
         "tokenRequired": "El token es obligatorio", 
         "tokenLabel": "Token",
-        "tokenPlaceholder": "Introduce tu token"
+        "tokenPlaceholder": "Introduce tu token", 
+        "invalidLinkTitle": "Enlace inválido",
+        "invalidLinkMessage": "El enlace que has utilizado no es válido o ha expirado.",
+        "requestNewLink": "Solicita un nuevo enlace"
     },
     "updateUser": {
         "title": "Actualiza tu cuenta",
@@ -255,9 +260,6 @@
             "expenses": "Gastos",
             "net": "Neto"
         }
-    },
-    "common": {
-        "closeDialog": "Cerrar dialogo"
     },
     "accounts": {
         "title": "Cuentas", 
