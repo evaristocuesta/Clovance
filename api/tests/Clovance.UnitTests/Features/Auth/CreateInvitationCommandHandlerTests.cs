@@ -4,10 +4,13 @@ using Clovance.ApiService.Features.Auth.CreateInvitation;
 using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.ApiService.Infrastructure.Email;
+using Clovance.ApiService.Infrastructure.Frontend;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
@@ -18,7 +21,10 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
     private readonly IJwtTokenService _tokenService;
+    private readonly IEmailSender _emailSender;
+    private readonly IStringLocalizer<EmailResources> _localizer;
     private readonly IOptions<UserInvitationOptions> _invitationOptions;
+    private readonly IOptions<FrontendOptions> _frontendOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly CreateInvitationCommandHandler _handler;
     private readonly HttpContext _httpContext;
@@ -32,18 +38,25 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
         _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
 
         _tokenService = Substitute.For<IJwtTokenService>();
+        _emailSender = Substitute.For<IEmailSender>();
+        _localizer = Substitute.For<IStringLocalizer<EmailResources>>();
         _invitationOptions = Substitute.For<IOptions<UserInvitationOptions>>();
+        _frontendOptions = Substitute.For<IOptions<FrontendOptions>>();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _httpContext = Substitute.For<HttpContext>();
 
         _invitationOptions.Value.Returns(new UserInvitationOptions { ExpirationHours = 48 });
+        _frontendOptions.Value.Returns(new FrontendOptions { BaseUrl = "https://example.com" });
         _httpContextAccessor.HttpContext.Returns(_httpContext);
 
         _handler = new CreateInvitationCommandHandler(
             _userManager,
             _dbContext,
             _tokenService,
+            _emailSender,
+            _localizer,
             _invitationOptions,
+            _frontendOptions,
             _httpContextAccessor);
     }
 
