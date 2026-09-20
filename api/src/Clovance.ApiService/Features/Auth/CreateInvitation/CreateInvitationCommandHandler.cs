@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Shared;
-using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.Email;
@@ -17,7 +17,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IJwtTokenService _tokenService;
+    private readonly ITokenService _tokenService;
     private readonly IEmailSender _emailSender;
     private readonly IStringLocalizer<EmailResources> _localizer;
     private readonly UserInvitationOptions _invitationOptions;
@@ -27,7 +27,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
     public CreateInvitationCommandHandler(
         UserManager<ApplicationUser> userManager,
         ClovanceDbContext dbContext,
-        IJwtTokenService tokenService,
+        ITokenService tokenService,
         IEmailSender emailSender,
         IStringLocalizer<EmailResources> localizer,
         IOptions<UserInvitationOptions> invitationOptions,

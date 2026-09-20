@@ -18,7 +18,7 @@ public sealed class UserInvitation : AuditableEntityBase<UserInvitationId>
         Id = UserInvitationId.New();
         Email = UserInvitationEmail.Create(email);
         IsAdmin = isAdmin;
-        TokenHash = UserInvitationToken.Create(tokenHash);
+        TokenHash = UserInvitationTokenHash.Create(tokenHash);
         ExpiresAt = expiresAt;
         MarkAsCreated(createdBy);
     }
@@ -27,7 +27,7 @@ public sealed class UserInvitation : AuditableEntityBase<UserInvitationId>
 
     public bool IsAdmin { get; private set; }
 
-    public UserInvitationToken TokenHash { get; private set; } = null!;
+    public UserInvitationTokenHash TokenHash { get; private set; } = null!;
 
     public DateTimeOffset ExpiresAt { get; private set; }
 

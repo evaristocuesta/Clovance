@@ -7,11 +7,11 @@ public class RefreshToken : EntityBase<RefreshTokenId>
     private RefreshToken()
     {
     }
-    private RefreshToken(RefreshTokenId id, Guid userId, string token, DateTimeOffset expiresAt, bool isUsed)
+    private RefreshToken(RefreshTokenId id, Guid userId, string tokenHash, DateTimeOffset expiresAt, bool isUsed)
     {
         Id = id;
         UserId = RefreshTokenUserId.Create(userId);
-        Token = RefreshTokenToken.Create(token);
+        TokenHash = RefreshTokenTokenHash.Create(tokenHash);
         ExpiresAt = expiresAt;
         CreatedAt = DateTimeOffset.UtcNow;
         IsUsed = isUsed;
@@ -19,7 +19,7 @@ public class RefreshToken : EntityBase<RefreshTokenId>
 
     public RefreshTokenUserId UserId { get; private set; } = null!;
 
-    public RefreshTokenToken Token { get; private set; } = null!;
+    public RefreshTokenTokenHash TokenHash { get; private set; } = null!;
 
     public DateTimeOffset ExpiresAt { get; private set; }
 
@@ -27,9 +27,9 @@ public class RefreshToken : EntityBase<RefreshTokenId>
 
     public bool IsUsed { get; private set; }
 
-    public static RefreshToken Create(Guid userId, string token, DateTimeOffset expiresAt)
+    public static RefreshToken Create(Guid userId, string tokenHash, DateTimeOffset expiresAt)
     {
-        return new RefreshToken(RefreshTokenId.New(), userId, token, expiresAt, false);
+        return new RefreshToken(RefreshTokenId.New(), userId, tokenHash, expiresAt, false);
     }
 
     public void MarkAsUsed()

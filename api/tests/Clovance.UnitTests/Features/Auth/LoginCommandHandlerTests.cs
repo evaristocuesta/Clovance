@@ -1,7 +1,9 @@
 ﻿using Clovance.ApiService.Features.Auth.Login;
 using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
+using Clovance.UnitTests.Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
     private readonly ClovanceDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly ITokenService _tokenService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly HttpContext _httpContext;
     private readonly LoginCommandHandler _handler;
@@ -27,11 +30,12 @@ public class LoginCommandHandlerTests : IAsyncLifetime
             null, null, null, null, null, null, null, null);
 
         _jwtTokenService = Substitute.For<IJwtTokenService>();
+        _tokenService = Substitute.For<ITokenService>();
         _httpContext = new DefaultHttpContext();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _httpContextAccessor.HttpContext.Returns(_httpContext);
-
-        _handler = new LoginCommandHandler(_dbContext, _httpContextAccessor, _userManager, _jwtTokenService);
+        
+        _handler = new LoginCommandHandler(_dbContext, _httpContextAccessor, _userManager, _jwtTokenService, _tokenService);
     }
 
     public ValueTask InitializeAsync()
@@ -59,8 +63,8 @@ public class LoginCommandHandlerTests : IAsyncLifetime
 
         var roles = new List<string> { "User" };
         var expectedToken = "jwt-token";
-        var expectedRefreshToken = "refresh-token-12345";
-        var expectedHashedToken = "hashed-refresh-token";
+        var expectedRefreshToken = TestData.PlainToken;
+        var expectedHashedToken = TestData.TokenHash;
         var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
@@ -71,8 +75,8 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns((expectedToken, expectedExpiresAt));
 
-        _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
-        _jwtTokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
+        _tokenService.GenerateToken().Returns(expectedRefreshToken);
+        _tokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
 
         // Act
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
@@ -83,13 +87,13 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         Assert.Equal(expectedExpiresAt, result.Value.ExpiresAt);
 
         // Verify refresh token was generated
-        _jwtTokenService.Received(1).GenerateToken();
+        _tokenService.Received(1).GenerateToken();
 
         // Verify refresh token was saved to database
         var savedRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(savedRefreshToken);
         Assert.Equal(user.Id, savedRefreshToken.UserId.Value);
-        Assert.Equal(expectedHashedToken, savedRefreshToken.Token.Value);
+        Assert.Equal(expectedHashedToken, savedRefreshToken.TokenHash.Value);
         Assert.Equal(expectedExpiresAt.AddDays(7), savedRefreshToken.ExpiresAt);
 
         // Verify cookie was set
@@ -173,8 +177,8 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         };
 
         var roles = new List<string> { "User" };
-        var expectedRefreshToken = "refresh-token-abc123";
-        var expectedHashedToken = "hashed-refresh-token";
+        var expectedRefreshToken = TestData.PlainToken;
+        var expectedHashedToken = TestData.TokenHash;
         var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
@@ -185,8 +189,8 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", expectedExpiresAt));
 
-        _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
-        _jwtTokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
+        _tokenService.GenerateToken().Returns(expectedRefreshToken);
+        _tokenService.HashToken(Arg.Any<string>()).Returns(expectedHashedToken);
 
         // Act
         await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
@@ -195,7 +199,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         var savedToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(savedToken);
         Assert.Equal(user.Id, savedToken.UserId.Value);
-        Assert.Equal(expectedHashedToken, savedToken.Token.Value);
+        Assert.Equal(expectedHashedToken, savedToken.TokenHash.Value);
         Assert.True(savedToken.ExpiresAt > DateTimeOffset.UtcNow);
     }
 
@@ -213,7 +217,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         };
 
         var roles = new List<string> { "User" };
-        var expectedRefreshToken = "refresh-token-xyz789";
+        var expectedRefreshToken = TestData.PlainToken;
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
@@ -223,8 +227,8 @@ public class LoginCommandHandlerTests : IAsyncLifetime
         _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(15)));
 
-        _jwtTokenService.GenerateToken().Returns(expectedRefreshToken);
-        _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashed-refresh-token");
+        _tokenService.GenerateToken().Returns(expectedRefreshToken);
+        _tokenService.HashToken(Arg.Any<string>()).Returns(TestData.TokenHash);
 
         // Act
         await _handler.HandleAsync(command, TestContext.Current.CancellationToken);

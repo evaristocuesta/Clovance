@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Clovance.ApiService.Infrastructure.Auth.Refresh;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,16 +12,16 @@ public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IJwtTokenService _jwtTokenService;
+    private readonly ITokenService _tokenService;
 
     public LogoutCommandHandler(
         IHttpContextAccessor httpContextAccessor,
         ClovanceDbContext dbContext,
-        IJwtTokenService jwtTokenService)
+        ITokenService tokenService)
     {
         _httpContextAccessor = httpContextAccessor;
         _dbContext = dbContext;
-        _jwtTokenService = jwtTokenService;
+        _tokenService = tokenService;
     }
 
     public async Task<Result> HandleAsync(LogoutCommand request, CancellationToken cancellationToken)
@@ -35,7 +36,7 @@ public sealed class LogoutCommandHandler : IHandler<LogoutCommand, Result>
             var token = await _dbContext
                 .RefreshTokens
                 .FirstOrDefaultAsync(t =>
-                    t.Token.Equals(RefreshTokenToken.Create(_jwtTokenService.HashToken(refreshToken))),
+                    t.TokenHash.Equals(RefreshTokenTokenHash.Create(_tokenService.HashToken(refreshToken))),
                     cancellationToken);
 
             if (token is not null)

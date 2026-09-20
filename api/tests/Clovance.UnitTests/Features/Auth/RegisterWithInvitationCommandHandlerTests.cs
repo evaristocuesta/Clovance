@@ -1,8 +1,9 @@
 ﻿using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Auth.RegisterWithInvitation;
-using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
+using Clovance.UnitTests.Domain.Shared;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 
@@ -12,7 +13,7 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IJwtTokenService _tokenService;
+    private readonly ITokenService _tokenService;
     private readonly RegisterWithInvitationCommandHandler _handler;
 
     public RegisterWithInvitationCommandHandlerTests()
@@ -23,7 +24,7 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
 
         _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
 
-        _tokenService = Substitute.For<IJwtTokenService>();
+        _tokenService = Substitute.For<ITokenService>();
 
         _handler = new RegisterWithInvitationCommandHandler(
             _userManager,
@@ -47,11 +48,11 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "newuser@example.com",
             "Password123!",
-            "valid-token", 
+            TestData.PlainToken, 
             "FirstName",
             "LastName");
 
-        var tokenHash = "hashed-token";
+        var tokenHash = TestData.TokenHash;
 
         var invitation = UserInvitation.Create(
             email: "newuser@example.com",
@@ -94,11 +95,11 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "user@example.com",
             "Password123!",
-            "invalid-token", 
+            TestData.PlainToken, 
             "FirstName",
             "LastName");
 
-        _tokenService.HashToken(command.Token.Trim()).Returns("wrong-hash");
+        _tokenService.HashToken(command.Token.Trim()).Returns(TestData.TokenHash);
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -113,11 +114,11 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "user@example.com",
             "Password123!",
-            "valid-token",
+            TestData.PlainToken,
             "FirstName",
             "LastName");
 
-        var tokenHash = "hashed-token";
+        var tokenHash = TestData.TokenHash;
 
         var expiredInvitation = UserInvitation.Create(
             email: "user@example.com",
@@ -145,11 +146,11 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "user@example.com",
             "Password123!",
-            "valid-token",
+            TestData.PlainToken,
             "FirstName",
             "LastName");
 
-        var tokenHash = "hashed-token";
+        var tokenHash = TestData.TokenHash;
 
         var consumedInvitation = UserInvitation.Create(
             email: "user@example.com",
@@ -179,11 +180,11 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "existing@example.com",
             "Password123!",
-            "valid-token",
+            TestData.PlainToken,
             "FirstName",
             "LastName");
 
-        var tokenHash = "hashed-token";
+        var tokenHash = TestData.TokenHash;
 
         var invitation = UserInvitation.Create(
             email: "existing@example.com",
@@ -218,11 +219,11 @@ public class RegisterWithInvitationCommandHandlerTests : IAsyncLifetime
         var command = new RegisterWithInvitationCommand(
             "newuser@example.com",
             "weak",
-            "valid-token",
+            TestData.PlainToken,
             "FirstName",
             "LastName");
 
-        var tokenHash = "hashed-token";
+        var tokenHash = TestData.TokenHash;
 
         var invitation = UserInvitation.Create(
             email: "newuser@example.com",
