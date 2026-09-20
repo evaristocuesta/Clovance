@@ -26,8 +26,9 @@
             }
           </div>
           <div>
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{
-              t('login.passwordLabel') }}</label>
+            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              {{ t('login.passwordLabel') }}
+            </label>
             <input type="password" id="password" [formField]="loginForm.password" autocomplete="current-password"
               placeholder="{{ t('login.passwordPlaceholder') }}"
               class="bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -41,11 +42,6 @@
             </p>
             }
           </div>
-          <div class="flex items-center justify-center">
-            <a routerLink="/auth/forgot-password" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">
-              {{ t('login.forgotPassword') }}
-            </a>
-          </div>
           <button type="submit"
             class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             [disabled]="loginForm().submitting()">
@@ -55,6 +51,11 @@
             {{ t('login.signInButton') }}
             }
           </button>
+          <div class="flex items-center justify-center">
+            <a routerLink="/auth/forgot-password" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">
+              {{ t('login.forgotPassword') }}
+            </a>
+          </div>
           @if (errorMessage()) {
           <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ t(errorMessage()) }}</p>
           }
