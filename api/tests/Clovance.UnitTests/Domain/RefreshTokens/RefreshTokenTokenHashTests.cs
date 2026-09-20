@@ -1,17 +1,18 @@
 ﻿using Clovance.ApiService.Domain.RefreshTokens;
+using Clovance.UnitTests.Domain.Shared;
 
 namespace Clovance.UnitTests.Domain.RefreshTokens;
 
-public class RefreshTokenTokenTests
+public class RefreshTokenTokenHashTests
 {
     [Fact]
     public void Create_WithValidValue_ShouldReturnRefreshTokenToken()
     {
         // Arrange
-        var value = Guid.CreateVersion7().ToString();
+        var value = TestData.TokenHash;
 
         // Act
-        var refreshTokenToken = RefreshTokenToken.Create(value);
+        var refreshTokenToken = RefreshTokenTokenHash.Create(value);
 
         // Assert
         Assert.Equal(value, refreshTokenToken.Value);
@@ -24,7 +25,7 @@ public class RefreshTokenTokenTests
         string value = null!;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => RefreshTokenToken.Create(value));
+        Assert.Throws<ArgumentException>(() => RefreshTokenTokenHash.Create(value));
     }
 
     [Fact]
@@ -34,6 +35,6 @@ public class RefreshTokenTokenTests
         var value = string.Empty;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => RefreshTokenToken.Create(value));
+        Assert.Throws<ArgumentException>(() => RefreshTokenTokenHash.Create(value));
     }
 }

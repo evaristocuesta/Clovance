@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Clovance.ApiService.Infrastructure.Auth.Refresh;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 
@@ -13,17 +14,20 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly ITokenService _tokenService;
 
     public LoginCommandHandler(
         ClovanceDbContext dbContext,
         IHttpContextAccessor httpContextAccessor,
         UserManager<ApplicationUser> userManager,
-        IJwtTokenService jwtTokenService)
+        IJwtTokenService jwtTokenService,
+        ITokenService tokenService)
     {
         _dbContext = dbContext;
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;
+        _tokenService = tokenService;
     }
 
     public async Task<Result<LoginResult>> HandleAsync(LoginCommand request, CancellationToken cancellationToken)
@@ -59,7 +63,7 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
             user.Email ?? string.Empty,
             roles);
 
-        var refreshToken = _jwtTokenService.GenerateToken();
+        var refreshToken = _tokenService.GenerateToken();
         var refreshTokenExpiresAt = expiresAt.AddDays(7);
 
         await _dbContext
@@ -67,7 +71,7 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
             .AddAsync(
                 RefreshToken.Create(
                     user.Id,
-                    _jwtTokenService.HashToken(refreshToken),
+                    _tokenService.HashToken(refreshToken),
                     refreshTokenExpiresAt)
                 , cancellationToken);
 

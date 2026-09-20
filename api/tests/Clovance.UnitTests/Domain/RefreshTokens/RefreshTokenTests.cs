@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Domain.RefreshTokens;
+using Clovance.UnitTests.Domain.Shared;
 
 namespace Clovance.UnitTests.Domain.RefreshTokens;
 
@@ -9,7 +10,7 @@ public class RefreshTokenTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var token = "refreshToken123";
+        var token = TestData.TokenHash;
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
 
         // Act
@@ -17,7 +18,7 @@ public class RefreshTokenTests
 
         // Assert
         Assert.Equal(userId, refreshToken.UserId.Value);
-        Assert.Equal(token, refreshToken.Token.Value);
+        Assert.Equal(token, refreshToken.TokenHash.Value);
         Assert.Equal(expiresAt, refreshToken.ExpiresAt);
         Assert.NotEqual(default, refreshToken.CreatedAt);
     }
@@ -27,7 +28,7 @@ public class RefreshTokenTests
     {
         // Arrange
         Guid userId = Guid.Empty;
-        var token = "refreshToken123";
+        var token = TestData.TokenHash;
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
 
         // Act & Assert
@@ -39,7 +40,7 @@ public class RefreshTokenTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var token = "refreshToken123";
+        var token = TestData.TokenHash;
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
         var refreshToken = RefreshToken.Create(userId, token, expiresAt);
 
@@ -55,7 +56,7 @@ public class RefreshTokenTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var token = "refreshToken123";
+        var token = TestData.TokenHash;
         var expiresAt = DateTimeOffset.UtcNow.AddHours(48);
         var refreshToken = RefreshToken.Create(userId, token, expiresAt);
         refreshToken.MarkAsUsed();

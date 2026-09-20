@@ -1,7 +1,8 @@
 ﻿using Clovance.ApiService.Domain.RefreshTokens;
 using Clovance.ApiService.Features.Auth.Logout;
-using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
+using Clovance.UnitTests.Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 
@@ -13,7 +14,7 @@ public class LogoutCommandHandlerTests : IAsyncLifetime
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly HttpContext _httpContext;
     private readonly LogoutCommandHandler _handler;
-    private readonly IJwtTokenService _jwtTokenService;
+    private readonly ITokenService _tokenService;
 
     public LogoutCommandHandlerTests()
     {
@@ -22,9 +23,9 @@ public class LogoutCommandHandlerTests : IAsyncLifetime
         _httpContext = new DefaultHttpContext();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _httpContextAccessor.HttpContext.Returns(_httpContext);
-        _jwtTokenService = Substitute.For<IJwtTokenService>();
+        _tokenService = Substitute.For<ITokenService>();
 
-        _handler = new LogoutCommandHandler(_httpContextAccessor, _dbContext, _jwtTokenService);
+        _handler = new LogoutCommandHandler(_httpContextAccessor, _dbContext, _tokenService);
     }
 
     public ValueTask InitializeAsync()
@@ -50,14 +51,14 @@ public class LogoutCommandHandlerTests : IAsyncLifetime
         }, TestContext.Current.CancellationToken);
 
         await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(userId, "hashedToken", DateTimeOffset.UtcNow.AddDays(7)),
+            RefreshToken.Create(userId, TestData.TokenHash, DateTimeOffset.UtcNow.AddDays(7)),
             TestContext.Current.CancellationToken);
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService.HashToken(Arg.Any<string>()).Returns("hashedToken");
+        _tokenService.HashToken(Arg.Any<string>()).Returns(TestData.TokenHash);
 
         var command = new LogoutCommand();
 

@@ -2,16 +2,16 @@
 
 namespace Clovance.ApiService.Domain.UserInvitations;
 
-public sealed class UserInvitationToken : ValueObject
+public sealed class UserInvitationTokenHash : ValueObject
 {
-    private UserInvitationToken(string value)
+    private UserInvitationTokenHash(string value)
     {
         Value = value;
     }
 
     public string Value { get; }
 
-    public static UserInvitationToken Create(string value)
+    public static UserInvitationTokenHash Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -21,12 +21,12 @@ public sealed class UserInvitationToken : ValueObject
         var normalizedToken = value
             .Trim();
 
-        if (normalizedToken.Length > 200)
+        if (normalizedToken.Length != 64)
         {
-            throw new ArgumentException("Token is too long.", nameof(value));
+            throw new ArgumentException("Token is invalid.", nameof(value));
         }
 
-        return new UserInvitationToken(normalizedToken);
+        return new UserInvitationTokenHash(normalizedToken);
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

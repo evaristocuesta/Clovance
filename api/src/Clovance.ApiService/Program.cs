@@ -36,7 +36,16 @@ builder.Services.AddProblemDetails();
 builder.Services.AddFrontend(builder.Configuration);
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddMemoryCache();
-builder.Services.AddSmtpEmailSender(builder.Configuration);
+
+if (builder.Environment.IsTesting())
+{
+    builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();
+}
+else
+{
+    builder.Services.AddSmtpEmailSender(builder.Configuration);
+}
+
 builder.Services.AddRefreshTokenCleanup(builder.Configuration);
 builder.Services.AddUserInvitationService(builder.Configuration);
 builder.Services.AddPasswordReset(builder.Configuration);

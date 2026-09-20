@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -23,6 +23,7 @@ public static class JwtAuthenticationServiceCollectionExtensions
         services.PostConfigure<JwtOptions>(options => options.Key = jwtSecret);
 
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
+        services.AddSingleton<ITokenService, TokenService>();
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

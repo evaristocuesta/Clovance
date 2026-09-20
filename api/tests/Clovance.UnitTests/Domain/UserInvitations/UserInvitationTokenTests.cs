@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Domain.UserInvitations;
+using Clovance.UnitTests.Domain.Shared;
 
 namespace Clovance.UnitTests.Domain.UserInvitations;
 
@@ -7,8 +8,8 @@ public class UserInvitationTokenTests
     [Fact]
     public void Create_WithValidToken_ReturnsUserInvitationToken()
     {
-        var userInvitationToken = UserInvitationToken.Create("valid-token");
-        Assert.Equal("valid-token", userInvitationToken.Value);
+        var userInvitationToken = UserInvitationTokenHash.Create(TestData.TokenHash);
+        Assert.Equal(TestData.TokenHash, userInvitationToken.Value);
     }
 
     [Fact]
@@ -16,6 +17,6 @@ public class UserInvitationTokenTests
     {
         var invalidToken = "";
 
-        Assert.Throws<ArgumentException>(() => UserInvitationToken.Create(invalidToken));
+        Assert.Throws<ArgumentException>(() => UserInvitationTokenHash.Create(invalidToken));
     }
 }

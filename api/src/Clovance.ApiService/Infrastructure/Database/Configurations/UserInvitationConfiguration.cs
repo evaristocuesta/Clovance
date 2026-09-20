@@ -26,8 +26,9 @@ public sealed class UserInvitationConfiguration : IEntityTypeConfiguration<UserI
         builder.Property(x => x.TokenHash)
             .HasConversion(
                 token => token.Value,
-                token => UserInvitationToken.Create(token))
-            .HasMaxLength(200)
+                token => UserInvitationTokenHash.Create(token))
+            .HasMaxLength(64)
+            .IsFixedLength()
             .IsRequired();
 
         builder.Property(x => x.ExpiresAt)

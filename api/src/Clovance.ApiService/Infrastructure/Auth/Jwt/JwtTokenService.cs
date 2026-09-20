@@ -1,19 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Clovance.ApiService.Infrastructure.Auth.Jwt;
-
-public interface IJwtTokenService
-{
-    string GenerateToken();
-    (string Token, DateTimeOffset ExpiresAt) GenerateToken(Guid userId, string email, IEnumerable<string> roles);
-    ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
-    string HashToken(string token);
-}
 
 public sealed class JwtTokenService(IOptions<JwtOptions> jwtOptions) : IJwtTokenService
 {
@@ -43,19 +33,6 @@ public sealed class JwtTokenService(IOptions<JwtOptions> jwtOptions) : IJwtToken
             signingCredentials: credentials);
 
         return (new JwtSecurityTokenHandler().WriteToken(token), expiresAt);
-    }
-
-    public string GenerateToken()
-    {
-        var bytes = RandomNumberGenerator.GetBytes(64);
-        return Convert.ToHexString(bytes).ToLower();
-    }
-
-    public string HashToken(string token)
-    {
-        var bytes = Encoding.UTF8.GetBytes(token);
-        var hash = SHA256.HashData(bytes);
-        return Convert.ToHexString(hash);
     }
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)

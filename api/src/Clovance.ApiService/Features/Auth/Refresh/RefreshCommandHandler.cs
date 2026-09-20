@@ -2,6 +2,7 @@
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Clovance.ApiService.Infrastructure.Auth.Refresh;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,20 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly ITokenService _tokenService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
 
     public RefreshCommandHandler(
         IHttpContextAccessor httpContextAccessor,
         IJwtTokenService jwtTokenService,
+        ITokenService tokenService,
         UserManager<ApplicationUser> userManager,
         ClovanceDbContext dbContext)
     {
         _httpContextAccessor = httpContextAccessor;
         _jwtTokenService = jwtTokenService;
+        _tokenService = tokenService;
         _userManager = userManager;
         _dbContext = dbContext;
     }
@@ -37,17 +41,19 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
         if (string.IsNullOrEmpty(refreshTokenValue))
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
 
-        var hashedToken = _jwtTokenService.HashToken(refreshTokenValue);
+        var hashedToken = _tokenService.HashToken(refreshTokenValue);
 
         var storedToken = await _dbContext
             .RefreshTokens
             .FirstOrDefaultAsync(t =>
-                t.Token == RefreshTokenToken.Create(hashedToken) &&
+                t.TokenHash == RefreshTokenTokenHash.Create(hashedToken) &&
                 !t.IsUsed &&
                 t.ExpiresAt > DateTime.UtcNow, cancellationToken);
 
         if (storedToken is null)
+        {
             return Result<RefreshResult>.Failure(AppErrors.Auth.UserNotAuthenticated());
+        }
 
         var userId = storedToken.UserId.Value;
 
@@ -63,7 +69,7 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
 
         var roles = await _userManager.GetRolesAsync(user);
         var newAccessToken = _jwtTokenService.GenerateToken(userId, user.Email!, roles);
-        var newRefreshToken = _jwtTokenService.GenerateToken();
+        var newRefreshToken = _tokenService.GenerateToken();
         var refreshTokenExpiresAt = newAccessToken.ExpiresAt.AddDays(7);
 
         await _dbContext
@@ -71,7 +77,7 @@ public sealed class RefreshCommandHandler : IHandler<RefreshCommand, Result<Refr
             .AddAsync(
                 RefreshToken.Create(
                     userId,
-                    _jwtTokenService.HashToken(newRefreshToken),
+                    _tokenService.HashToken(newRefreshToken),
                     refreshTokenExpiresAt),
                 cancellationToken);
 

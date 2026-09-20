@@ -1,10 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.RefreshTokens;
 using Clovance.ApiService.Features.Auth.Refresh;
 using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
+using Clovance.UnitTests.Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
     private readonly HttpContext _httpContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly ITokenService _tokenService;
     private readonly RefreshCommandHandler _handler;
 
     public RefreshCommandHandlerTests()
@@ -33,10 +35,12 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
             null, null, null, null, null, null, null, null);
 
         _jwtTokenService = Substitute.For<IJwtTokenService>();
+        _tokenService = Substitute.For<ITokenService>();
 
         _handler = new RefreshCommandHandler(
             _httpContextAccessor,
             _jwtTokenService,
+            _tokenService,
             _userManager,
             _dbContext);
     }
@@ -63,7 +67,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
         _userManager.FindByIdAsync(Arg.Any<string>()).Returns(user.Entity);
 
         await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(user.Entity.Id, "hashedNewRefreshToken", DateTimeOffset.UtcNow.AddDays(7)),
+            RefreshToken.Create(user.Entity.Id, TestData.TokenHash, DateTimeOffset.UtcNow.AddDays(7)),
             TestContext.Current.CancellationToken);
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -81,13 +85,13 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
             .GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("newAccessToken", DateTime.UtcNow.AddMinutes(30)));
 
-        _jwtTokenService
+        _tokenService
             .GenerateToken()
-            .Returns("newRefreshToken");
+            .Returns(TestData.PlainToken);
 
-        _jwtTokenService
+        _tokenService
             .HashToken(Arg.Any<string>())
-            .Returns("hashedNewRefreshToken");
+            .Returns(TestData.TokenHash);
 
         var command = new RefreshCommand();
 
@@ -99,7 +103,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
 
         var usedRefreshToken = await _dbContext
             .RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.Token == RefreshTokenToken.Create("hashedNewRefreshToken"), TestContext.Current.CancellationToken);
+            .FirstOrDefaultAsync(rt => rt.TokenHash == RefreshTokenTokenHash.Create(TestData.TokenHash), TestContext.Current.CancellationToken);
 
         Assert.NotNull(usedRefreshToken);
         Assert.True(usedRefreshToken.IsUsed);
@@ -133,8 +137,8 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService.HashToken(Arg.Any<string>())
-            .Returns("hashedToken");
+        _tokenService.HashToken(Arg.Any<string>())
+            .Returns(TestData.TokenHash);
 
         var command = new RefreshCommand();
 
@@ -159,7 +163,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
         _userManager.FindByIdAsync(Arg.Any<string>()).Returns(user.Entity);
 
         var refreshToken = await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(user.Entity.Id, "token", DateTimeOffset.UtcNow.AddDays(7)),
+            RefreshToken.Create(user.Entity.Id, TestData.TokenHash, DateTimeOffset.UtcNow.AddDays(7)),
             TestContext.Current.CancellationToken);
 
         refreshToken.Entity.MarkAsUsed();
@@ -168,8 +172,8 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService.HashToken(Arg.Any<string>())
-            .Returns("hashedToken");
+        _tokenService.HashToken(Arg.Any<string>())
+            .Returns(TestData.TokenHash);
 
         var command = new RefreshCommand();
 
@@ -194,15 +198,15 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
         _userManager.FindByIdAsync(Arg.Any<string>()).Returns(user.Entity);
 
         var refreshToken = await _dbContext.RefreshTokens.AddAsync(
-            RefreshToken.Create(user.Entity.Id, "hashedToken", DateTimeOffset.UtcNow.AddDays(-7)),
+            RefreshToken.Create(user.Entity.Id, TestData.TokenHash, DateTimeOffset.UtcNow.AddDays(-7)),
             TestContext.Current.CancellationToken);
 
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         _httpContext.Request.Headers.Cookie = "refreshToken=token";
 
-        _jwtTokenService.HashToken(Arg.Any<string>())
-            .Returns("hashedToken");
+        _tokenService.HashToken(Arg.Any<string>())
+            .Returns(TestData.TokenHash);
 
         var command = new RefreshCommand();
 

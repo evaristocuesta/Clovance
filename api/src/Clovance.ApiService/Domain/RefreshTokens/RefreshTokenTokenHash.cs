@@ -2,16 +2,16 @@
 
 namespace Clovance.ApiService.Domain.RefreshTokens;
 
-public sealed class RefreshTokenToken : ValueObject
+public sealed class RefreshTokenTokenHash : ValueObject
 {
-    private RefreshTokenToken(string value)
+    private RefreshTokenTokenHash(string value)
     {
         Value = value;
     }
 
     public string Value { get; }
 
-    public static RefreshTokenToken Create(string value)
+    public static RefreshTokenTokenHash Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -21,12 +21,12 @@ public sealed class RefreshTokenToken : ValueObject
         var normalizedToken = value
             .Trim();
 
-        if (normalizedToken.Length > 200)
+        if (normalizedToken.Length != 64)
         {
-            throw new ArgumentException("Refresh token is too long.", nameof(value));
+            throw new ArgumentException("Refresh token must be 64 characters long.", nameof(value));
         }
 
-        return new RefreshTokenToken(normalizedToken);
+        return new RefreshTokenTokenHash(normalizedToken);
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

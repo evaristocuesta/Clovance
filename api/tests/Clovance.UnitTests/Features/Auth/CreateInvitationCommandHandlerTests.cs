@@ -1,12 +1,13 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.UserInvitations;
 using Clovance.ApiService.Features.Auth.CreateInvitation;
-using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.Email;
 using Clovance.ApiService.Infrastructure.Frontend;
 using Clovance.ApiService.Shared;
+using Clovance.UnitTests.Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ClovanceDbContext _dbContext;
-    private readonly IJwtTokenService _tokenService;
+    private readonly ITokenService _tokenService;
     private readonly IEmailSender _emailSender;
     private readonly IStringLocalizer<EmailResources> _localizer;
     private readonly IOptions<UserInvitationOptions> _invitationOptions;
@@ -37,7 +38,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
 
         _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
 
-        _tokenService = Substitute.For<IJwtTokenService>();
+        _tokenService = Substitute.For<ITokenService>();
         _emailSender = Substitute.For<IEmailSender>();
         _localizer = Substitute.For<IStringLocalizer<EmailResources>>();
         _invitationOptions = Substitute.For<IOptions<UserInvitationOptions>>();
@@ -48,6 +49,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
         _invitationOptions.Value.Returns(new UserInvitationOptions { ExpirationHours = 48 });
         _frontendOptions.Value.Returns(new FrontendOptions { BaseUrl = "https://example.com" });
         _httpContextAccessor.HttpContext.Returns(_httpContext);
+        _emailSender.IsConfigured.Returns(true);
 
         _handler = new CreateInvitationCommandHandler(
             _userManager,
@@ -75,8 +77,8 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     {
         var command = new CreateInvitationCommand("newuser@example.com");
         var adminUserId = Guid.CreateVersion7();
-        var rawToken = "raw-token-123";
-        var tokenHash = "hashed-token-123";
+        var rawToken = TestData.PlainToken;
+        var tokenHash = TestData.TokenHash;
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
@@ -154,7 +156,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
         var activeInvitation = UserInvitation.Create(
             email: "invited@example.com",
             isAdmin: false,
-            tokenHash: "hashed-token-123",
+            tokenHash: TestData.TokenHash,
             expiresAt: DateTimeOffset.UtcNow.AddHours(24),
             createdBy: adminUserId
         );
@@ -187,7 +189,7 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
         var expiredInvitation = UserInvitation.Create(
             email: "user@example.com",
             isAdmin: false,
-            tokenHash: "hashed-token-123",
+            tokenHash: TestData.TokenHash,
             expiresAt: DateTimeOffset.UtcNow.AddHours(-1),
             createdBy: adminUserId
         );
@@ -196,8 +198,8 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
         await _dbContext.UserInvitations.AddAsync(expiredInvitation, TestContext.Current.CancellationToken);
         await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var rawToken = "raw-token-123";
-        var tokenHash = "hashed-token-123";
+        var rawToken = TestData.PlainToken;
+        var tokenHash = TestData.TokenHash;
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
@@ -225,8 +227,8 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
     {
         var command = new CreateInvitationCommand("newuser@example.com");
         var adminUserId = Guid.CreateVersion7();
-        var rawToken = "raw-token-123";
-        var tokenHash = "hashed-token-123";
+        var rawToken = TestData.PlainToken;
+        var tokenHash = TestData.TokenHash;
         var expirationHours = 72;
 
         _invitationOptions.Value.Returns(new UserInvitationOptions { ExpirationHours = expirationHours });
@@ -242,7 +244,17 @@ public class CreateInvitationCommandHandlerTests : IAsyncLifetime
         _tokenService.GenerateToken().Returns(rawToken);
         _tokenService.HashToken(rawToken).Returns(tokenHash);
 
-        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
+        var handler = new CreateInvitationCommandHandler(
+            _userManager,
+            _dbContext,
+            _tokenService,
+            _emailSender,
+            _localizer,
+            _invitationOptions,
+            _frontendOptions,
+            _httpContextAccessor);
+
+        var result = await handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         var expectedExpiration = DateTimeOffset.UtcNow.AddHours(expirationHours);
