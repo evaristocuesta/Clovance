@@ -4,7 +4,7 @@ This document shows how to use the Docker images published to GitHub Container R
 
 ## 🐳 Docker Compose
 
-Create a `.env` file by filling in the api service image, api service port, frontend image and postgres username and password. 
+Create a `.env` file by filling in the api service image, api service port, frontend image, postgres username and password and SMTP email configuration. SMTP email configuration will be use to send invitations to other users to create an account or to reset your password account. 
 
 ```
 # Container image name for clovance-apiservice
