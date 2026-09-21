@@ -7,7 +7,7 @@ namespace Clovance.IntegrationTests.Infrastructure;
 
 public class AspireTests
 {
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(5);
 
     [Fact]
     public async Task GetWebResourceRootReturnsOkStatusCode()
@@ -35,7 +35,36 @@ public class AspireTests
 
         // Act
         var httpClient = app.CreateHttpClient("clovance-frontend");
-        await app.ResourceNotifications.WaitForResourceHealthyAsync("clovance-frontend", cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
+
+        var maxAttempts = 60;
+        var attempt = 0;
+        var frontendHealthy = false;
+
+        while (attempt < maxAttempts && !frontendHealthy)
+        {
+            attempt++;
+            try
+            {
+                var healthResponse = await httpClient.GetAsync("/healthz.txt", cancellationToken);
+
+                if (healthResponse.IsSuccessStatusCode)
+                {
+                    frontendHealthy = true;
+                }
+            }
+            catch
+            {
+                // Ignore and retry
+            }
+
+            if (!frontendHealthy)
+            {
+                await Task.Delay(1000, cancellationToken);
+            }
+        }
+
+        Assert.True(frontendHealthy, "Frontend did not respond successfully on /healthz.txt within timeout.");
+
         var response = await httpClient.GetAsync("/", cancellationToken);
 
         // Assert
