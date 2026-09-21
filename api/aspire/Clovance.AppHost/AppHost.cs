@@ -83,6 +83,7 @@ builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName
     .WithReference(apiService)
     .WaitFor(apiService)
     .WithHttpEndpoint(port: 7000, env: "PORT")
+    .WithHttpHealthCheck("/healthz.txt")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile(container => container
         .WithEntrypoint("/docker-entrypoint.sh")
