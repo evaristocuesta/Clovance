@@ -22,6 +22,10 @@ POSTGRES_PASSWORD=your_postgres_password
 # Parameter postgres-username
 POSTGRES_USERNAME=your_postgres_username
 
+# Parameter frontend-base-url
+# Default value http://localhost:7000
+FRONTEND__BASEURL=http://your-url.com
+
 # Parameter smtp-from-address
 SMTP_FROM_ADDRESS=your_smtp_from_address@example.com
 
@@ -88,6 +92,7 @@ services:
       CLOVANCE_DATABASE_DATABASENAME: "clovance-database"
       ASPNETCORE_ENVIRONMENT: "Production"
       Jwt__KeyFilePath: "/home/app/jwt.key"
+      Frontend__BaseUrl: "${FRONTEND__BASEURL}"
       Smtp__Host: "${SMTP_HOST}"
       Smtp__Port: "${SMTP_PORT}"
       Smtp__Username: "${SMTP_USERNAME}"
