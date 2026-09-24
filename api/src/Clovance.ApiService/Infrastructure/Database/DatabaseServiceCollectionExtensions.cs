@@ -1,5 +1,4 @@
-﻿using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Infrastructure.Database;
@@ -28,6 +27,9 @@ public static class DatabaseServiceCollectionExtensions
             optionsLifetime: ServiceLifetime.Singleton);
 
         services.AddDbContextFactory<ClovanceDbContext>(configureDbContext);
+
+        services.AddHealthChecks()
+            .AddDbContextCheck<ClovanceDbContext>("database", tags: ["ready"]);
 
         services
           .AddIdentityCore<ApplicationUser>(options =>
