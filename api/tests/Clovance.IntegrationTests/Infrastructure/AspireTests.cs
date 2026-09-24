@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿extern alias apphost;
+
+using System.Net;
 using Aspire.Hosting.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +19,7 @@ public class AspireTests
         var cancellationToken = TestContext.Current.CancellationToken;
 
         var appHost = await DistributedApplicationTestingBuilder
-            .CreateAsync<Projects.Clovance_AppHost>(cancellationToken);
+            .CreateAsync<apphost::Projects.Clovance_AppHost>(cancellationToken);
 
         appHost.Services.AddLogging(logging =>
         {

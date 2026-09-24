@@ -27,11 +27,8 @@ public class RefreshEndpointTests : IntegrationTestBase
         var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>(TestContext.Current.CancellationToken);
         Assert.NotNull(loginResult);
 
-        // Act - Try refresh WITHOUT cookie using a new client without cookies
-        using var clientWithoutCookies = new HttpClient
-        {
-            BaseAddress = Client.BaseAddress
-        };
+        // Act - Try refresh WITHOUT cookie using a new client without automatic cookie handling
+        using var clientWithoutCookies = CreateClient(handleCookies: false);
 
         var response = await clientWithoutCookies.PostAsJsonAsync(
             "/api/auth/refresh",
@@ -121,10 +118,7 @@ public class RefreshEndpointTests : IntegrationTestBase
         request.Headers.Add("Cookie", "refreshToken=no-valid-refresh-token");
         request.Headers.Add("Authorization", $"Bearer {loginResult.AccessToken}");
 
-        using var clientWithoutCookies = new HttpClient
-        {
-            BaseAddress = Client.BaseAddress
-        };
+        using var clientWithoutCookies = CreateClient(handleCookies: false);
 
         var response = await clientWithoutCookies.SendAsync(request, TestContext.Current.CancellationToken);
 
