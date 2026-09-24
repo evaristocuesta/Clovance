@@ -1,4 +1,5 @@
 ﻿using Aspire.Hosting.Docker.Resources.ServiceNodes;
+using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -36,7 +37,7 @@ var postgres = builder.AddPostgres(postgresResourceName, userName: postgresUsern
 // Mount the SQL scripts directory into the container so that the init scripts run.
 //.WithBindMount("../DatabaseContainers.ApiService/data/postgres", "/docker-entrypoint-initdb.d")
 
-if (!isTestEnvironment)
+if (builder.Configuration.GetValue("AddFrontend", true))
 {
     // In development: persist data and keep container running
     postgres
@@ -78,7 +79,7 @@ var apiService = builder.AddProject<Projects.Clovance_ApiService>("clovance-apis
         service.Volumes.Add(volume);
     });
 
-if (!isTestEnvironment)
+if (builder.Configuration.GetValue("AddFrontend", true))
 {
 
     builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName: "start")

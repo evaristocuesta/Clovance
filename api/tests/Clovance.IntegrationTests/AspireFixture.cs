@@ -41,6 +41,7 @@ public class AspireFixture : IAsyncLifetime
             .CreateAsync<Projects.Clovance_AppHost>(
                 args:
                 [
+                    "AddFrontend=false",
                     "--environment=Testing",
                     $"--Jwt:KeyFilePath={jwtKeyFilePath}"
                 ],
