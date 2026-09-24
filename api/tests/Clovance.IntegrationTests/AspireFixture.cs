@@ -1,108 +1,98 @@
-﻿using Clovance.ApiService.Infrastructure.Auth.Jwt;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Aspire.Hosting;
+using Aspire.Hosting.Testing;
+using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Testcontainers.PostgreSql;
+using Microsoft.Extensions.Options;
 
 namespace Clovance.IntegrationTests;
 
 /// <summary>
-/// Shared API fixture backed by a PostgreSQL Testcontainer.
+/// Shared Aspire fixture that starts the distributed application once for all tests in a collection.
 /// </summary>
-public sealed class AspireFixture : IAsyncLifetime
+public class AspireFixture : IAsyncLifetime
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(5);
 
-    private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder("postgres:18.3-alpine")
-        .WithDatabase("clovance-database")
-        .WithUsername("postgres")
-        .WithPassword("postgres")
-        .Build();
-
-    private readonly string _jwtKeyFilePath = Path.Combine(
-        Path.GetTempPath(),
-        $"clovance-tests-{Guid.NewGuid()}",
-        "jwt.key");
-
-    private WebApplicationFactory<Program> _factory = null!;
+    private DistributedApplication _app = null!;
     private IJwtTokenService _jwtTokenService = null!;
 
     public HttpClient Client { get; private set; } = null!;
     public IJwtTokenService JwtTokenService => _jwtTokenService;
 
-    public HttpClient CreateClient(bool handleCookies = true)
-    {
-        return _factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            HandleCookies = handleCookies
-        });
-    }
-
     /// <summary>
-    /// Tracks whether the admin user has been created for THIS test host instance.
+    /// Tracks whether the admin user has been created for THIS Aspire instance.
     /// </summary>
-    public bool AdminUserCreated { get; set; }
+    public bool AdminUserCreated { get; set; } = false;
 
     /// <summary>
-    /// Lock for thread-safe admin setup for THIS test host instance.
+    /// Lock for thread-safe admin setup for THIS Aspire instance.
     /// </summary>
     public SemaphoreSlim AdminLock { get; } = new(1, 1);
 
     public async ValueTask InitializeAsync()
     {
         var ct = TestContext.Current.CancellationToken;
-        Directory.CreateDirectory(Path.GetDirectoryName(_jwtKeyFilePath)!);
+
+        var jwtKeyFilePath = Path.Combine(
+            Path.GetTempPath(), $"clovance-tests-{Guid.NewGuid()}", "jwt.key");
+        Directory.CreateDirectory(Path.GetDirectoryName(jwtKeyFilePath)!);
+
+        var appHost = await DistributedApplicationTestingBuilder
+            .CreateAsync<Projects.Clovance_AppHost>(
+                args:
+                [
+                    "--environment=Testing",
+                    $"--Jwt:KeyFilePath={jwtKeyFilePath}"
+                ],
+                ct);
 
         using var cts = new CancellationTokenSource(DefaultTimeout);
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
 
-        await _postgresContainer
+        _app = await appHost
+            .BuildAsync(linkedCts.Token)
+            .WaitAsync(DefaultTimeout, linkedCts.Token);
+
+        await _app
             .StartAsync(linkedCts.Token)
             .WaitAsync(DefaultTimeout, linkedCts.Token);
 
-        _factory = new TestApiFactory(_postgresContainer.GetConnectionString(), _jwtKeyFilePath);
-        Client = _factory.CreateClient();
-        _jwtTokenService = _factory.Services.GetRequiredService<IJwtTokenService>();
+        await _app.ResourceNotifications
+            .WaitForResourceHealthyAsync(
+                resourceName: "clovance-apiservice",
+                cancellationToken: linkedCts.Token)
+            .WaitAsync(DefaultTimeout, linkedCts.Token);
 
-        var response = await Client.GetAsync("/health", linkedCts.Token);
-        response.EnsureSuccessStatusCode();
+        Client = _app.CreateHttpClient("clovance-apiservice");
+
+        var jwtKey = await File.ReadAllTextAsync(jwtKeyFilePath, linkedCts.Token);
+
+        var apiProjectPath = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "..", "..", "..", "..", "..",
+            "src", "Clovance.ApiService");
+
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(apiProjectPath)
+            .AddJsonFile("appsettings.json", optional: false)
+            .AddJsonFile("appsettings.Testing.json", optional: true)
+            .Build();
+
+        var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+            ?? throw new InvalidOperationException("Jwt configuration section is missing.");
+
+        jwtOptions.Key = jwtKey;
+
+        _jwtTokenService = new JwtTokenService(Options.Create(jwtOptions));
     }
 
     public async ValueTask DisposeAsync()
     {
         Client?.Dispose();
 
-        if (_factory is not null)
+        if (_app is not null)
         {
-            await _factory.DisposeAsync();
-        }
-
-        await _postgresContainer.DisposeAsync();
-
-        var jwtDirectory = Path.GetDirectoryName(_jwtKeyFilePath);
-        if (jwtDirectory is not null && Directory.Exists(jwtDirectory))
-        {
-            Directory.Delete(jwtDirectory, recursive: true);
-        }
-    }
-
-    private sealed class TestApiFactory(string connectionString, string jwtKeyFilePath) : WebApplicationFactory<Program>
-    {
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            builder.UseEnvironment("Testing");
-            builder.UseSetting("ConnectionStrings:clovance-database", connectionString);
-            builder.UseSetting("Jwt:KeyFilePath", jwtKeyFilePath);
-
-            builder.ConfigureAppConfiguration((_, configurationBuilder) =>
-            {
-                configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["ConnectionStrings:clovance-database"] = connectionString,
-                    ["Jwt:KeyFilePath"] = jwtKeyFilePath
-                });
-            });
+            await _app.DisposeAsync();
         }
     }
 }

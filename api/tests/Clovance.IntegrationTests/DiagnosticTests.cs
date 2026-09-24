@@ -1,6 +1,4 @@
-﻿extern alias apphost;
-
-using Aspire.Hosting.Testing;
+﻿using Aspire.Hosting.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Clovance.IntegrationTests;
@@ -20,7 +18,7 @@ public class DiagnosticTests
         {
             Console.WriteLine("Step 1: Creating DistributedApplicationTestingBuilder...");
             var appHost = await DistributedApplicationTestingBuilder
-                .CreateAsync<apphost::Projects.Clovance_AppHost>(ct);
+                .CreateAsync<Projects.Clovance_AppHost>(ct);
 
             appHost.Services.ConfigureHttpClientDefaults(clientBuilder =>
             {
