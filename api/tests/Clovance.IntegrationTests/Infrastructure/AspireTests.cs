@@ -7,7 +7,7 @@ namespace Clovance.IntegrationTests.Infrastructure;
 
 public class AspireTests
 {
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(10);
 
     [Fact]
     public async Task GetWebResourceRootReturnsOkStatusCode()

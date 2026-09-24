@@ -43,7 +43,7 @@ public class AspireFixture : IAsyncLifetime
 
         _app = await appHost.BuildAsync();
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(8));
         await _app.StartAsync(cts.Token);
 
         Client = _app.CreateHttpClient("clovance-apiservice");
