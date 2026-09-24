@@ -11,6 +11,8 @@ namespace Clovance.IntegrationTests;
 /// </summary>
 public class AspireFixture : IAsyncLifetime
 {
+    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(5);
+
     private DistributedApplication _app = null!;
     private IJwtTokenService _jwtTokenService = null!;
 
@@ -29,6 +31,8 @@ public class AspireFixture : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
+        var ct = TestContext.Current.CancellationToken;
+
         var jwtKeyFilePath = Path.Combine(
             Path.GetTempPath(), $"clovance-tests-{Guid.NewGuid()}", "jwt.key");
         Directory.CreateDirectory(Path.GetDirectoryName(jwtKeyFilePath)!);
@@ -39,16 +43,29 @@ public class AspireFixture : IAsyncLifetime
                 [
                     "--environment=Testing",
                     $"--Jwt:KeyFilePath={jwtKeyFilePath}"
-                ]);
+                ],
+                ct);
 
-        _app = await appHost.BuildAsync();
+        using var cts = new CancellationTokenSource(DefaultTimeout);
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(8));
-        await _app.StartAsync(cts.Token);
+        _app = await appHost
+            .BuildAsync(linkedCts.Token)
+            .WaitAsync(DefaultTimeout, linkedCts.Token);
+
+        await _app
+            .StartAsync(linkedCts.Token)
+            .WaitAsync(DefaultTimeout, linkedCts.Token);
+
+        await _app.ResourceNotifications
+            .WaitForResourceHealthyAsync(
+                resourceName: "clovance-apiservice",
+                cancellationToken: linkedCts.Token)
+            .WaitAsync(DefaultTimeout, linkedCts.Token);
 
         Client = _app.CreateHttpClient("clovance-apiservice");
 
-        var jwtKey = await File.ReadAllTextAsync(jwtKeyFilePath, cts.Token);
+        var jwtKey = await File.ReadAllTextAsync(jwtKeyFilePath, linkedCts.Token);
 
         var apiProjectPath = Path.Combine(
             Directory.GetCurrentDirectory(),
@@ -67,8 +84,6 @@ public class AspireFixture : IAsyncLifetime
         jwtOptions.Key = jwtKey;
 
         _jwtTokenService = new JwtTokenService(Options.Create(jwtOptions));
-
-        await Task.Delay(3000);
     }
 
     public async ValueTask DisposeAsync()

@@ -1,4 +1,5 @@
 ﻿using Aspire.Hosting.Testing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Clovance.IntegrationTests;
 
@@ -8,6 +9,7 @@ public class DiagnosticTests
     public async Task CanCreateAndStartAspireApp_WithTestingEnvironment()
     {
         // Arrange
+        var defaultTimeout = TimeSpan.FromMinutes(5);
         var ct = TestContext.Current.CancellationToken;
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Testing");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
@@ -18,16 +20,31 @@ public class DiagnosticTests
             var appHost = await DistributedApplicationTestingBuilder
                 .CreateAsync<Projects.Clovance_AppHost>(ct);
 
+            appHost.Services.ConfigureHttpClientDefaults(clientBuilder =>
+            {
+                clientBuilder.AddStandardResilienceHandler();
+            });
+
             Console.WriteLine("Step 2: Building app...");
-            await using var app = await appHost.BuildAsync(ct);
+            await using var app = await appHost
+                .BuildAsync(ct)
+                .WaitAsync(defaultTimeout, ct);
 
             Console.WriteLine("Step 3: Starting app (timeout: 5 minutes)...");
-            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+            using var cts = new CancellationTokenSource(defaultTimeout);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
 
-            await app.StartAsync(linkedCts.Token);
+            await app
+                .StartAsync(linkedCts.Token)
+                .WaitAsync(defaultTimeout, linkedCts.Token);
 
             Console.WriteLine("Step 4: App started successfully!");
+            
+            await app.ResourceNotifications
+                .WaitForResourceHealthyAsync(
+                    resourceName: "clovance-apiservice",
+                    cancellationToken: linkedCts.Token)
+                .WaitAsync(defaultTimeout, linkedCts.Token);
 
             Console.WriteLine("Step 5: Creating HTTP client...");
             var client = app.CreateHttpClient("clovance-apiservice");
@@ -42,7 +59,7 @@ public class DiagnosticTests
                 attempt++;
                 try
                 {
-                    var response = await client.GetAsync("/health", ct);
+                    var response = await client.GetAsync("/health", linkedCts.Token);
                     Console.WriteLine($"Attempt {attempt}: Status = {response.StatusCode}");
 
                     if (response.IsSuccessStatusCode)
@@ -58,7 +75,7 @@ public class DiagnosticTests
 
                 if (!success)
                 {
-                    await Task.Delay(1000, ct);
+                    await Task.Delay(1000, linkedCts.Token);
                 }
             }
 

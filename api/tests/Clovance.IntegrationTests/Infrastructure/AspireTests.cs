@@ -13,9 +13,12 @@ public class AspireTests
     public async Task GetWebResourceRootReturnsOkStatusCode()
     {
         // Arrange
+        var defaultTimeout = TimeSpan.FromMinutes(5);
         var cancellationToken = TestContext.Current.CancellationToken;
 
-        var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.Clovance_AppHost>(cancellationToken);
+        var appHost = await DistributedApplicationTestingBuilder
+            .CreateAsync<Projects.Clovance_AppHost>(cancellationToken);
+
         appHost.Services.AddLogging(logging =>
         {
             logging.SetMinimumLevel(LogLevel.Debug);
@@ -30,8 +33,22 @@ public class AspireTests
             clientBuilder.AddStandardResilienceHandler();
         });
 
-        await using var app = await appHost.BuildAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
-        await app.StartAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
+        await using var app = await appHost
+            .BuildAsync(cancellationToken)
+            .WaitAsync(DefaultTimeout, cancellationToken);
+
+        using var cts = new CancellationTokenSource(defaultTimeout);
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
+
+        await app
+            .StartAsync(linkedCts.Token)
+            .WaitAsync(DefaultTimeout, linkedCts.Token);
+
+        await app.ResourceNotifications
+            .WaitForResourceHealthyAsync(
+                resourceName: "clovance-frontend",
+                cancellationToken: linkedCts.Token)
+            .WaitAsync(DefaultTimeout, linkedCts.Token);
 
         // Act
         var httpClient = app.CreateHttpClient("clovance-frontend");
@@ -45,7 +62,7 @@ public class AspireTests
             attempt++;
             try
             {
-                var healthResponse = await httpClient.GetAsync("/healthz.txt", cancellationToken);
+                var healthResponse = await httpClient.GetAsync("/healthz.txt", linkedCts.Token);
 
                 if (healthResponse.IsSuccessStatusCode)
                 {
@@ -59,13 +76,13 @@ public class AspireTests
 
             if (!frontendHealthy)
             {
-                await Task.Delay(1000, cancellationToken);
+                await Task.Delay(1000, linkedCts.Token);
             }
         }
 
         Assert.True(frontendHealthy, "Frontend did not respond successfully on /healthz.txt within timeout.");
 
-        var response = await httpClient.GetAsync("/", cancellationToken);
+        var response = await httpClient.GetAsync("/", linkedCts.Token);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
