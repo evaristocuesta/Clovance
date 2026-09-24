@@ -78,7 +78,10 @@ var apiService = builder.AddProject<Projects.Clovance_ApiService>("clovance-apis
         service.Volumes.Add(volume);
     });
 
-builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName: "start")
+if (!isTestEnvironment)
+{
+
+    builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName: "start")
     .WithPnpm(installArgs: ["--frozen-lockfile", "--ignore-scripts"])
     .WithReference(apiService)
     .WaitFor(apiService)
@@ -88,5 +91,6 @@ builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName
     .PublishAsDockerFile(container => container
         .WithEntrypoint("/docker-entrypoint.sh")
         .WithArgs("nginx", "-g", "daemon off;"));
+}
 
 await builder.Build().RunAsync();
