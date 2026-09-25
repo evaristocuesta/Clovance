@@ -47,6 +47,8 @@ public class AspireFixture : IAsyncLifetime
                 ],
                 ct);
 
+        Console.WriteLine($"[DEBUG] AppHost environment = {appHost.Environment.EnvironmentName}");
+
         using var cts = new CancellationTokenSource(DefaultTimeout);
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
 

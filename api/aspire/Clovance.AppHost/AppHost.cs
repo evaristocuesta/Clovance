@@ -1,9 +1,14 @@
 ﻿using Aspire.Hosting.Docker.Resources.ServiceNodes;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var isTestEnvironment = builder.Environment.EnvironmentName == "Testing";
+Console.WriteLine($"[DEBUG] EnvironmentName = {builder.Environment.EnvironmentName}");
+
+var isTestEnvironment = builder.Environment.IsEnvironment("Testing");
+
+Console.WriteLine($"[DEBUG] isTestEnvironment = {isTestEnvironment}");
 
 builder.AddDockerComposeEnvironment("env")
         .ConfigureComposeFile(composeFile =>
@@ -13,7 +18,7 @@ builder.AddDockerComposeEnvironment("env")
                 Name = "clovance-jwt-keys",
                 Driver = "local"
             });
-        }); ;
+        });
 
 var postgresUsername = builder.AddParameter("postgres-username");
 var postgresPassword = builder.AddParameter("postgres-password", secret: true);
@@ -37,7 +42,7 @@ var postgres = builder.AddPostgres(postgresResourceName, userName: postgresUsern
 // Mount the SQL scripts directory into the container so that the init scripts run.
 //.WithBindMount("../DatabaseContainers.ApiService/data/postgres", "/docker-entrypoint-initdb.d")
 
-if (builder.Configuration.GetValue("AddFrontend", true))
+if (!isTestEnvironment)
 {
     // In development: persist data and keep container running
     postgres
