@@ -30,11 +30,14 @@ var frontendBaseUrl = builder.AddParameter("frontend-base-url");
 // Use different resource names for testing vs development to avoid container conflicts
 var postgresResourceName = isTestEnvironment ? "clovance-postgres-test" : "clovance-postgres";
 
-var postgres = builder.AddPostgres(postgresResourceName, userName: postgresUsername, password: postgresPassword)
+var postgres = builder
+    .AddPostgres(postgresResourceName, userName: postgresUsername, password: postgresPassword)
     // Set the name of the default database to auto-create on container startup.
-    .WithEnvironment("POSTGRES_DB", "clovance-database");
-// Mount the SQL scripts directory into the container so that the init scripts run.
-//.WithBindMount("../DatabaseContainers.ApiService/data/postgres", "/docker-entrypoint-initdb.d")
+    .WithEnvironment("POSTGRES_DB", "clovance-database")
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Restart = "unless-stopped";
+    });
 
 if (!isTestEnvironment)
 {
@@ -51,7 +54,8 @@ var database = postgres.AddDatabase("clovance-database");
 
 var jwtKeyFilePath = builder.Configuration["Jwt:KeyFilePath"] ?? "/home/app/jwt.key";
 
-var apiService = builder.AddProject<Projects.Clovance_ApiService>("clovance-apiservice")
+var apiService = builder
+    .AddProject<Projects.Clovance_ApiService>("clovance-apiservice")
     .WithReference(database)
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", builder.Environment.EnvironmentName)
     .WithEnvironment("Jwt__KeyFilePath", jwtKeyFilePath)
@@ -76,9 +80,11 @@ var apiService = builder.AddProject<Projects.Clovance_ApiService>("clovance-apis
         };
 
         service.Volumes.Add(volume);
+        service.Restart = "unless-stopped";
     });
 
-builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName: "start")
+builder
+    .AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName: "start")
     .WithPnpm(installArgs: ["--frozen-lockfile", "--ignore-scripts"])
     .WithReference(apiService)
     .WaitFor(apiService)
@@ -87,6 +93,10 @@ builder.AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile(container => container
         .WithEntrypoint("/docker-entrypoint.sh")
-        .WithArgs("nginx", "-g", "daemon off;"));
+        .WithArgs("nginx", "-g", "daemon off;"))
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Restart = "unless-stopped";
+    });
 
 await builder.Build().RunAsync();
