@@ -26,6 +26,7 @@ services:
         read_only: false
     networks:
       - "aspire"
+    restart: "unless-stopped"
   clovance-apiservice:
     image: "${CLOVANCE_APISERVICE_IMAGE}"
     environment:
@@ -48,6 +49,7 @@ services:
       Smtp__Password: "${SMTP_PASSWORD}"
       Smtp__FromAddress: "${SMTP_FROM_ADDRESS}"
       Smtp__FromName: "${SMTP_FROM_NAME}"
+      Frontend__BaseUrl: "${FRONTEND_BASE_URL}"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-apiservice"
@@ -63,6 +65,7 @@ services:
         condition: "service_started"
     networks:
       - "aspire"
+    restart: "unless-stopped"
   clovance-frontend:
     image: "${CLOVANCE_FRONTEND_IMAGE}"
     command:
@@ -87,6 +90,7 @@ services:
         condition: "service_started"
     networks:
       - "aspire"
+    restart: "unless-stopped"
 networks:
   aspire:
     driver: "bridge"
