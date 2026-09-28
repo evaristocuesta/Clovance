@@ -4,15 +4,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var isTestEnvironment = builder.Environment.EnvironmentName == "Testing";
 
-builder.AddDockerComposeEnvironment("env")
-        .ConfigureComposeFile(composeFile =>
-        {
-            composeFile.AddVolume(new Volume
-            {
-                Name = "clovance-jwt-keys",
-                Driver = "local"
-            });
-        }); ;
+builder.AddDockerComposeEnvironment("env");
 
 var postgresUsername = builder.AddParameter("postgres-username");
 var postgresPassword = builder.AddParameter("postgres-password", secret: true);
@@ -27,23 +19,40 @@ var smtpFromName = builder.AddParameter("smtp-from-name");
 
 var frontendBaseUrl = builder.AddParameter("frontend-base-url");
 
+var volumeSourcePath = builder.AddParameter("volume-source-path");
+
 // Use different resource names for testing vs development to avoid container conflicts
-var postgresResourceName = isTestEnvironment ? "clovance-postgres-test" : "clovance-postgres";
+var postgresResourceName =
+    isTestEnvironment ? "clovance-postgres-test" : "clovance-postgres";
 
 var postgres = builder
-    .AddPostgres(postgresResourceName, userName: postgresUsername, password: postgresPassword)
+    .AddPostgres(
+        postgresResourceName,
+        userName: postgresUsername,
+        password: postgresPassword)
     // Set the name of the default database to auto-create on container startup.
     .WithEnvironment("POSTGRES_DB", "clovance-database")
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Restart = "unless-stopped";
+
+        if (!isTestEnvironment)
+        {
+            service.Volumes.Add(new Volume
+            {
+                Name = "clovance-postgres-data",
+                Source = $"{volumeSourcePath.AsEnvironmentPlaceholder(resource)}/postgres",
+                Target = "/var/lib/postgresql",
+                Type = "bind",
+                ReadOnly = false
+            });
+        }
     });
 
 if (!isTestEnvironment)
 {
     // In development: persist data and keep container running
     postgres
-        .WithDataVolume()
         .WithLifetime(ContainerLifetime.Persistent)
         .WithPgWeb();
 }
@@ -52,7 +61,8 @@ if (!isTestEnvironment)
 // Add the default database to the application model so that it can be referenced by other resources.
 var database = postgres.AddDatabase("clovance-database");
 
-var jwtKeyFilePath = builder.Configuration["Jwt:KeyFilePath"] ?? "/home/app/jwt.key";
+var jwtKeyFilePath =
+    builder.Configuration["Jwt:KeyFilePath"] ?? "/home/app/jwt.key";
 
 var apiService = builder
     .AddProject<Projects.Clovance_ApiService>("clovance-apiservice")
@@ -70,21 +80,23 @@ var apiService = builder
     .WithHttpHealthCheck("/health")
     .PublishAsDockerComposeService((resource, service) =>
     {
-        var volume = new Aspire.Hosting.Docker.Resources.ServiceNodes.Volume
+        service.Volumes.Add(new Volume
         {
             Name = "clovance-jwt-keys",
-            Source = "clovance-jwt-keys",
+            Source = $"{volumeSourcePath.AsEnvironmentPlaceholder(resource)}/jwt",
             Target = "/home/app",
-            Type = "volume", 
-            ReadOnly = false,
-        };
+            Type = "bind",
+            ReadOnly = false
+        });
 
-        service.Volumes.Add(volume);
         service.Restart = "unless-stopped";
     });
 
 builder
-    .AddJavaScriptApp("clovance-frontend", "../../../frontend", runScriptName: "start")
+    .AddJavaScriptApp(
+        "clovance-frontend",
+        "../../../frontend",
+        runScriptName: "start")
     .WithPnpm(installArgs: ["--frozen-lockfile", "--ignore-scripts"])
     .WithReference(apiService)
     .WaitFor(apiService)

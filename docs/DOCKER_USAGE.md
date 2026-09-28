@@ -16,15 +16,14 @@ CLOVANCE_APISERVICE_PORT=8080
 # Container image name for clovance-frontend
 CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0-rc1
 
+# Parameter frontend-base-url
+FRONTEND_BASE_URL=http://localhost:7000
+
 # Parameter postgres-password
 POSTGRES_PASSWORD=your_postgres_password
 
 # Parameter postgres-username
 POSTGRES_USERNAME=your_postgres_username
-
-# Parameter frontend-base-url
-# Default value http://localhost:7000
-FRONTEND__BASEURL=http://your-url.com
 
 # Parameter smtp-from-address
 SMTP_FROM_ADDRESS=your_smtp_from_address@example.com
@@ -43,6 +42,9 @@ SMTP_PORT=587
 
 # Parameter smtp-username
 SMTP_USERNAME=your_smtp_username
+
+# Parameter volume-source-path
+VOLUME_SOURCE_PATH=/home/docker/clovance
 ```
 
 Create a `docker-compose.yml` file to run the complete application:
@@ -70,12 +72,13 @@ services:
     expose:
       - "5432"
     volumes:
-      - type: "volume"
+      - type: "bind"
         target: "/var/lib/postgresql"
-        source: "clovance.apphost-f8d48ee71c-clovance-postgres-data"
+        source: "${VOLUME_SOURCE_PATH}/postgres"
         read_only: false
     networks:
       - "aspire"
+    restart: "unless-stopped"
   clovance-apiservice:
     image: "${CLOVANCE_APISERVICE_IMAGE}"
     environment:
@@ -92,28 +95,29 @@ services:
       CLOVANCE_DATABASE_DATABASENAME: "clovance-database"
       ASPNETCORE_ENVIRONMENT: "Production"
       Jwt__KeyFilePath: "/home/app/jwt.key"
-      Frontend__BaseUrl: "${FRONTEND__BASEURL}"
       Smtp__Host: "${SMTP_HOST}"
       Smtp__Port: "${SMTP_PORT}"
       Smtp__Username: "${SMTP_USERNAME}"
       Smtp__Password: "${SMTP_PASSWORD}"
       Smtp__FromAddress: "${SMTP_FROM_ADDRESS}"
       Smtp__FromName: "${SMTP_FROM_NAME}"
+      Frontend__BaseUrl: "${FRONTEND_BASE_URL}"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://env-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-apiservice"
     expose:
       - "${CLOVANCE_APISERVICE_PORT}"
     volumes:
-      - type: "volume"
+      - type: "bind"
         target: "/home/app"
-        source: "clovance-jwt-keys"
+        source: "${VOLUME_SOURCE_PATH}/jwt"
         read_only: false
     depends_on:
       clovance-postgres:
         condition: "service_started"
     networks:
       - "aspire"
+    restart: "unless-stopped"
   clovance-frontend:
     image: "${CLOVANCE_FRONTEND_IMAGE}"
     command:
@@ -138,14 +142,10 @@ services:
         condition: "service_started"
     networks:
       - "aspire"
+    restart: "unless-stopped"
 networks:
   aspire:
     driver: "bridge"
-volumes:
-  clovance.apphost-f8d48ee71c-clovance-postgres-data:
-    driver: "local"
-  clovance-jwt-keys:
-    driver: "local"
 ```
 
 Start the application:
