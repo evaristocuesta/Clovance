@@ -13,7 +13,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class RefreshCommandHandlerTests : IAsyncLifetime
+public class RefreshCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
 {
     private readonly ClovanceDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -30,9 +30,7 @@ public class RefreshCommandHandlerTests : IAsyncLifetime
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _httpContextAccessor.HttpContext.Returns(_httpContext);
 
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
+        _userManager = CreateUserManager();
 
         _jwtTokenService = Substitute.For<IJwtTokenService>();
         _tokenService = Substitute.For<ITokenService>();

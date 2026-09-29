@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Clovance.ApiService.Features.Auth.UpdateUser;
+﻿using Clovance.ApiService.Features.Auth.UpdateUser;
 using Clovance.ApiService.Infrastructure.Auth.Jwt;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
@@ -9,7 +8,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class UpdateUserCommandHandlerTests
+public class UpdateUserCommandHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -18,10 +17,7 @@ public class UpdateUserCommandHandlerTests
 
     public UpdateUserCommandHandlerTests()
     {
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
-
+        _userManager = CreateUserManager();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _jwtTokenService = Substitute.For<IJwtTokenService>();
         _handler = new UpdateUserCommandHandler(_userManager, _httpContextAccessor, _jwtTokenService);
@@ -40,13 +36,7 @@ public class UpdateUserCommandHandlerTests
             LastName = "Name"
         };
 
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(user.Id);
 
         var command = new UpdateUserCommand("new@example.com", "New", "Surname");
         var generatedToken = (Token: "new-jwt-token", ExpiresAt: DateTimeOffset.UtcNow.AddMinutes(20));
@@ -74,13 +64,7 @@ public class UpdateUserCommandHandlerTests
     public async Task HandleAsync_WhenUserIsNotFound_ReturnsUserNotFoundError()
     {
         // Arrange
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(Guid.NewGuid());
 
         _httpContextAccessor.HttpContext.Returns(httpContext);
         _userManager.GetUserAsync(httpContext.User).Returns((ApplicationUser?)null);
@@ -105,13 +89,7 @@ public class UpdateUserCommandHandlerTests
             UserName = "old@example.com"
         };
 
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(user.Id);
 
         _httpContextAccessor.HttpContext.Returns(httpContext);
         _userManager.GetUserAsync(httpContext.User).Returns(user);

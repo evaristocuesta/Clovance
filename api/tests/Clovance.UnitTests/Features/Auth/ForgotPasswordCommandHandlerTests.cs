@@ -11,7 +11,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class ForgotPasswordCommandHandlerTests
+public class ForgotPasswordCommandHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEmailSender _emailSender;
@@ -22,9 +22,7 @@ public class ForgotPasswordCommandHandlerTests
 
     public ForgotPasswordCommandHandlerTests()
     {
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
+        _userManager = CreateUserManager();
 
         _emailSender = Substitute.For<IEmailSender>();
         _frontendOptions = Substitute.For<IOptions<FrontendOptions>>();

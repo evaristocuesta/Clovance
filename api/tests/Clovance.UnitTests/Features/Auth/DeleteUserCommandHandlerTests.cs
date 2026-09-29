@@ -6,17 +6,14 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class DeleteUserCommandHandlerTests
+public class DeleteUserCommandHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly DeleteUserCommandHandler _handler;
 
     public DeleteUserCommandHandlerTests()
     {
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
-
+        _userManager = CreateUserManager();
         _handler = new DeleteUserCommandHandler(_userManager);
     }
 
