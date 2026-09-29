@@ -5,17 +5,14 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class SetupCompletedQueryHandlerTests
+public class SetupCompletedQueryHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SetupCompletedQueryHandler _handler;
 
     public SetupCompletedQueryHandlerTests()
     {
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
-
+        _userManager = CreateUserManager();
         _handler = new SetupCompletedQueryHandler(_userManager);
     }
 

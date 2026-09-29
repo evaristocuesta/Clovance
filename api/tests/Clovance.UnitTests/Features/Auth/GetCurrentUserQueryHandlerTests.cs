@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Clovance.ApiService.Features.Auth.GetCurrentUser;
+﻿using Clovance.ApiService.Features.Auth.GetCurrentUser;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +7,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class GetCurrentUserQueryHandlerTests
+public class GetCurrentUserQueryHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -16,10 +15,7 @@ public class GetCurrentUserQueryHandlerTests
 
     public GetCurrentUserQueryHandlerTests()
     {
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
-
+        _userManager = CreateUserManager();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _handler = new GetCurrentUserQueryHandler(_userManager, _httpContextAccessor);
     }
@@ -37,13 +33,7 @@ public class GetCurrentUserQueryHandlerTests
             UserName = "user@example.com"
         };
 
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(user.Id);
 
         _httpContextAccessor.HttpContext.Returns(httpContext);
         _userManager.GetUserAsync(httpContext.User).Returns(user);
@@ -65,13 +55,7 @@ public class GetCurrentUserQueryHandlerTests
     public async Task HandleAsync_WhenUserIsNotFound_ReturnsUserNotFoundError()
     {
         // Arrange
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(Guid.NewGuid());
 
         _httpContextAccessor.HttpContext.Returns(httpContext);
         _userManager.GetUserAsync(httpContext.User).Returns((ApplicationUser?)null);

@@ -9,7 +9,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class ResetPasswordCommandHandlerTests : IAsyncLifetime
+public class ResetPasswordCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
 {
     private readonly ClovanceDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -18,9 +18,7 @@ public class ResetPasswordCommandHandlerTests : IAsyncLifetime
     public ResetPasswordCommandHandlerTests()
     {
         _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
+        _userManager = CreateUserManager();
 
         _handler = new ResetPasswordCommandHandler(_userManager, _dbContext);
     }

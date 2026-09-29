@@ -6,17 +6,14 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class GetUserByIdRequestHandlerTests
+public class GetUserByIdRequestHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly GetUserByIdQueryHandler _handler;
 
     public GetUserByIdRequestHandlerTests()
     {
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
-
+        _userManager = CreateUserManager();
         _handler = new GetUserByIdQueryHandler(_userManager);
     }
 

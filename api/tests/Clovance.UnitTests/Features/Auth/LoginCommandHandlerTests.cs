@@ -11,7 +11,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class LoginCommandHandlerTests : IAsyncLifetime
+public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
 {
     private readonly ClovanceDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -25,9 +25,7 @@ public class LoginCommandHandlerTests : IAsyncLifetime
     {
         _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
 
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
+        _userManager = CreateUserManager();
 
         _jwtTokenService = Substitute.For<IJwtTokenService>();
         _tokenService = Substitute.For<ITokenService>();

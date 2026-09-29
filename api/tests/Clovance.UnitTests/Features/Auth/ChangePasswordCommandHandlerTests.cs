@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Clovance.ApiService.Features.Auth.ChangePassword;
+﻿using Clovance.ApiService.Features.Auth.ChangePassword;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +7,7 @@ using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
 
-public class ChangePasswordCommandHandlerTests
+public class ChangePasswordCommandHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -16,10 +15,7 @@ public class ChangePasswordCommandHandlerTests
 
     public ChangePasswordCommandHandlerTests()
     {
-        _userManager = Substitute.For<UserManager<ApplicationUser>>(
-            Substitute.For<IUserStore<ApplicationUser>>(),
-            null, null, null, null, null, null, null, null);
-
+        _userManager = CreateUserManager();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _handler = new ChangePasswordCommandHandler(_userManager, _httpContextAccessor);
     }
@@ -29,13 +25,7 @@ public class ChangePasswordCommandHandlerTests
     {
         // Arrange
         var user = new ApplicationUser { Id = Guid.CreateVersion7() };
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(user.Id);
 
         var command = new ChangePasswordCommand("OldPassword123!", "NewPassword123!");
 
@@ -56,13 +46,7 @@ public class ChangePasswordCommandHandlerTests
     public async Task HandleAsync_WhenUserIsNotFound_ReturnsUserNotFoundError()
     {
         // Arrange
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(Guid.NewGuid());
 
         var command = new ChangePasswordCommand("OldPassword123!", "NewPassword123!");
 
@@ -83,13 +67,7 @@ public class ChangePasswordCommandHandlerTests
     {
         // Arrange
         var user = new ApplicationUser { Id = Guid.CreateVersion7() };
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            }, "TestAuthType"))
-        };
+        var httpContext = CreateHttpContext(user.Id);
 
         var command = new ChangePasswordCommand("OldPassword123!", "NewPassword123!");
         var failedResult = IdentityResult.Failed(new IdentityError { Description = "Password is too short." });
