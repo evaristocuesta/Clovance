@@ -1,9 +1,7 @@
 ﻿using System.Security.Claims;
 using Clovance.ApiService.Domain.Accounts;
-using Clovance.ApiService.Features.Auth.CreateInvitation;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Accounts.UpdateAccount;
 
