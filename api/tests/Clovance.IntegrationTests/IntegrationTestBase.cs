@@ -11,8 +11,8 @@ using Clovance.ApiService.Infrastructure.Auth.Jwt;
 namespace Clovance.IntegrationTests;
 
 /// <summary>
-/// Base class for integration tests that provides shared access to Aspire infrastructure.
-/// Uses IClassFixture to share the Aspire app instance across all tests in the class.
+/// Base class for integration tests that provides shared access to the API test host.
+/// Uses IClassFixture to share the HTTP client, JWT token service and PostgreSQL Testcontainer across tests.
 /// </summary>
 public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
 {
@@ -24,6 +24,7 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
     private readonly AspireFixture _fixture;
 
     protected HttpClient Client => _fixture.Client;
+    protected HttpClient CreateClient(bool handleCookies = true) => _fixture.CreateClient(handleCookies);
     private IJwtTokenService _jwtTokenService => _fixture.JwtTokenService;
 
     protected IntegrationTestBase(
