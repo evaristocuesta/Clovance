@@ -3,6 +3,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 var isTestEnvironment = builder.Environment.EnvironmentName == "Testing";
+var isRunMode = builder.ExecutionContext.IsRunMode;
 
 builder.AddDockerComposeEnvironment("env");
 
@@ -30,33 +31,36 @@ var postgres = builder
         postgresResourceName,
         userName: postgresUsername,
         password: postgresPassword)
-    // Set the name of the default database to auto-create on container startup.
-    .WithEnvironment("POSTGRES_DB", "clovance-database")
-    .PublishAsDockerComposeService((resource, service) =>
-    {
-        service.Restart = "unless-stopped";
+    .WithEnvironment("POSTGRES_DB", "clovance-database");
 
-        if (!isTestEnvironment)
-        {
-            service.Volumes.Add(new Volume
-            {
-                Name = "clovance-postgres-data",
-                Source = $"{volumeSourcePath.AsEnvironmentPlaceholder(resource)}/postgres",
-                Target = "/var/lib/postgresql",
-                Type = "bind",
-                ReadOnly = false
-            });
-        }
-    });
-
-if (!isTestEnvironment)
+// Development only:
+// Persist PostgreSQL using an Aspire-managed Docker volume.
+//
+// This is deliberately NOT added during publish, otherwise the generated
+// Docker Compose would contain both the named volume and the production bind mount.
+if (isRunMode && !isTestEnvironment)
 {
-    // In development: persist data and keep container running
     postgres
+        .WithDataVolume()
         .WithLifetime(ContainerLifetime.Persistent)
         .WithPgWeb();
 }
-// In testing: ephemeral container with no volume (destroyed after tests)
+
+// Docker Compose publish only:
+// Use bind mounts configured through VOLUME_SOURCE_PATH.
+postgres.PublishAsDockerComposeService((resource, service) =>
+{
+    service.Restart = "unless-stopped";
+
+    service.Volumes.Add(new Volume
+    {
+        Name = "clovance-postgres-data",
+        Source = $"{volumeSourcePath.AsEnvironmentPlaceholder(resource)}/postgres",
+        Target = "/var/lib/postgresql",
+        Type = "bind",
+        ReadOnly = false
+    });
+});
 
 // Add the default database to the application model so that it can be referenced by other resources.
 var database = postgres.AddDatabase("clovance-database");
