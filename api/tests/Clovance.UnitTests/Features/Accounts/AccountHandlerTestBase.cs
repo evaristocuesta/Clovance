@@ -1,12 +1,11 @@
-﻿using System.Security.Claims;
-using Clovance.ApiService.Domain.Accounts;
+﻿using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Accounts;
 
-public abstract class AccountHandlerTestBase
+public abstract class AccountHandlerTestBase : FeatureTestBase
 {
     protected ClovanceDbContext Context { get; }
     protected IHttpContextAccessor HttpContextAccessor { get; }
@@ -19,20 +18,7 @@ public abstract class AccountHandlerTestBase
 
     protected void Authenticate(Guid userId)
     {
-        HttpContextAccessor.HttpContext.Returns(CreateHttpContext(userId));
-    }
-
-    protected static HttpContext CreateHttpContext(Guid userId)
-    {
-        var identity = new ClaimsIdentity(new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
-        }, "TestAuth");
-
-        return new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal(identity)
-        };
+        FeatureTestBase.Authenticate(HttpContextAccessor, userId);
     }
 
     protected static Account CreateAccount(string name, AccountType type, string currency, Guid? createdBy = null)
