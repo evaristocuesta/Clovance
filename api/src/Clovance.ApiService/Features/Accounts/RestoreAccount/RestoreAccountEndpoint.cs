@@ -6,11 +6,21 @@ public class RestoreAccountEndpoint : IApiEndPoint
 {
     public void MapApiEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapPut("/{id:guid}/restore", async (Guid id, IHandler<RestoreAccountCommand, Result> handler, CancellationToken cancellationToken) =>
+        app.MapPut("/{id:guid}/restore", async (
+            Guid id,
+            IHandler<RestoreAccountCommand, Result> handler,
+            HttpContext httpContext,
+            CancellationToken cancellationToken) =>
         {
             var command = new RestoreAccountCommand(id);
             var result = await handler.HandleAsync(command, cancellationToken);
-            return Results.Ok(result);
+
+            if (result.IsFailure)
+            {
+                return result.ToProblemResult(httpContext);
+            }
+
+            return Results.NoContent();
         })
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
