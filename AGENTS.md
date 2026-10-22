@@ -13,8 +13,15 @@ Backend (`api/Clovance.slnx` exists; CI restores/builds per project dir):
 - Build all: `dotnet build api/Clovance.slnx`
 - Unit tests: `dotnet test` in `api/tests/Clovance.UnitTests` (in-memory DB + NSubstitute; no Docker needed)
 - Integration tests: `dotnet test` in `api/tests/Clovance.IntegrationTests` — **requires Docker** (Testcontainers spins up `postgres:18.3-alpine` per run). Uses env `Testing`: NoOp email sender, refresh-token cleanup disabled.
-- Single test: `dotnet test --filter "FullyQualifiedName~SomeName"`
+- Single test: run the xunit v3 MTP executable directly (VSTest `--filter` syntax is no longer supported, and forwarding args through `dotnet test --` fails with MTP exit code 5; verified on SDK 10.0.402):
+  `dotnet bin/Debug/net10.0/Clovance.UnitTests.dll -method "Clovance.UnitTests.Namespace.ClassName.MethodName"` — also available: `-class`, `-namespace`, `-filter` (query language, see xunit help).
 - `api/tests/Clovante.IntegrationTests2` is an orphan (only `obj/`, not in the solution) — ignore it.
+
+### Test runner (MTP mode)
+
+- `dotnet test` runs in **Microsoft.Testing.Platform (MTP) mode**, enabled by `api/global.json` (`test.runner: "Microsoft.Testing.Platform"`). Required since the `Microsoft.NET.Test.Sdk` 18.11 + xunit v4 upgrade removed VSTest execution on the .NET 10 SDK. xunit v3 test projects are native MTP executables, so no test project changes were needed.
+- Do not "fix" this with `TestingPlatformDotnetTestSupport=true` (the VSTest bridge) — it was removed in Microsoft.Testing.Platform 2.x with the .NET 10 SDK.
+- Add `test` runner settings to `api/global.json` when the test stack changes again; never add an `sdk` section there (SDK resolution is global for everything under `api/`).
 
 Frontend (`cd frontend`; pnpm 11.8.0, Node 22):
 - `pnpm install --frozen-lockfile`
