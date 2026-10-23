@@ -13,6 +13,7 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
     private readonly ClovanceDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly ITokenService _tokenService;
 
@@ -20,12 +21,14 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
         ClovanceDbContext dbContext,
         IHttpContextAccessor httpContextAccessor,
         UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
         IJwtTokenService jwtTokenService,
         ITokenService tokenService)
     {
         _dbContext = dbContext;
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
+        _signInManager = signInManager;
         _jwtTokenService = jwtTokenService;
         _tokenService = tokenService;
     }
@@ -49,9 +52,17 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
             return Result<LoginResult>.Failure(AppErrors.Auth.InvalidCredentials());
         }
 
-        var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(
+            user,
+            request.Password,
+            lockoutOnFailure: true);
 
-        if (!isPasswordValid)
+        if (signInResult.IsLockedOut)
+        {
+            return Result<LoginResult>.Failure(AppErrors.Auth.AccountLocked());
+        }
+
+        if (!signInResult.Succeeded)
         {
             return Result<LoginResult>.Failure(AppErrors.Auth.InvalidCredentials());
         }

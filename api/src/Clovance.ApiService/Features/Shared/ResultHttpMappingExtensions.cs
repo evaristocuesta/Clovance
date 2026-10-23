@@ -48,6 +48,7 @@ public static class ResultHttpMappingExtensions
         StatusCodes.Status404NotFound => "Not Found",
         StatusCodes.Status409Conflict => "Conflict",
         StatusCodes.Status422UnprocessableEntity => "Unprocessable Entity",
+        StatusCodes.Status423Locked => "Locked",
         StatusCodes.Status500InternalServerError => "Internal Server Error",
         _ => "Error"
     };

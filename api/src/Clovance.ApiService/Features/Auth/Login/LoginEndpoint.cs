@@ -28,6 +28,7 @@ public sealed class LoginEndpoint : IApiEndPoint
         .Produces<LoginResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status423Locked)
         .ProducesProblem(StatusCodes.Status429TooManyRequests)
         .AllowAnonymous()
         .RequireRateLimiting(RateLimitingServiceCollectionExtensions.AuthPolicyName)

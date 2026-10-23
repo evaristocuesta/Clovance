@@ -53,6 +53,9 @@ public static class AppErrors
         public static Error InvalidCredentials() =>
             CreateUnauthorized(ErrorCodes.Auth.InvalidCredentials, "Invalid credentials.");
 
+        public static Error AccountLocked() =>
+            CreateLocked(ErrorCodes.Auth.AccountLocked, "Account is locked due to repeated failed login attempts.");
+
         public static Error UserNotAuthenticated() =>
             CreateUnauthorized(ErrorCodes.Auth.UserNotAuthenticated, "User is not authenticated.");
 
@@ -137,4 +140,7 @@ public static class AppErrors
 
     private static Error CreateForbidden(string code, string description) =>
         new(code, description, StatusCodes.Status403Forbidden);
+
+    private static Error CreateLocked(string code, string description) =>
+        new(code, description, StatusCodes.Status423Locked);
 }
