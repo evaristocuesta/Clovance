@@ -40,6 +40,8 @@ public static class DatabaseServiceCollectionExtensions
               options.Password.RequireNonAlphanumeric = true;
               options.Password.RequireUppercase = true;
               options.Password.RequireLowercase = true;
+              options.Lockout.MaxFailedAccessAttempts = 5;
+              options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
           })
           .AddRoles<IdentityRole<Guid>>()
           .AddSignInManager()

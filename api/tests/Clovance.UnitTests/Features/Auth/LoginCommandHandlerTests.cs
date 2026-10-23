@@ -4,9 +4,12 @@ using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Clovance.UnitTests.Domain.Shared;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
@@ -15,6 +18,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
 {
     private readonly ClovanceDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly ITokenService _tokenService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -26,6 +30,14 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         _dbContext = TestDbContextFactory.CreateInMemoryDbContext();
 
         _userManager = CreateUserManager();
+        _signInManager = Substitute.For<SignInManager<ApplicationUser>>(
+            _userManager,
+            Substitute.For<IHttpContextAccessor>(),
+            Substitute.For<IUserClaimsPrincipalFactory<ApplicationUser>>(),
+            Substitute.For<IOptions<IdentityOptions>>(),
+            Substitute.For<ILogger<SignInManager<ApplicationUser>>>(),
+            Substitute.For<IAuthenticationSchemeProvider>(),
+            Substitute.For<IUserConfirmation<ApplicationUser>>());
 
         _jwtTokenService = Substitute.For<IJwtTokenService>();
         _tokenService = Substitute.For<ITokenService>();
@@ -33,7 +45,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _httpContextAccessor.HttpContext.Returns(_httpContext);
         
-        _handler = new LoginCommandHandler(_dbContext, _httpContextAccessor, _userManager, _jwtTokenService, _tokenService);
+        _handler = new LoginCommandHandler(_dbContext, _httpContextAccessor, _userManager, _signInManager, _jwtTokenService, _tokenService);
     }
 
     public ValueTask InitializeAsync()
@@ -66,7 +78,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
-        _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
+        _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Success);
         _userManager.GetRolesAsync(user).Returns(roles);
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
@@ -151,7 +163,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         };
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
-        _userManager.CheckPasswordAsync(user, command.Password).Returns(false);
+        _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Failed);
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
@@ -180,7 +192,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         var expectedExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
-        _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
+        _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Success);
         _userManager.GetRolesAsync(user).Returns(roles);
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
@@ -218,7 +230,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         var expectedRefreshToken = TestData.PlainToken;
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
-        _userManager.CheckPasswordAsync(user, command.Password).Returns(true);
+        _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Success);
         _userManager.GetRolesAsync(user).Returns(roles);
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
 
@@ -239,5 +251,31 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         var containsSecure = cookieHeader.ToLower().Contains("secure");
         Assert.Equal(_httpContext.Request.IsHttps, containsSecure);
         Assert.Contains("samesite=strict", cookieHeader.ToLower());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithLockedOutUser_ReturnsAccountLockedError()
+    {
+        // Arrange
+        var command = new LoginCommand("test@example.com", "Password123!");
+
+        var user = new ApplicationUser
+        {
+            UserName = "test@example.com",
+            Email = "test@example.com"
+        };
+
+        _userManager.FindByEmailAsync(command.Email).Returns(user);
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
+        _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.LockedOut);
+
+        // Act
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.NotNull(result.Error);
+        Assert.Equal(ErrorCodes.Auth.AccountLocked, result.Error.Code);
+        Assert.Equal(StatusCodes.Status423Locked, result.Error.StatusCode);
     }
 }

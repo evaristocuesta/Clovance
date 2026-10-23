@@ -18,6 +18,7 @@ public static class ErrorCodes
     {
         public const string EmailSendFailed = "auth.email.send_failed";
         public const string InvalidCredentials = "auth.invalid_credentials";
+        public const string AccountLocked = "auth.account_locked";
         public const string UserNotAuthenticated = "auth.user.not_authenticated";
         public const string UserNotFound = "auth.user.not_found";
         public const string UserUpdateFailed = "auth.user.update_failed";
