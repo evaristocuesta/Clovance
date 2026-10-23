@@ -23,7 +23,7 @@ public class SetupCompletedQueryHandlerTests : AuthHandlerTestBase
         _userManager.Users.Returns(new List<ApplicationUser>
         {
             new() { Email = "admin@example.com" }
-        }.AsQueryable());
+        }.AsAsyncQueryable());
 
         // Act
         var result = await _handler.HandleAsync(new SetupCompletedQuery(), TestContext.Current.CancellationToken);
@@ -37,7 +37,7 @@ public class SetupCompletedQueryHandlerTests : AuthHandlerTestBase
     public async Task HandleAsync_WhenNoUsersExist_ReturnsSetupCompletedFalse()
     {
         // Arrange
-        _userManager.Users.Returns(new List<ApplicationUser>().AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser>().AsAsyncQueryable());
 
         // Act
         var result = await _handler.HandleAsync(new SetupCompletedQuery(), TestContext.Current.CancellationToken);
