@@ -24,6 +24,7 @@ public class SetupEndpoint : IApiEndPoint
         })
         .Produces(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
+        .AllowAnonymous()
         .WithName("Setup")
         .WithSummary("Setup")
         .WithDescription("Setup the application with an initial admin user.");

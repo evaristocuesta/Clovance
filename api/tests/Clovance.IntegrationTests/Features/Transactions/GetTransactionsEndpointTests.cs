@@ -33,8 +33,20 @@ public class GetTransactionsEndpointTests : TransactionIntegrationTestBase
     [Fact]
     public async Task GetTransactionsEndpoint_ReturnsBadRequest_ForInvalidQuery()
     {
+        AuthenticateAsRegularUser();
+
         var response = await Client.GetAsync("/api/transactions?dateFrom=2025-01-01&pageSize=10", TestContext.Current.CancellationToken);
 
         Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetTransactionsEndpoint_ReturnsUnauthorized_ForUnauthenticatedUser()
+    {
+        AuthenticateWithToken(string.Empty);
+
+        var response = await Client.GetAsync("/api/transactions", TestContext.Current.CancellationToken);
+
+        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }

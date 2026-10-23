@@ -21,6 +21,7 @@ public class SetupCompletedEndpoint : IApiEndPoint
             return Results.Ok(result.Value);
         })
         .Produces<SetupCompletedResult>(StatusCodes.Status200OK)
+        .AllowAnonymous()
         .WithName("SetupCompleted")
         .WithSummary("Setup completed")
         .WithDescription("Checks if the setup process has been completed.");

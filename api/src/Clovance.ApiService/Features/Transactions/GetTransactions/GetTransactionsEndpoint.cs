@@ -36,6 +36,7 @@ public class GetTransactionsEndpoint : IApiEndPoint
         .Produces<GetTransactionsPageResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .RequireAuthorization()
         .WithName("GetTransactions")
         .WithSummary("Get Transactions")
         .WithDescription("Get a paginated list of transactions with optional filtering by year, month, account ID, and description.");

@@ -27,6 +27,7 @@ public sealed class LoginEndpoint : IApiEndPoint
         .Produces<LoginResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .AllowAnonymous()
         .WithName("Login")
         .WithSummary("Login")
         .WithDescription("Returns a Bearer token in the response that can be used for authenticated requests.");

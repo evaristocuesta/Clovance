@@ -11,6 +11,7 @@ using Clovance.ApiService.Infrastructure.ExternalServices;
 using Clovance.ApiService.Infrastructure.Frontend;
 using Clovance.ApiService.Infrastructure.HttpRequest;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
@@ -54,7 +55,12 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>()
     .AddProblemDetails();
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // Every endpoint requires authentication unless it explicitly calls .AllowAnonymous().
+    // Prevents new endpoints from being born open by default.
+    options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+});
 
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -104,7 +110,7 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
 
     app.MapScalarApiReference(options => options
         .WithTitle("Clovance API Reference")
@@ -113,9 +119,10 @@ if (app.Environment.IsDevelopment())
         .AddHttpAuthentication("Bearer", auth =>
         {
             auth.Token = "";
-        }));
+        }))
+        .AllowAnonymous();
 
-    app.MapGet("/", () => Results.Redirect("/scalar", permanent: false));
+    app.MapGet("/", () => Results.Redirect("/scalar", permanent: false)).AllowAnonymous();
 }
 
 
