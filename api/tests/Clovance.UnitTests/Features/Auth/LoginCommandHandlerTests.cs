@@ -80,7 +80,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Success);
         _userManager.GetRolesAsync(user).Returns(roles);
-        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsAsyncQueryable());
 
         _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns((expectedToken, expectedExpiresAt));
@@ -122,6 +122,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         var command = new LoginCommand("nonexistent@example.com", "Password123!");
 
         _userManager.FindByEmailAsync(command.Email).Returns((ApplicationUser?)null);
+        _userManager.Users.Returns(new List<ApplicationUser>().AsAsyncQueryable());
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -142,7 +143,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         };
 
         _userManager.FindByEmailAsync(command.Email).Returns((ApplicationUser?)null);
-        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsAsyncQueryable());
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -164,7 +165,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Failed);
-        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsAsyncQueryable());
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -194,7 +195,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Success);
         _userManager.GetRolesAsync(user).Returns(roles);
-        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsAsyncQueryable());
 
         _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", expectedExpiresAt));
@@ -232,7 +233,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         _userManager.FindByEmailAsync(command.Email).Returns(user);
         _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.Success);
         _userManager.GetRolesAsync(user).Returns(roles);
-        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsAsyncQueryable());
 
         _jwtTokenService.GenerateToken(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
             .Returns(("jwt-token", DateTimeOffset.UtcNow.AddMinutes(15)));
@@ -266,7 +267,7 @@ public class LoginCommandHandlerTests : AuthHandlerTestBase, IAsyncLifetime
         };
 
         _userManager.FindByEmailAsync(command.Email).Returns(user);
-        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser> { user }.AsAsyncQueryable());
         _signInManager.CheckPasswordSignInAsync(user, command.Password, true).Returns(SignInResult.LockedOut);
 
         // Act

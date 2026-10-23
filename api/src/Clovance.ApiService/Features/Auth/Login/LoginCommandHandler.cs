@@ -5,6 +5,7 @@ using Clovance.ApiService.Infrastructure.Auth.Refresh;
 using Clovance.ApiService.Infrastructure.Auth.Token;
 using Clovance.ApiService.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
@@ -35,9 +36,9 @@ public sealed class LoginCommandHandler : IHandler<LoginCommand, Result<LoginRes
 
     public async Task<Result<LoginResult>> HandleAsync(LoginCommand request, CancellationToken cancellationToken)
     {
-        var users = _userManager.Users.ToList();
+        var hasUsers = await _userManager.Users.AnyAsync(cancellationToken);
 
-        if (!users.Any())
+        if (!hasUsers)
         {
             return Result<LoginResult>.Failure(AppErrors.Auth.SetupIsNotCompleted());
         }
