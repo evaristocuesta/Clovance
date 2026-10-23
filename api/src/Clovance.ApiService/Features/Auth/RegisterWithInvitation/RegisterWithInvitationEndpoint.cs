@@ -23,6 +23,7 @@ public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
         .Produces<RegisterWithInvitationResult>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .AllowAnonymous()
         .WithName("RegisterWithInvitation")
         .WithSummary("Register With Invitation")
         .WithDescription("Registers a new user using an invitation.");
