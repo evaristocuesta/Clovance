@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.RateLimiting;
 
 namespace Clovance.ApiService.Features.Auth.ForgotPassword;
 
@@ -23,7 +24,9 @@ public sealed class ForgotPasswordEndpoint : IApiEndPoint
         })
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status503ServiceUnavailable)
+        .ProducesProblem(StatusCodes.Status429TooManyRequests)
         .AllowAnonymous()
+        .RequireRateLimiting(RateLimitingServiceCollectionExtensions.AuthPolicyName)
         .WithName("ForgotPassword")
         .WithSummary("Forgot password")
         .WithDescription("Request a password reset email");

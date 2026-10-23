@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.RateLimiting;
 
 namespace Clovance.ApiService.Features.Auth.Login;
 
@@ -27,7 +28,9 @@ public sealed class LoginEndpoint : IApiEndPoint
         .Produces<LoginResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status429TooManyRequests)
         .AllowAnonymous()
+        .RequireRateLimiting(RateLimitingServiceCollectionExtensions.AuthPolicyName)
         .WithName("Login")
         .WithSummary("Login")
         .WithDescription("Returns a Bearer token in the response that can be used for authenticated requests.");

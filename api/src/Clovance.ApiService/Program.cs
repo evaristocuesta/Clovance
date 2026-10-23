@@ -10,6 +10,7 @@ using Clovance.ApiService.Infrastructure.Email;
 using Clovance.ApiService.Infrastructure.ExternalServices;
 using Clovance.ApiService.Infrastructure.Frontend;
 using Clovance.ApiService.Infrastructure.HttpRequest;
+using Clovance.ApiService.Infrastructure.RateLimiting;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,7 @@ builder.Services.AddAuthorization(options =>
     // Prevents new endpoints from being born open by default.
     options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 });
+builder.Services.AddApiRateLimiting(builder.Configuration);
 
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -107,6 +109,7 @@ app.UseHttpRequestTracing();
 app.UseExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {
