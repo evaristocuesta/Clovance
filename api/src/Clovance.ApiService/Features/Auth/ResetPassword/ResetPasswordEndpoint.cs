@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.RateLimiting;
 
 namespace Clovance.ApiService.Features.Auth.ResetPassword;
 
@@ -23,7 +24,9 @@ public sealed class ResetPasswordEndpoint : IApiEndPoint
         })
         .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status429TooManyRequests)
         .AllowAnonymous()
+        .RequireRateLimiting(RateLimitingServiceCollectionExtensions.AuthPolicyName)
         .WithName("ResetPassword")
         .WithSummary("Reset password")
         .WithDescription("Reset a user's password using a password reset token");

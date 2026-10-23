@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.RateLimiting;
 
 namespace Clovance.ApiService.Features.Auth.RegisterWithInvitation;
 
@@ -23,7 +24,9 @@ public sealed class RegisterWithInvitationEndpoint : IApiEndPoint
         .Produces<RegisterWithInvitationResult>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status429TooManyRequests)
         .AllowAnonymous()
+        .RequireRateLimiting(RateLimitingServiceCollectionExtensions.AuthPolicyName)
         .WithName("RegisterWithInvitation")
         .WithSummary("Register With Invitation")
         .WithDescription("Registers a new user using an invitation.");

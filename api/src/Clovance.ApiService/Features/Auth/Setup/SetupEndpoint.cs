@@ -1,5 +1,6 @@
 ﻿using Clovance.ApiService.Features.Auth.RegisterAdmin;
 using Clovance.ApiService.Features.Shared;
+using Clovance.ApiService.Infrastructure.RateLimiting;
 
 namespace Clovance.ApiService.Features.Auth.Setup;
 
@@ -24,7 +25,9 @@ public class SetupEndpoint : IApiEndPoint
         })
         .Produces(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status429TooManyRequests)
         .AllowAnonymous()
+        .RequireRateLimiting(RateLimitingServiceCollectionExtensions.AuthPolicyName)
         .WithName("Setup")
         .WithSummary("Setup")
         .WithDescription("Setup the application with an initial admin user.");
