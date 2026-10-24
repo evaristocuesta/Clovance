@@ -8,6 +8,7 @@ using Clovance.ApiService.Infrastructure.Auth.UserInvitation;
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Infrastructure.Email;
 using Clovance.ApiService.Infrastructure.ExternalServices;
+using Clovance.ApiService.Infrastructure.ForwardedHeaders;
 using Clovance.ApiService.Infrastructure.Frontend;
 using Clovance.ApiService.Infrastructure.HttpRequest;
 using Clovance.ApiService.Infrastructure.RateLimiting;
@@ -63,6 +64,7 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 });
 builder.Services.AddApiRateLimiting(builder.Configuration);
+builder.Services.AddForwardedHeaders(builder.Configuration);
 
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -101,6 +103,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 var app = builder.Build();
+
+// Must run first so Request.Scheme/RemoteIpAddress reflect the original client request.
+app.UseForwardedHeaders();
 
 app.UseRequestLocalization();
 
