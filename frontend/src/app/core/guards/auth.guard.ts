@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { map } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { AuthService } from '@core/services/auth.service';
 
 /**
@@ -55,3 +55,27 @@ export const publicGuard: CanActivateFn = (route, state) => {
         })
       );
 };
+
+/**
+ * Guard for admin-only routes (user management)
+ * Defence in depth: the API requires the Admin role on every admin endpoint, so this
+ * only keeps non-admin users out of the admin screens. When the current user has not
+ * been loaded yet (e.g. right after a page reload), it is loaded once before deciding;
+ * if it cannot be loaded, the user is redirected to the home route.
+ */
+export const adminGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  const currentUser = authService.getCurrentUser();
+
+  return currentUser
+    ? resolveAdminAccess(currentUser.roles, router)
+    : authService.loadCurrentUser().pipe(
+        map(user => resolveAdminAccess(user.roles, router)),
+        catchError(() => of(router.createUrlTree(['/'])))
+      );
+};
+
+const resolveAdminAccess = (roles: string[], router: Router) =>
+  roles.includes('Admin') ? true : router.createUrlTree(['/']);
