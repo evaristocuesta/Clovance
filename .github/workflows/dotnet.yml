@@ -13,6 +13,11 @@ on:
       - ".github/workflows/dotnet.yml"
   workflow_dispatch:
 
+# Least privilege for the default token: this workflow only needs to read the code it
+# builds and tests.
+permissions:
+  contents: read
+
 jobs:
   build-api:
 

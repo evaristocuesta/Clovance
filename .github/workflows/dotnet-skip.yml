@@ -12,6 +12,10 @@ on:
       - "api/**"
       - ".github/workflows/dotnet.yml"
 
+# Least privilege for the default token.
+permissions:
+  contents: read
+
 jobs:
   build-api:
     runs-on: ubuntu-latest

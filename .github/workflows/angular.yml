@@ -13,6 +13,11 @@ on:
       - ".github/workflows/angular.yml"
   workflow_dispatch:
 
+# Least privilege for the default token: this workflow only needs to read the code it
+# builds and tests.
+permissions:
+  contents: read
+
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
@@ -37,8 +42,11 @@ jobs:
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
+      # --ignore-scripts: dependency lifecycle scripts (postinstall) run with the
+      # GITHUB_TOKEN in the environment, so they are skipped in CI. Verified that the
+      # build and the tests pass without them.
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Build
         run: pnpm build
