@@ -1,4 +1,8 @@
-<div
-  [class]="className()"
-  [innerHTML]="svg()">
-</div>
+<svg
+  #svg
+  [attr.class]="className()"
+  [attr.viewBox]="viewBox()"
+  [attr.fill]="fill()"
+  aria-hidden="true"
+  xmlns="http://www.w3.org/2000/svg"
+></svg>
