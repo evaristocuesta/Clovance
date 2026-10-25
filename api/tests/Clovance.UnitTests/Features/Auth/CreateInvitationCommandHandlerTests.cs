@@ -88,7 +88,12 @@ public class CreateInvitationCommandHandlerTests : AuthHandlerTestBase, IAsyncLi
 
         Assert.True(result.IsSuccess);
         Assert.Equal(command.Email, result.Value.Email);
-        Assert.Equal(rawToken, result.Value.Token);
+
+        await _emailSender.Received(1).SendAsync(
+            Arg.Is<EmailMessage>(m =>
+                m.To == command.Email &&
+                m.HtmlBody.Contains(Uri.EscapeDataString(rawToken))),
+            Arg.Any<CancellationToken>());
 
         var savedInvitation = await _dbContext.UserInvitations
             .FirstOrDefaultAsync(i => i.Email.Value == command.Email, TestContext.Current.CancellationToken);

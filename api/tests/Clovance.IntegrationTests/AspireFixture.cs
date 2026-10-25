@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Infrastructure.Auth.Jwt;
+using Clovance.ApiService.Infrastructure.Email;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -28,9 +29,16 @@ public sealed class AspireFixture : IAsyncLifetime
     private WebApplicationFactory<Program> _factory = null!;
 
     private IJwtTokenService _jwtTokenService = null!;
+    private NoOpEmailSender _emailSender = null!;
 
     public HttpClient Client { get; private set; } = null!;
     public IJwtTokenService JwtTokenService => _jwtTokenService;
+
+    /// <summary>
+    /// Testing email sender; it captures messages in memory so tests can read
+    /// tokens that are only delivered by email.
+    /// </summary>
+    public NoOpEmailSender EmailSender => _emailSender;
 
     public HttpClient CreateClient(bool handleCookies = true)
     {
@@ -65,6 +73,8 @@ public sealed class AspireFixture : IAsyncLifetime
         _factory = new TestApiFactory(_postgresContainer.GetConnectionString(), _jwtKeyFilePath);
         Client = _factory.CreateClient();
         _jwtTokenService = _factory.Services.GetRequiredService<IJwtTokenService>();
+        _emailSender = _factory.Services.GetRequiredService<IEmailSender>() as NoOpEmailSender
+            ?? throw new InvalidOperationException("The testing email sender is not registered.");
 
         var response = await Client.GetAsync("/health", linkedCts.Token);
         response.EnsureSuccessStatusCode();

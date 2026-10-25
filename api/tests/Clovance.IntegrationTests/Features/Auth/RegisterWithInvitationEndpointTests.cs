@@ -22,12 +22,13 @@ public class RegisterWithInvitationEndpointTests : IntegrationTestBase
             new CreateInvitationCommand(Email: "test1@example.com"),
             TestContext.Current.CancellationToken);
 
-        var invitation = await responseInvitation.Content.ReadFromJsonAsync<CreateInvitationResult>(cancellationToken: TestContext.Current.CancellationToken);
+        responseInvitation.EnsureSuccessStatusCode();
+        var invitationToken = GetInvitationTokenFromEmail("test1@example.com");
 
         // Act
         var response = await Client.PostAsJsonAsync(
             "/api/auth/users/register",
-            new RegisterWithInvitationCommand(Email: "test1@example.com", Password: "Password123!", Token: invitation!.Token, FirstName: "FirstName", LastName: "LastName"),
+            new RegisterWithInvitationCommand(Email: "test1@example.com", Password: "Password123!", Token: invitationToken, FirstName: "FirstName", LastName: "LastName"),
             TestContext.Current.CancellationToken);
 
         // Assert
@@ -61,7 +62,7 @@ public class RegisterWithInvitationEndpointTests : IntegrationTestBase
             new CreateInvitationCommand(Email: "test2@example.com"),
             TestContext.Current.CancellationToken);
 
-        var invitation = await responseInvitation.Content.ReadFromJsonAsync<CreateInvitationResult>(cancellationToken: TestContext.Current.CancellationToken);
+        responseInvitation.EnsureSuccessStatusCode();
 
         // Act
         var response = await Client.PostAsJsonAsync(
