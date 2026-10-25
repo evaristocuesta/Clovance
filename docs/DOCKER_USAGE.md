@@ -52,9 +52,9 @@ Create a `docker-compose.yml` file to run the complete application:
 ```yaml
 services:
   env-dashboard:
-    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:13.5"
+    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:13.6"
     ports:
-      - "18888"
+      - "${CLOVANCE_DASHBOARD_BIND_ADDRESS:-0.0.0.0}::18888"
     expose:
       - "18889"
       - "18890"
@@ -136,7 +136,7 @@ services:
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-frontend"
     ports:
-      - "7000:7000"
+      - "${CLOVANCE_BIND_ADDRESS:-0.0.0.0}:7000:7000"
     depends_on:
       clovance-apiservice:
         condition: "service_started"
@@ -165,6 +165,45 @@ To also remove the database volume:
 ```bash
 docker compose down -v
 ```
+
+---
+
+## Published ports and reverse proxy
+
+Only two ports are published to the host. The API and PostgreSQL are reachable only through the internal Docker network.
+
+| Service | Host port | Bind address variable | Default |
+|---|---|---|---|
+| Frontend (Clovance) | `7000` | `CLOVANCE_BIND_ADDRESS` | `0.0.0.0` |
+| Aspire Dashboard | random (see `docker ps`) | `CLOVANCE_DASHBOARD_BIND_ADDRESS` | `0.0.0.0` |
+
+### Direct access by IP and port
+
+With the defaults, Clovance is available at `http://<host-ip>:7000`. Traffic is plain HTTP, so use this on a trusted network.
+
+### Behind a reverse proxy with TLS
+
+To use a domain name and a certificate, put a reverse proxy (nginx, Caddy, Traefik...) in front of Clovance and point it at port `7000`. The proxy must send the `X-Forwarded-Proto` and `X-Forwarded-For` headers; otherwise the refresh cookie is not marked `Secure`. Clovance only trusts these headers when they come from a private network address (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`).
+
+If the proxy runs on the same host, close the direct access by binding Clovance to the loopback interface and point the proxy at `127.0.0.1:7000`:
+
+```
+CLOVANCE_BIND_ADDRESS=127.0.0.1
+```
+
+If the proxy runs on another machine, keep the default (or set the host LAN IP), because the proxy must reach the published port over the network.
+
+In both cases, do not forward port `7000` in your router. Only the proxy port (usually `443`) should be reachable from the internet.
+
+### Aspire Dashboard
+
+The dashboard shows telemetry and the environment of every service. It asks for a browser token that is printed in the container logs (`docker logs <dashboard-container>`). Never expose it to the internet. To reach it only from the host, set:
+
+```
+CLOVANCE_DASHBOARD_BIND_ADDRESS=127.0.0.1
+```
+
+Check what is published with `docker ps` or `docker compose config`.
 
 ---
 
