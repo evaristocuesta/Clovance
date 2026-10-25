@@ -5,7 +5,20 @@ var builder = DistributedApplication.CreateBuilder(args);
 var isTestEnvironment = builder.Environment.EnvironmentName == "Testing";
 var isRunMode = builder.ExecutionContext.IsRunMode;
 
-builder.AddDockerComposeEnvironment("env");
+// Docker Compose publish only: the host interface each published port binds to is read
+// from the environment at deploy time. Defaults keep http://ip:port working; set the
+// variable to 127.0.0.1 to reach the service only from the host (e.g. behind a reverse proxy).
+const string frontendBindAddress = "${CLOVANCE_BIND_ADDRESS:-0.0.0.0}";
+const string dashboardBindAddress = "${CLOVANCE_DASHBOARD_BIND_ADDRESS:-0.0.0.0}";
+
+builder.AddDockerComposeEnvironment("env")
+    .ConfigureComposeFile(composeFile =>
+    {
+        if (composeFile.Services.TryGetValue("env-dashboard", out var dashboard))
+        {
+            dashboard.Ports = [$"{dashboardBindAddress}::18888"];
+        }
+    });
 
 var postgresUsername = builder.AddParameter("postgres-username");
 var postgresPassword = builder.AddParameter("postgres-password", secret: true);
@@ -113,6 +126,7 @@ builder
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Restart = "unless-stopped";
+        service.Ports = [$"{frontendBindAddress}:7000:7000"];
     });
 
 await builder.Build().RunAsync();

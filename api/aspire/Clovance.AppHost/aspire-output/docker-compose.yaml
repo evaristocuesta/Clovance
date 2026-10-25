@@ -2,7 +2,7 @@ services:
   env-dashboard:
     image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:13.6"
     ports:
-      - "18888"
+      - "${CLOVANCE_DASHBOARD_BIND_ADDRESS:-0.0.0.0}::18888"
     expose:
       - "18889"
       - "18890"
@@ -84,7 +84,7 @@ services:
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "clovance-frontend"
     ports:
-      - "7000:7000"
+      - "${CLOVANCE_BIND_ADDRESS:-0.0.0.0}:7000:7000"
     depends_on:
       clovance-apiservice:
         condition: "service_started"
