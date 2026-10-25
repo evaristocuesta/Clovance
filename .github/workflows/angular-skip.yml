@@ -12,6 +12,10 @@ on:
       - "frontend/**"
       - ".github/workflows/angular.yml"
 
+# Least privilege for the default token.
+permissions:
+  contents: read
+
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
