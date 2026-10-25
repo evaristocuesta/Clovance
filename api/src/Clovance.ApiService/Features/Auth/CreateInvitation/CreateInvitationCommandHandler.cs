@@ -9,6 +9,7 @@ using Clovance.ApiService.Infrastructure.Frontend;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Clovance.ApiService.Features.Auth.CreateInvitation;
@@ -23,6 +24,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
     private readonly UserInvitationOptions _invitationOptions;
     private readonly FrontendOptions _frontendOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<CreateInvitationCommandHandler> _logger;
 
     public CreateInvitationCommandHandler(
         UserManager<ApplicationUser> userManager,
@@ -32,7 +34,8 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         IStringLocalizer<EmailResources> localizer,
         IOptions<UserInvitationOptions> invitationOptions,
         IOptions<FrontendOptions> frontendOptions,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<CreateInvitationCommandHandler> logger)
     {
         _userManager = userManager;
         _dbContext = dbContext;
@@ -42,6 +45,7 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         _invitationOptions = invitationOptions.Value;
         _frontendOptions = frontendOptions.Value;
         _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
     }
 
     public async Task<Result<CreateInvitationResult>> HandleAsync(CreateInvitationCommand request, CancellationToken cancellationToken)
@@ -97,7 +101,8 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
         {
             _dbContext.UserInvitations.Remove(invitation);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            return Result<CreateInvitationResult>.Failure(AppErrors.Auth.EmailSendFailed(ex.Message));
+            _logger.LogError(ex, "Failed to send invitation email to {Email}.", email.Value);
+            return Result<CreateInvitationResult>.Failure(AppErrors.Auth.EmailSendFailed());
         }
 
         return Result<CreateInvitationResult>.Success(new CreateInvitationResult(invitation.Id.Value, invitation.Email.Value, invitation.ExpiresAt, rawToken));

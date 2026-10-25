@@ -131,6 +131,6 @@ public class ForgotPasswordCommandHandlerTests : AuthHandlerTestBase
         // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(ErrorCodes.Auth.EmailSendFailed, result.Error?.Code);
-        Assert.Contains("SMTP unavailable", result.Error?.Description);
+        Assert.DoesNotContain("SMTP unavailable", result.Error?.Description);
     }
 }
