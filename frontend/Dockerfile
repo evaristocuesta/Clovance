@@ -17,7 +17,10 @@ COPY . .
 
 RUN ./node_modules/.bin/ng build
 
-FROM nginx:alpine
+# Runs as uid 101 (nginx) by default: pid, temp paths and cache live in /tmp and the
+# image's entrypoint needs no root privileges. The stock nginx:alpine image cannot be
+# started with a non-root USER because its config writes pid and cache under /var.
+FROM nginxinc/nginx-unprivileged:alpine
 
 COPY --from=build /app/dist/clovance/browser /usr/share/nginx/html
 COPY --from=build /app/default.conf.template /etc/nginx/templates/default.conf.template

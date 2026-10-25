@@ -32,4 +32,10 @@ EXPOSE 8080
 EXPOSE 8081
 
 COPY --from=publish /app/publish .
+
+# The app generates its JWT signing key (and the data protection keys) under its own home
+# directory at startup, so it needs write access there. Nothing under /app is writable.
+RUN chown -R app:app /home/app
+
+USER app
 ENTRYPOINT ["dotnet", "Clovance.ApiService.dll"]
