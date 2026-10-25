@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, publicGuard } from '@core/guards/auth.guard';
+import { adminGuard, authGuard, publicGuard } from '@core/guards/auth.guard';
 import { AuthLayout } from '@layouts/auth-layout/auth-layout';
 import { MainLayout } from '@layouts/main-layout/main-layout';
 
@@ -27,7 +27,7 @@ export const routes: Routes = [
             { path: 'accounts', loadComponent: () => import('@features/accounts/accounts/accounts').then(m => m.Accounts) }, 
             { path: 'transactions', loadComponent: () => import('@features/transactions/transactions/transactions').then(m => m.Transactions) }, 
             { path: 'summary', loadComponent: () => import('@features/summary/summary/summary').then(m => m.Summary) }, 
-            { path: 'users', loadComponent: () => import('@features/auth/users/users').then(m => m.Users) }, 
+            { path: 'users', canActivate: [adminGuard], loadComponent: () => import('@features/auth/users/users').then(m => m.Users) }, 
             { path: 'account-settings', loadComponent: () => import('@features/auth/account-settings/account-settings').then(m => m.AccountSettings) },
             { path: '', redirectTo: 'transactions', pathMatch: 'full'}
         ]
