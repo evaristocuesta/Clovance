@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
@@ -27,6 +28,7 @@ public class CreateInvitationCommandHandlerTests : AuthHandlerTestBase, IAsyncLi
     private readonly IOptions<UserInvitationOptions> _invitationOptions;
     private readonly IOptions<FrontendOptions> _frontendOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<CreateInvitationCommandHandler> _logger;
     private readonly CreateInvitationCommandHandler _handler;
     private readonly HttpContext _httpContext;
 
@@ -43,21 +45,14 @@ public class CreateInvitationCommandHandlerTests : AuthHandlerTestBase, IAsyncLi
         _frontendOptions = Substitute.For<IOptions<FrontendOptions>>();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _httpContext = Substitute.For<HttpContext>();
+        _logger = Substitute.For<ILogger<CreateInvitationCommandHandler>>();
 
         _invitationOptions.Value.Returns(new UserInvitationOptions { ExpirationHours = 48 });
         _frontendOptions.Value.Returns(new FrontendOptions { BaseUrl = "https://example.com" });
         _httpContextAccessor.HttpContext.Returns(_httpContext);
         _emailSender.IsConfigured.Returns(true);
 
-        _handler = new CreateInvitationCommandHandler(
-            _userManager,
-            _dbContext,
-            _tokenService,
-            _emailSender,
-            _localizer,
-            _invitationOptions,
-            _frontendOptions,
-            _httpContextAccessor);
+        _handler = CreateHandler();
     }
 
     public ValueTask InitializeAsync()
@@ -242,15 +237,7 @@ public class CreateInvitationCommandHandlerTests : AuthHandlerTestBase, IAsyncLi
         _tokenService.GenerateToken().Returns(rawToken);
         _tokenService.HashToken(rawToken).Returns(tokenHash);
 
-        var handler = new CreateInvitationCommandHandler(
-            _userManager,
-            _dbContext,
-            _tokenService,
-            _emailSender,
-            _localizer,
-            _invitationOptions,
-            _frontendOptions,
-            _httpContextAccessor);
+        var handler = CreateHandler();
 
         var result = await handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -258,4 +245,49 @@ public class CreateInvitationCommandHandlerTests : AuthHandlerTestBase, IAsyncLi
         var expectedExpiration = DateTimeOffset.UtcNow.AddHours(expirationHours);
         Assert.True(Math.Abs((result.Value.ExpiresAt - expectedExpiration).TotalSeconds) < 2);
     }
+
+    [Fact]
+    public async Task HandleAsync_WhenEmailSendFails_RemovesInvitationAndDoesNotLeakExceptionDetails()
+    {
+        // Arrange
+        var command = new CreateInvitationCommand("newuser@example.com");
+        var adminUserId = Guid.CreateVersion7();
+
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, adminUserId.ToString())
+        }));
+
+        _httpContext.User.Returns(claimsPrincipal);
+        _userManager.GetUserId(claimsPrincipal).Returns(adminUserId.ToString());
+        _userManager.FindByEmailAsync(command.Email.Trim()).Returns((ApplicationUser?)null);
+        _tokenService.GenerateToken().Returns(TestData.PlainToken);
+        _tokenService.HashToken(TestData.PlainToken).Returns(TestData.TokenHash);
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new Exception("Connection to mail.internal:587 failed")));
+
+        // Act
+        var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ErrorCodes.Auth.EmailSendFailed, result.Error?.Code);
+        Assert.DoesNotContain("mail.internal", result.Error?.Description);
+
+        var invitationCount = await _dbContext.UserInvitations
+            .CountAsync(TestContext.Current.CancellationToken);
+        Assert.Equal(0, invitationCount);
+    }
+
+    private CreateInvitationCommandHandler CreateHandler() =>
+        new(
+            _userManager,
+            _dbContext,
+            _tokenService,
+            _emailSender,
+            _localizer,
+            _invitationOptions,
+            _frontendOptions,
+            _httpContextAccessor,
+            _logger);
 }
