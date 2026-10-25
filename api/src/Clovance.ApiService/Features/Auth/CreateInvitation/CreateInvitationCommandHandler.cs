@@ -9,7 +9,6 @@ using Clovance.ApiService.Infrastructure.Frontend;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Clovance.ApiService.Features.Auth.CreateInvitation;
@@ -105,7 +104,8 @@ public sealed class CreateInvitationCommandHandler : IHandler<CreateInvitationCo
             return Result<CreateInvitationResult>.Failure(AppErrors.Auth.EmailSendFailed());
         }
 
-        return Result<CreateInvitationResult>.Success(new CreateInvitationResult(invitation.Id.Value, invitation.Email.Value, invitation.ExpiresAt, rawToken));
+        // The raw token is only delivered by email; it must never appear in the response body.
+        return Result<CreateInvitationResult>.Success(new CreateInvitationResult(invitation.Id.Value, invitation.Email.Value, invitation.ExpiresAt));
     }
 
     private EmailMessage BuildInvitationEmail(string toEmail, string token)

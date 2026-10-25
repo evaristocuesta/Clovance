@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 using Clovance.ApiService.Features.Auth;
 using Clovance.ApiService.Features.Auth.CreateInvitation;
 using Clovance.ApiService.Features.Auth.GetUserById;
@@ -113,17 +114,16 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         var (adminToken, adminRefreshToken) = await EnsureAdminReadyAsync();
         AuthenticateWithToken(adminToken);
 
-        // Create an invitation
+        // Create an invitation (the raw token is only delivered by email)
         var invitationRequest = new CreateInvitationCommand(Email: email, IsAdmin: isAdmin);
         var invitationResponse = await Client.PostAsJsonAsync("/api/auth/invitations", invitationRequest);
         invitationResponse.EnsureSuccessStatusCode();
-        var invitation = await invitationResponse.Content.ReadFromJsonAsync<CreateInvitationResult>();
 
         // Clear authentication to register as a new user
         Client.DefaultRequestHeaders.Authorization = null;
 
         // Register with the invitation
-        var registerRequest = new RegisterWithInvitationCommand(Email: email, Password: password, Token: invitation!.Token, FirstName: "FirstName", LastName: "LastName");
+        var registerRequest = new RegisterWithInvitationCommand(Email: email, Password: password, Token: GetInvitationTokenFromEmail(email), FirstName: "FirstName", LastName: "LastName");
         var registerResponse = await Client.PostAsJsonAsync("/api/auth/users/register", registerRequest);
         registerResponse.EnsureSuccessStatusCode();
         var registerResult = await registerResponse.Content.ReadFromJsonAsync<RegisterWithInvitationResult>();
@@ -213,6 +213,23 @@ public abstract class IntegrationTestBase : IClassFixture<AspireFixture>
         Assert.NotNull(refreshToken);
 
         return (result!.AccessToken, refreshToken);
+    }
+
+    /// <summary>
+    /// Extracts an invitation token from the captured testing email, because the API
+    /// does not return it in the invitation response.
+    /// </summary>
+    protected string GetInvitationTokenFromEmail(string email)
+    {
+        var message = _fixture.EmailSender.Messages
+            .LastOrDefault(m => string.Equals(m.To, email, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"No captured email was found for {email}.");
+
+        var match = Regex.Match(message.HtmlBody, @"token=([^&""]+)");
+
+        Assert.True(match.Success, "The invitation link was not found in the email body.");
+
+        return Uri.UnescapeDataString(match.Groups[1].Value);
     }
 
     private static string? ExtractCookieValue(string setCookieHeader, string cookieName)
