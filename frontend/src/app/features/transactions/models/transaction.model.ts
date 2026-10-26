@@ -9,4 +9,6 @@ export interface Transaction {
   description: string;
   type: 'Income' | 'Expense' | 'Transfer' | 'OpeningBalance' | 'LoanPayment';
   relatedTransactionId?: string;
+  /** Optimistic concurrency token. Sent back on update so a stale edit is refused. */
+  version: number;
 }

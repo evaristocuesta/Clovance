@@ -21,7 +21,7 @@ public class UpdateTransferEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/transfer/{created.FromTransaction.Id}",
-            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, fromAccount.Id, replacementToAccount.Id),
+            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, fromAccount.Id, replacementToAccount.Id, created.FromTransaction.Version, created.ToTransaction.Version),
             TestContext.Current.CancellationToken);
         var result = await ReadJsonAsync<UpdateTransferResult>(response.Content);
 
@@ -41,7 +41,7 @@ public class UpdateTransferEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/transfer/{Guid.CreateVersion7()}",
-            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, fromAccount.Id, toAccount.Id),
+            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, fromAccount.Id, toAccount.Id, 0, 0),
             TestContext.Current.CancellationToken);
 
         Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
@@ -57,7 +57,7 @@ public class UpdateTransferEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/transfer/{created.FromTransaction.Id}",
-            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, account.Id, account.Id),
+            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, account.Id, account.Id, created.FromTransaction.Version, created.ToTransaction.Version),
             TestContext.Current.CancellationToken);
 
         Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
@@ -70,7 +70,7 @@ public class UpdateTransferEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/transfer/{Guid.CreateVersion7()}",
-            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, Guid.CreateVersion7(), Guid.CreateVersion7()),
+            new UpdateTransferRequest(new DateOnly(2025, 4, 5), "Updated transfer", 300m, Guid.CreateVersion7(), Guid.CreateVersion7(), 0, 0),
             TestContext.Current.CancellationToken);
 
         Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);

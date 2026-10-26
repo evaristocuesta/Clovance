@@ -1,4 +1,5 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
+using Clovance.ApiService.Domain.Transactions;
 using Clovance.ApiService.Features.Transactions.UpdateLoanPayment;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Http;
@@ -37,7 +38,9 @@ public class UpdateLoanPaymentCommandHandlerTests : TransactionHandlerTestBase
             600m,
             250m,
             fromAccount.Id.Value,
-            toAccount.Id.Value);
+            toAccount.Id.Value,
+            payment.From.Xmin,
+            payment.To.Xmin);
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -60,7 +63,7 @@ public class UpdateLoanPaymentCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateLoanPaymentCommand(Guid.NewGuid(), new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, Guid.NewGuid(), Guid.NewGuid()),
+            new UpdateLoanPaymentCommand(Guid.NewGuid(), new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, Guid.NewGuid(), Guid.NewGuid(), 0, 0),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -83,7 +86,7 @@ public class UpdateLoanPaymentCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, toAccount.Id.Value),
+            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, toAccount.Id.Value, payment.From.Xmin, payment.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -106,7 +109,7 @@ public class UpdateLoanPaymentCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, toAccount.Id.Value),
+            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, toAccount.Id.Value, payment.From.Xmin, payment.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -129,7 +132,7 @@ public class UpdateLoanPaymentCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, Guid.NewGuid(), toAccount.Id.Value),
+            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, Guid.NewGuid(), toAccount.Id.Value, payment.From.Xmin, payment.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -152,7 +155,7 @@ public class UpdateLoanPaymentCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, Guid.NewGuid()),
+            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, Guid.NewGuid(), payment.From.Xmin, payment.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -175,10 +178,50 @@ public class UpdateLoanPaymentCommandHandlerTests : TransactionHandlerTestBase
         HttpContextAccessor.HttpContext.Returns(new DefaultHttpContext());
 
         var result = await _handler.HandleAsync(
-            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, toAccount.Id.Value),
+            new UpdateLoanPaymentCommand(payment.From.Id.Value, new DateOnly(2025, 7, 10), "Updated payment", 600m, 250m, fromAccount.Id.Value, toAccount.Id.Value, payment.From.Xmin, payment.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.Equal(ErrorCodes.Auth.UserNotAuthenticated, result.Error?.Code);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenRelatedLegVersionIsStale_ReturnsStaleDataError()
+    {
+        var userId = Guid.CreateVersion7();
+        var fromAccount = CreateAccount("Checking", AccountType.Checking, "EUR", userId);
+        var toAccount = CreateAccount("Mortgage", AccountType.Mortgage, "EUR", userId);
+
+        await Context.Accounts.AddRangeAsync(new[] { fromAccount, toAccount }, TestContext.Current.CancellationToken);
+
+        var payment = CreateLoanPaymentPair(fromAccount.Id.Value, toAccount.Id.Value, 400m, 150m, "Mortgage payment", new DateOnly(2025, 7, 1), userId);
+        await Context.Transactions.AddRangeAsync(new[] { payment.From, payment.To }, TestContext.Current.CancellationToken);
+
+        // The in-memory provider does not generate the xmin concurrency token, so give both
+        // legs the versions the database would have assigned.
+        Context.Entry(payment.From).Property(x => x.Xmin).CurrentValue = 5u;
+        Context.Entry(payment.To).Property(x => x.Xmin).CurrentValue = 7u;
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        Authenticate(userId);
+
+        // The primary leg is current but the related one is not. A loan payment is one
+        // atomic operation, so the whole thing must be refused.
+        var result = await _handler.HandleAsync(
+            new UpdateLoanPaymentCommand(
+                payment.From.Id.Value,
+                new DateOnly(2025, 7, 10),
+                "Updated payment",
+                600m,
+                250m,
+                fromAccount.Id.Value,
+                toAccount.Id.Value,
+                5u,
+                6u),
+            TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ErrorCodes.Common.StaleData, result.Error?.Code);
+        Assert.Equal(StatusCodes.Status409Conflict, result.Error?.StatusCode);
     }
 }

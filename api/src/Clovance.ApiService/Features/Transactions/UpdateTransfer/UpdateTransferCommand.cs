@@ -5,7 +5,9 @@ public sealed record UpdateTransferRequest(
     string Description,
     decimal Amount,
     Guid FromAccountId,
-    Guid ToAccountId);
+    Guid ToAccountId,
+    uint Version,
+    uint RelatedVersion);
 
 public sealed record UpdateTransferCommand(
     Guid TransactionId,
@@ -13,7 +15,9 @@ public sealed record UpdateTransferCommand(
     string Description,
     decimal Amount,
     Guid FromAccountId,
-    Guid ToAccountId);
+    Guid ToAccountId,
+    uint Version,
+    uint RelatedVersion);
 
 public sealed record UpdateTransferResult(
     TransactionDto FromTransaction,

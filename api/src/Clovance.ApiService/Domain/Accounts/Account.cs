@@ -23,6 +23,10 @@ public sealed class Account : SoftDeletableAuditableEntityBase<AccountId>
 
     public Currency Currency { get; private set; } = null!;
 
+    // PostgreSQL system column used as the optimistic concurrency token. The database
+    // bumps it on every update to the row, so application code only ever reads it.
+    public uint Xmin { get; private set; }
+
     public static Account Create(AccountName name, AccountType type, Currency currency, Guid createdBy)
     {
         return new Account(name, type, currency, createdBy);

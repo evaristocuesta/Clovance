@@ -43,6 +43,9 @@ public static class AppErrors
                 ? errorCode
                 : ErrorCodes.Common.ValidationFailed;
         }
+
+        public static Error StaleData() =>
+            CreateConflict(ErrorCodes.Common.StaleData, "The record was modified by someone else.");
     }
 
     public static class Auth

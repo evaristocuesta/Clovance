@@ -16,7 +16,7 @@ describe('AccountForm', () => {
           provide: AccountService,
           useValue: {
             getCurrencies: () => of([]),
-            getAccountById: () => of({ id: '', name: '', currency: '' }),
+            getAccountById: () => of({ id: '', name: '', currency: '', version: 0 }),
             updateAccount: () => of({}),
             createAccount: () => of({}),
           },

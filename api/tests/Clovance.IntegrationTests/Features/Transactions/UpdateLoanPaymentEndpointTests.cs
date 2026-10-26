@@ -19,7 +19,7 @@ public class UpdateLoanPaymentEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/loan-payment/{created.FromTransaction.Id}",
-            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 250m, fromAccount.Id, toAccount.Id),
+            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 250m, fromAccount.Id, toAccount.Id, created.FromTransaction.Version, created.ToTransaction.Version),
             TestContext.Current.CancellationToken);
         var result = await ReadJsonAsync<UpdateLoanPaymentResult>(response.Content);
 
@@ -39,7 +39,7 @@ public class UpdateLoanPaymentEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/loan-payment/{Guid.CreateVersion7()}",
-            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 250m, fromAccount.Id, toAccount.Id),
+            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 250m, fromAccount.Id, toAccount.Id, 0, 0),
             TestContext.Current.CancellationToken);
 
         Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
@@ -55,7 +55,7 @@ public class UpdateLoanPaymentEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/loan-payment/{created.FromTransaction.Id}",
-            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 700m, fromAccount.Id, toAccount.Id),
+            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 700m, fromAccount.Id, toAccount.Id, created.FromTransaction.Version, created.ToTransaction.Version),
             TestContext.Current.CancellationToken);
 
         Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
@@ -68,7 +68,7 @@ public class UpdateLoanPaymentEndpointTests : TransactionIntegrationTestBase
 
         var response = await Client.PutAsJsonAsync(
             $"/api/transactions/loan-payment/{Guid.CreateVersion7()}",
-            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 250m, Guid.CreateVersion7(), Guid.CreateVersion7()),
+            new UpdateLoanPaymentRequest(new DateOnly(2025, 6, 10), "Updated mortgage payment", 600m, 250m, Guid.CreateVersion7(), Guid.CreateVersion7(), 0, 0),
             TestContext.Current.CancellationToken);
 
         Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);

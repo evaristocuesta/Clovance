@@ -61,8 +61,20 @@ public class UpdateTransactionCommandHandler : IHandler<UpdateTransactionCommand
         transaction.ChangeDescription(TransactionDescription.Create(command.Transaction.Description), userId);
         transaction.MoveToAccount(AccountId.Create(command.Transaction.AccountId), userId);
 
-        _context.Transactions.Update(transaction);
-        await _context.SaveChangesAsync(cancellationToken);
+        // The client states the version it based its edit on. If the row changed since then
+        // the UPDATE matches no rows and EF throws, which is turned into a 409 instead of
+        // silently overwriting the concurrent change.
+        _context.Entry(transaction).Property(x => x.Xmin).OriginalValue = command.Transaction.Version;
+
+        try
+        {
+            _context.Transactions.Update(transaction);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result<UpdateTransactionResult>.Failure(AppErrors.Common.StaleData());
+        }
 
         return Result<UpdateTransactionResult>.Success(new UpdateTransactionResult(transaction.ToDto()));
     }

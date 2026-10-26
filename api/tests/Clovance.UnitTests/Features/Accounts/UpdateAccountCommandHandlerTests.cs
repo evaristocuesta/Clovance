@@ -23,11 +23,16 @@ public class UpdateAccountCommandHandlerTests : AccountHandlerTestBase
         var userId = Guid.CreateVersion7();
         var account = CreateAccount("Checking", AccountType.Checking, "EUR", userId);
         await Context.Accounts.AddAsync(account, TestContext.Current.CancellationToken);
+
+        // The in-memory provider does not generate the xmin concurrency token, so give the
+        // row the version the database would have assigned.
+        Context.Entry(account).Property(x => x.Xmin).CurrentValue = 5u;
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         Authenticate(userId);
 
-        var command = new UpdateAccountCommand(account.Id.Value, "Savings", AccountType.Savings, "USD");
+        // Sending back the version that was read is the normal case and must not conflict.
+        var command = new UpdateAccountCommand(account.Id.Value, "Savings", AccountType.Savings, "USD", account.Xmin);
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
@@ -49,7 +54,7 @@ public class UpdateAccountCommandHandlerTests : AccountHandlerTestBase
         var userId = Guid.CreateVersion7();
         Authenticate(userId);
 
-        var result = await _handler.HandleAsync(new UpdateAccountCommand(Guid.NewGuid(), "Budget", AccountType.Checking, "EUR"), TestContext.Current.CancellationToken);
+        var result = await _handler.HandleAsync(new UpdateAccountCommand(Guid.NewGuid(), "Budget", AccountType.Checking, "EUR", 0), TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.Equal(ErrorCodes.Accounts.AccountNotFound, result.Error?.Code);
@@ -65,10 +70,34 @@ public class UpdateAccountCommandHandlerTests : AccountHandlerTestBase
 
         HttpContextAccessor.HttpContext.Returns(new DefaultHttpContext());
 
-        var result = await _handler.HandleAsync(new UpdateAccountCommand(account.Id.Value, "Savings", AccountType.Savings, "USD"), TestContext.Current.CancellationToken);
+        var result = await _handler.HandleAsync(new UpdateAccountCommand(account.Id.Value, "Savings", AccountType.Savings, "USD", account.Xmin), TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.Equal(ErrorCodes.Auth.UserNotAuthenticated, result.Error?.Code);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenVersionIsStale_ReturnsStaleDataError()
+    {
+        var userId = Guid.CreateVersion7();
+        var account = CreateAccount("Checking", AccountType.Checking, "EUR", userId);
+        await Context.Accounts.AddAsync(account, TestContext.Current.CancellationToken);
+
+        // The in-memory provider does not generate the xmin concurrency token, so give the
+        // row a stored version and then claim an older one. That is what a second tab
+        // saving on top of data it never re-read looks like.
+        Context.Entry(account).Property(x => x.Xmin).CurrentValue = 5u;
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        Authenticate(userId);
+
+        var result = await _handler.HandleAsync(
+            new UpdateAccountCommand(account.Id.Value, "Savings", AccountType.Savings, "USD", 4u),
+            TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ErrorCodes.Common.StaleData, result.Error?.Code);
+        Assert.Equal(StatusCodes.Status409Conflict, result.Error?.StatusCode);
     }
 
     }

@@ -14,6 +14,15 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
             .HasConversion(id => id.Value, value => AccountId.Create(value))
             .ValueGeneratedNever();
 
+        // xmin is a PostgreSQL system column, not a physical column of the table: Npgsql
+        // recognises the name and leaves it out of migration operations. It changes on every
+        // update to the row, which is what lets EF detect a lost update instead of silently
+        // overwriting a concurrent change. Npgsql maps it to uint.
+        builder.Property(x => x.Xmin)
+            .HasColumnName("xmin")
+            .IsConcurrencyToken()
+            .ValueGeneratedOnAddOrUpdate();
+
         builder.Property(x => x.Name)
             .HasConversion(name => name.Value, value => AccountName.Create(value))
             .HasMaxLength(200)

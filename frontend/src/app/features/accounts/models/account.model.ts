@@ -4,6 +4,8 @@ export interface Account {
   type: '' |'Checking' | 'Savings' | 'Cash' | 'CreditCard' | 'Loan' | 'Mortgage' | 'Investment';
   currency: string;
   isDeleted?: boolean;
+  /** Optimistic concurrency token. Sent back on update so a stale edit is refused. */
+  version: number;
 }
 
 export namespace Account {

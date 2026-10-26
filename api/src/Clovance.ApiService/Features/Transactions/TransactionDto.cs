@@ -12,4 +12,5 @@ public sealed record TransactionDto(
     Guid AccountId, 
     string AccountName,
     string Currency,
-    Guid? RelatedTransactionId);
+    Guid? RelatedTransactionId,
+    uint Version);

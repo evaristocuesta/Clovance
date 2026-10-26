@@ -21,7 +21,9 @@ public class UpdateLoanPaymentEndpoint : IApiEndPoint
                 Amount: request.Amount,
                 PrincipalAmount: request.PrincipalAmount,
                 FromAccountId: request.FromAccountId,
-                ToAccountId: request.ToAccountId
+                ToAccountId: request.ToAccountId,
+                Version: request.Version,
+                RelatedVersion: request.RelatedVersion
             );
             var result = await handler.HandleAsync(command, cancellationToken);
             return result.IsSuccess ? Results.Ok(result.Value) : result.ToProblemResult(httpContext);
@@ -30,6 +32,7 @@ public class UpdateLoanPaymentEndpoint : IApiEndPoint
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization()
             .WithName("UpdateLoanPayment")
             .WithSummary("Update Loan Payment")

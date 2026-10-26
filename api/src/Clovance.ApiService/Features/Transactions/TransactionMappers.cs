@@ -19,6 +19,7 @@ public static class TransactionMappers
             transaction.AccountId.Value, 
             accountName,
             currency,
-            transaction.RelatedTransactionId?.Value);
+            transaction.RelatedTransactionId?.Value,
+            transaction.Xmin);
     }
 }

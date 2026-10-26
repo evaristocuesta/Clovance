@@ -2,13 +2,13 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Transfer } from '../models/transfer.model';
 import { Account } from '@features/accounts/models/account.model';
 import { Transaction } from '../models/transaction.model';
-import { SaveTransferCommand, TransactionService } from '../services/transaction.service';
+import { SaveTransferCommand, TransactionService, UpdateTransferCommand } from '../services/transaction.service';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Icon } from '@shared/ui/icon/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, forkJoin } from 'rxjs';
 import { toDateOnlyString } from '@shared/utils/date-utils';
 import { Dialog } from '@shared/ui/dialog/dialog';
 
@@ -43,6 +43,9 @@ export class TransferForm implements OnInit {
     toAccountId: '',
   });
 
+  /** The pair being edited. Holds the versions the save is checked against. */
+  transferLegs = signal<{ toTransaction: Transaction; fromTransaction: Transaction } | null>(null);
+
   private readonly transactionService = inject(TransactionService);
 
   dialogRef = inject<DialogRef>(DialogRef);
@@ -50,14 +53,42 @@ export class TransferForm implements OnInit {
 
   ngOnInit(): void {
     if (this.data?.fromTransaction && this.data?.toTransaction) {
-      this.transfer.set({
-        date: this.data.fromTransaction.date,
-        description: this.data.fromTransaction.description,
-        amount: this.data.toTransaction.amount,
-        fromAccountId: this.data.fromTransaction.accountId,
-        toAccountId: this.data.toTransaction.accountId
+      const legs = {
+        toTransaction: this.data.toTransaction,
+        fromTransaction: this.data.fromTransaction,
+      };
+
+      this.transferLegs.set(legs);
+      this.applyTransferLegs(legs);
+
+      // Re-read both legs so the versions sent on save are the ones the user is looking
+      // at, not whatever the in-memory list last held. Without this a stale list makes
+      // the save fail permanently: reopening the dialog would reuse the same outdated
+      // versions and hit the same 409 again.
+      forkJoin({
+        toTransaction: this.transactionService.getTransactionById(legs.toTransaction.id),
+        fromTransaction: this.transactionService.getTransactionById(legs.fromTransaction.id),
+      }).subscribe({
+        next: (freshLegs) => {
+          this.transferLegs.set(freshLegs);
+          this.applyTransferLegs(freshLegs);
+        },
+        error: () => {
+          // Fall back to the legs the dialog was opened with; the save is still refused
+          // if they turn out to be stale.
+        },
       });
     }
+  }
+
+  private applyTransferLegs(legs: { toTransaction: Transaction; fromTransaction: Transaction }): void {
+    this.transfer.set({
+      date: legs.fromTransaction.date,
+      description: legs.fromTransaction.description,
+      amount: legs.toTransaction.amount,
+      fromAccountId: legs.fromTransaction.accountId,
+      toAccountId: legs.toTransaction.accountId
+    });
   }
 
   close() {
@@ -105,17 +136,23 @@ export class TransferForm implements OnInit {
           
           try {
             const formValue = field().value();
+            const legs = this.transferLegs();
 
-            if (this.data?.toTransaction?.id) {
-              const dto: SaveTransferCommand = {
+            if (legs) {
+              const dto: UpdateTransferCommand = {
                 date: toDateOnlyString(formValue.date),
                 description: formValue.description,
                 amount: formValue.amount,
                 fromAccountId: formValue.fromAccountId,
                 toAccountId: formValue.toAccountId,
+                // The URL addresses one leg of the pair, so its version goes in "version"
+                // and the other leg's in "relatedVersion". Sending back the versions the
+                // form was filled from lets the API refuse a save made from stale data.
+                version: legs.toTransaction.version,
+                relatedVersion: legs.fromTransaction.version,
               };
 
-              await firstValueFrom(this.transactionService.updateTransfer(this.data.toTransaction.id, dto));
+              await firstValueFrom(this.transactionService.updateTransfer(legs.toTransaction.id, dto));
             } else {
               const dto: SaveTransferCommand = {
                 date: toDateOnlyString(formValue.date),

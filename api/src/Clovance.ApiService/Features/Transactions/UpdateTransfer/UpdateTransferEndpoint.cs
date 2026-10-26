@@ -20,7 +20,9 @@ public class UpdateTransferEndpoint : IApiEndPoint
                 Description: request.Description,
                 Amount: request.Amount,
                 FromAccountId: request.FromAccountId,
-                ToAccountId: request.ToAccountId
+                ToAccountId: request.ToAccountId,
+                Version: request.Version,
+                RelatedVersion: request.RelatedVersion
             );
 
             var result = await handler.HandleAsync(command, cancellationToken);
@@ -30,6 +32,7 @@ public class UpdateTransferEndpoint : IApiEndPoint
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
         .ProducesProblem(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status409Conflict)
         .RequireAuthorization()
         .WithName("UpdateTransfer")
         .WithSummary("Update Transfer")

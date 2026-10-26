@@ -96,7 +96,20 @@ public class UpdateTransferCommandHandler : IHandler<UpdateTransferCommand, Resu
 
         _context.Transactions.Update(toTransaction);
 
-        _context.SaveChanges();
+        // The client states the version of each leg it based its edit on. A transfer is one
+        // atomic operation, so a concurrent change to either row fails the whole save and
+        // comes back as a 409 instead of silently overwriting the other edit.
+        _context.Entry(transaction).Property(x => x.Xmin).OriginalValue = command.Version;
+        _context.Entry(relatedTransaction).Property(x => x.Xmin).OriginalValue = command.RelatedVersion;
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result<UpdateTransferResult>.Failure(AppErrors.Common.StaleData());
+        }
 
         return Result<UpdateTransferResult>.Success(new UpdateTransferResult
         (

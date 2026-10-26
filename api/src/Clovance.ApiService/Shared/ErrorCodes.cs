@@ -12,6 +12,7 @@ public static class ErrorCodes
         public const string Unauthorized = "common.unauthorized";
         public const string BadRequest = "common.bad_request";
         public const string TooManyRequests = "common.too_many_requests";
+        public const string StaleData = "common.stale_data";
     }
 
     public static class Auth

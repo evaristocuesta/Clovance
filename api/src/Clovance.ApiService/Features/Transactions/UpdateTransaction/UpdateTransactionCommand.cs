@@ -2,7 +2,7 @@
 
 namespace Clovance.ApiService.Features.Transactions.UpdateTransaction;
 
-public sealed record UpdateTransactionRequest(DateOnly Date, string Description, decimal Amount, TransactionType Type, Guid AccountId);
+public sealed record UpdateTransactionRequest(DateOnly Date, string Description, decimal Amount, TransactionType Type, Guid AccountId, uint Version);
 
 public sealed record UpdateTransactionCommand(TransactionDto Transaction);
 

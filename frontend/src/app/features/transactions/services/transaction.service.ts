@@ -37,6 +37,8 @@ export interface SaveTransactionDto {
     amount: number;
     type: 'Income' | 'Expense' | 'Transfer' | 'OpeningBalance' | 'LoanPayment';
     accountId: string;
+    /** Version the edit was based on. Only sent when updating an existing transaction. */
+    version?: number;
 }
 
 export interface SaveTransferCommand {
@@ -45,6 +47,12 @@ export interface SaveTransferCommand {
     amount: number;
     fromAccountId: string;
     toAccountId: string;
+}
+
+export interface UpdateTransferCommand extends SaveTransferCommand {
+    /** Version of the transaction in the URL, and of its related leg. */
+    version: number;
+    relatedVersion: number;
 }
 
 export interface SaveTransferResult {
@@ -59,6 +67,12 @@ export interface SaveLoanPaymentCommand {
     principalAmount: number;
     fromAccountId: string;
     toAccountId: string;
+}
+
+export interface UpdateLoanPaymentCommand extends SaveLoanPaymentCommand {
+    /** Version of the transaction in the URL, and of its related leg. */
+    version: number;
+    relatedVersion: number;
 }
 
 export interface SaveLoanPaymentResult {
@@ -133,7 +147,7 @@ export class TransactionService {
         return this.http.post<SaveTransferResult>('/api/transactions/transfer', command);
     }
 
-    updateTransfer(transactionId: string, command: SaveTransferCommand) : Observable<SaveTransferResult> {
+    updateTransfer(transactionId: string, command: UpdateTransferCommand) : Observable<SaveTransferResult> {
         return this.http.put<SaveTransferResult>(`/api/transactions/transfer/${transactionId}`, command);
     }
 
@@ -141,7 +155,7 @@ export class TransactionService {
         return this.http.post<SaveLoanPaymentResult>('/api/transactions/loan-payment', command);
     }
 
-    updateLoanPayment(transactionId: string, command: SaveLoanPaymentCommand) : Observable<SaveLoanPaymentResult> {
+    updateLoanPayment(transactionId: string, command: UpdateLoanPaymentCommand) : Observable<SaveLoanPaymentResult> {
         return this.http.put<SaveLoanPaymentResult>(`/api/transactions/loan-payment/${transactionId}`, command);
     }
 

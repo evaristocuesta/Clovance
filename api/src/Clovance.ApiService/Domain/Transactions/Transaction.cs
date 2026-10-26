@@ -54,6 +54,10 @@ public sealed class Transaction : AuditableEntityBase<TransactionId>
 
     public TransactionId? RelatedTransactionId { get; private set; }
 
+    // PostgreSQL system column used as the optimistic concurrency token. The database
+    // bumps it on every update to the row, so application code only ever reads it.
+    public uint Xmin { get; private set; }
+
     public static Transaction Create(
       TransactionAmount amount,
       TransactionType type,
