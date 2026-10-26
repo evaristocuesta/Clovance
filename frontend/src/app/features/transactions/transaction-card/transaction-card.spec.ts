@@ -21,6 +21,7 @@ describe('TransactionCard', () => {
       date: new Date(),
       description: 'Test transaction',
       type: 'Income',
+      version: 0,
     });
     fixture.componentRef.setInput('currencySymbolMap', { EUR: '€' });
     fixture.detectChanges();

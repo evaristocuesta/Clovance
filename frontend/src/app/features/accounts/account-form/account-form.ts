@@ -34,6 +34,7 @@ export class AccountForm implements OnInit {
     openingBalance: 0,
     openingDate: toDateOnlyString(new Date()),
     openingDescription: this.translocoService.translate('accounts.openingBalanceDescription'),
+    version: 0,
   });
 
   readonly accountTypes = ['Checking', 'Savings', 'Cash', 'CreditCard', 'Loan', 'Mortgage', 'Investment'];

@@ -37,7 +37,9 @@ public class UpdateTransferCommandHandlerTests : TransactionHandlerTestBase
             "Updated transfer",
             300m,
             fromAccount.Id.Value,
-            toAccount.Id.Value);
+            toAccount.Id.Value,
+            transfer.From.Xmin,
+            transfer.To.Xmin);
 
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
@@ -61,7 +63,7 @@ public class UpdateTransferCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateTransferCommand(Guid.NewGuid(), new DateOnly(2025, 6, 5), "Updated transfer", 300m, Guid.NewGuid(), Guid.NewGuid()),
+            new UpdateTransferCommand(Guid.NewGuid(), new DateOnly(2025, 6, 5), "Updated transfer", 300m, Guid.NewGuid(), Guid.NewGuid(), 0, 0),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -84,7 +86,7 @@ public class UpdateTransferCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, fromAccount.Id.Value, toAccount.Id.Value),
+            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, fromAccount.Id.Value, toAccount.Id.Value, transfer.From.Xmin, transfer.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -107,7 +109,7 @@ public class UpdateTransferCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, Guid.NewGuid(), toAccount.Id.Value),
+            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, Guid.NewGuid(), toAccount.Id.Value, transfer.From.Xmin, transfer.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -130,7 +132,7 @@ public class UpdateTransferCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, fromAccount.Id.Value, Guid.NewGuid()),
+            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, fromAccount.Id.Value, Guid.NewGuid(), transfer.From.Xmin, transfer.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);
@@ -153,7 +155,7 @@ public class UpdateTransferCommandHandlerTests : TransactionHandlerTestBase
         HttpContextAccessor.HttpContext.Returns(new DefaultHttpContext());
 
         var result = await _handler.HandleAsync(
-            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, fromAccount.Id.Value, toAccount.Id.Value),
+            new UpdateTransferCommand(transfer.From.Id.Value, new DateOnly(2025, 6, 5), "Updated transfer", 300m, fromAccount.Id.Value, toAccount.Id.Value, transfer.From.Xmin, transfer.To.Xmin),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);

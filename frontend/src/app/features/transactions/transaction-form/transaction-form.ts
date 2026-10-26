@@ -26,10 +26,6 @@ export interface TransactionFormData {
 export class TransactionForm implements OnInit {
   errorMessage = signal('');
 
-  accounts = computed(() => this.data?.type === 'OpeningBalance' && this.data?.transaction?.id
-    ? this.data?.accounts?.filter(a => a.id === this.data?.transaction?.accountId) ?? []
-    : this.data?.accounts?.filter(a => (Account.canBeUsedForIncomeOrExpense(a) && !a.isDeleted) || (a.id === this.data?.transaction?.accountId && a.isDeleted)) ?? []);
-
   transaction = signal<Transaction>({
     id: '',
     date: new Date(),
@@ -39,7 +35,12 @@ export class TransactionForm implements OnInit {
     type: 'Income',
     accountName: '',
     currency: '',
+    version: 0,
   });
+
+  accounts = computed(() => this.data?.type === 'OpeningBalance' && this.transaction().id
+    ? this.data?.accounts?.filter(a => a.id === this.transaction().accountId) ?? []
+    : this.data?.accounts?.filter(a => (Account.canBeUsedForIncomeOrExpense(a) && !a.isDeleted) || (a.id === this.transaction().accountId && a.isDeleted)) ?? []);
 
   private readonly transactionService = inject(TransactionService);
 
@@ -63,6 +64,23 @@ export class TransactionForm implements OnInit {
       if (dataType) {
         this.transaction.update((t) => ({ ...t, type: dataType }));
       }
+
+      // Re-read the transaction so the version sent on save is the one the user is
+      // looking at, not whatever the in-memory list last held. Without this a stale
+      // list makes the save fail permanently: reopening the dialog would reuse the
+      // same outdated version and hit the same 409 again.
+      firstValueFrom(this.transactionService.getTransactionById(this.data.transaction.id)).then((transaction) => {
+        this.transaction.set({
+          ...transaction,
+          // Keep showing the amounts and type this dialog edits with, which for an
+          // expense are the absolute value of what the list stores.
+          amount: this.data?.type === 'Expense' ? Math.abs(transaction.amount) : transaction.amount,
+          type: dataType ?? transaction.type,
+        });
+      }).catch(() => {
+        // Fall back to the data the dialog was opened with; the save is still refused
+        // if that turns out to be stale.
+      });
     }
   }
 
@@ -116,7 +134,11 @@ export class TransactionForm implements OnInit {
             }
 
             if (this.data?.transaction?.id) {
-              await firstValueFrom(this.transactionService.updateTransaction(this.data.transaction.id, dto));
+              // Send back the version the form was filled from so the API can refuse the
+              // save if someone else changed the transaction in the meantime.
+              await firstValueFrom(this.transactionService.updateTransaction(
+                this.data.transaction.id,
+                { ...dto, version: this.transaction().version }));
             } else {
               await firstValueFrom(this.transactionService.createTransaction(dto));
             }

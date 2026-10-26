@@ -13,8 +13,8 @@ describe('PeriodNavigator', () => {
 
     fixture = TestBed.createComponent(PeriodNavigator);
     fixture.componentRef.setInput('accounts', [
-      { id: 'asset-account', name: 'Asset account', type: 'Checking', currency: 'EUR' },
-      { id: 'liability-account', name: 'Loan', type: 'Loan', currency: 'EUR' },
+      { id: 'asset-account', name: 'Asset account', type: 'Checking', currency: 'EUR', version: 0 },
+      { id: 'liability-account', name: 'Loan', type: 'Loan', currency: 'EUR', version: 0 },
     ]);
     fixture.componentRef.setInput('currencyOptions', [{ code: 'EUR', name: 'Euro', symbol: '€' }]);
     fixture.componentInstance.periodChange.subscribe((period) => latestPeriod = period);
@@ -33,7 +33,7 @@ describe('PeriodNavigator', () => {
     await fixture.whenStable();
 
     fixture.componentRef.setInput('accounts', [
-      { id: 'liability-account', name: 'Loan', type: 'Loan', currency: 'EUR' },
+      { id: 'liability-account', name: 'Loan', type: 'Loan', currency: 'EUR', version: 0 },
     ]);
     fixture.detectChanges();
     await fixture.whenStable();

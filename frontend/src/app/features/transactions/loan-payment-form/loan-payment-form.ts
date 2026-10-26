@@ -3,13 +3,13 @@ import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Account } from '@features/accounts/models/account.model';
 import { Transaction } from '../models/transaction.model';
 import { LoanPayment } from '../models/loan-payment.model';
-import { SaveLoanPaymentCommand, TransactionService } from '../services/transaction.service';
+import { SaveLoanPaymentCommand, TransactionService, UpdateLoanPaymentCommand } from '../services/transaction.service';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { toDateOnlyString } from '@shared/utils/date-utils';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Icon } from '@shared/ui/icon/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, forkJoin } from 'rxjs';
 import { Dialog } from '@shared/ui/dialog/dialog';
 
 export interface LoanPaymentFormData {
@@ -27,13 +27,16 @@ export interface LoanPaymentFormData {
 export class LoanPaymentForm implements OnInit {
   errorMessage = signal('');
 
+  /** The pair being edited. Holds the versions the save is checked against. */
+  loanPaymentLegs = signal<{ toTransaction: Transaction; fromTransaction: Transaction } | null>(null);
+
   fromAccounts = computed(() => this.data?.accounts?.filter(a => 
     (Account.canBeUsedForFromLoanPayment(a) && !a.isDeleted)
-    || (a.id === this.data?.fromTransaction?.accountId && a.isDeleted)) ?? []);
+    || (a.id === this.loanPaymentLegs()?.fromTransaction.accountId && a.isDeleted)) ?? []);
   
   toAccounts = computed(() => this.data?.accounts?.filter(a => 
     (Account.canBeUsedForToLoanPayment(a) && !a.isDeleted)
-    || (a.id === this.data?.toTransaction?.accountId && a.isDeleted)) ?? []);
+    || (a.id === this.loanPaymentLegs()?.toTransaction.accountId && a.isDeleted)) ?? []);
 
   loanPayment = signal<LoanPayment>({
     date: new Date(),
@@ -51,15 +54,45 @@ export class LoanPaymentForm implements OnInit {
 
   ngOnInit(): void {
     if (this.data?.fromTransaction && this.data?.toTransaction) {
-      this.loanPayment.set({
-        date: this.data.fromTransaction.date,
-        description: this.data.fromTransaction.description,
-        amount: -this.data.fromTransaction.amount,
-        principalAmount: -(this.data.fromTransaction.principalAmount || 0),
-        fromAccountId: this.data.fromTransaction.accountId,
-        toAccountId: this.data.toTransaction.accountId
+      const legs = {
+        toTransaction: this.data.toTransaction,
+        fromTransaction: this.data.fromTransaction,
+      };
+
+      this.loanPaymentLegs.set(legs);
+      this.applyLoanPaymentLegs(legs);
+
+      // Re-read both legs so the versions sent on save are the ones the user is looking
+      // at, not whatever the in-memory list last held. Without this a stale list makes
+      // the save fail permanently: reopening the dialog would reuse the same outdated
+      // versions and hit the same 409 again.
+      forkJoin({
+        toTransaction: this.transactionService.getTransactionById(legs.toTransaction.id),
+        fromTransaction: this.transactionService.getTransactionById(legs.fromTransaction.id),
+      }).subscribe({
+        next: (freshLegs) => {
+          this.loanPaymentLegs.set(freshLegs);
+          this.applyLoanPaymentLegs(freshLegs);
+        },
+        error: () => {
+          // Fall back to the legs the dialog was opened with; the save is still refused
+          // if they turn out to be stale.
+        },
       });
     }
+  }
+
+  private applyLoanPaymentLegs(legs: { toTransaction: Transaction; fromTransaction: Transaction }): void {
+    this.loanPayment.set({
+      date: legs.fromTransaction.date,
+      description: legs.fromTransaction.description,
+      // The list stores the amounts on the negative leg, while the form edits them
+      // as positive figures.
+      amount: -legs.fromTransaction.amount,
+      principalAmount: -(legs.fromTransaction.principalAmount || 0),
+      fromAccountId: legs.fromTransaction.accountId,
+      toAccountId: legs.toTransaction.accountId
+    });
   }
 
   close() {
@@ -120,18 +153,24 @@ export class LoanPaymentForm implements OnInit {
           
           try {
             const formValue = field().value();
-            
-            if (this.data?.toTransaction?.id) {
-              const command: SaveLoanPaymentCommand = {
+            const legs = this.loanPaymentLegs();
+
+            if (legs) {
+              const command: UpdateLoanPaymentCommand = {
                 date: toDateOnlyString(formValue.date),
                 description: formValue.description,
                 amount: formValue.amount,
                 principalAmount: formValue.principalAmount,
                 fromAccountId: formValue.fromAccountId,
                 toAccountId: formValue.toAccountId,
+                // The URL addresses one leg of the pair, so its version goes in "version"
+                // and the other leg's in "relatedVersion". Sending back the versions the
+                // form was filled from lets the API refuse a save made from stale data.
+                version: legs.toTransaction.version,
+                relatedVersion: legs.fromTransaction.version,
               };
 
-              await firstValueFrom(this.transactionService.updateLoanPayment(this.data.toTransaction.id, command));
+              await firstValueFrom(this.transactionService.updateLoanPayment(legs.toTransaction.id, command));
             } else {
               const command: SaveLoanPaymentCommand = {
                 date: toDateOnlyString(formValue.date),

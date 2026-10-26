@@ -17,7 +17,8 @@ public class UpdateAccountEndpoint : IApiEndPoint
                 Id: id,
                 Name: request.Name,
                 Type: request.Type,
-                Currency: request.Currency
+                Currency: request.Currency,
+                Version: request.Version
             );
 
             var result = await handler.HandleAsync(command, cancellationToken);
@@ -32,6 +33,7 @@ public class UpdateAccountEndpoint : IApiEndPoint
         .Produces<AccountDto>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status409Conflict)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
         .RequireAuthorization()
         .WithName("UpdateAccount")

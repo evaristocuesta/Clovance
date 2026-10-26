@@ -63,7 +63,7 @@ public class UpdateTransactionCommandHandlerTests : TransactionHandlerTestBase
         Authenticate(userId);
 
         var result = await _handler.HandleAsync(
-            new UpdateTransactionCommand(new TransactionDto(Guid.NewGuid(), new DateOnly(2025, 6, 1), "Salary", 100m, null, TransactionType.Income, Guid.NewGuid(), "Checking", "EUR", null)),
+            new UpdateTransactionCommand(new TransactionDto(Guid.NewGuid(), new DateOnly(2025, 6, 1), "Salary", 100m, null, TransactionType.Income, Guid.NewGuid(), "Checking", "EUR", null, 0)),
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsFailure);

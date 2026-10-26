@@ -2,6 +2,7 @@
 using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Features.Shared;
 using Clovance.ApiService.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clovance.ApiService.Features.Accounts.UpdateAccount;
 
@@ -43,8 +44,20 @@ public class UpdateAccountCommandHandler : IHandler<UpdateAccountCommand, Result
         account.ChangeType(command.Type, userId);
         account.ChangeCurrency(command.Currency, userId);
 
-        _context.Accounts.Update(account);
-        await _context.SaveChangesAsync(cancellationToken);
+        // The client states the version it based its edit on. If the row changed since then
+        // the UPDATE matches no rows and EF throws, which is turned into a 409 instead of
+        // silently overwriting the concurrent change.
+        _context.Entry(account).Property(x => x.Xmin).OriginalValue = command.Version;
+
+        try
+        {
+            _context.Accounts.Update(account);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result<UpdateAccountResult>.Failure(AppErrors.Common.StaleData());
+        }
 
         return Result<UpdateAccountResult>.Success(new UpdateAccountResult(account.ToDto()));
     }

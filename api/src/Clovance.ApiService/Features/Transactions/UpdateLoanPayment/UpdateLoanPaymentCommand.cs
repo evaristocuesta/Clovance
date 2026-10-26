@@ -6,7 +6,9 @@ public sealed record UpdateLoanPaymentRequest(
     decimal Amount,
     decimal PrincipalAmount,
     Guid FromAccountId,
-    Guid ToAccountId);
+    Guid ToAccountId,
+    uint Version,
+    uint RelatedVersion);
 
 public sealed record UpdateLoanPaymentCommand(
     Guid TransactionId,
@@ -15,7 +17,9 @@ public sealed record UpdateLoanPaymentCommand(
     decimal Amount,
     decimal PrincipalAmount,
     Guid FromAccountId,
-    Guid ToAccountId);
+    Guid ToAccountId,
+    uint Version,
+    uint RelatedVersion);
 
 public sealed record UpdateLoanPaymentResult(
     TransactionDto FromTransaction,

@@ -12,7 +12,8 @@ public static class AccountMappers
             account.Name.Value,
             account.Type,
             account.Currency.Code, 
-            account.IsDeleted);
+            account.IsDeleted,
+            account.Xmin);
     }
 
     public static Account ToDomain(

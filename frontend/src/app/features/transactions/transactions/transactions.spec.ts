@@ -33,6 +33,7 @@ describe('Transactions', () => {
               date: new Date(),
               description: 'Related',
               type: 'Income',
+              version: 0,
             }),
             deleteTransaction: () => of(void 0),
           },

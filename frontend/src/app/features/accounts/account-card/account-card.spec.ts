@@ -16,6 +16,7 @@ describe('AccountCard', () => {
       id: 'acc-1',
       name: 'Main account',
       currency: 'EUR',
+      version: 0,
     });
     fixture.componentRef.setInput('currencySymbolMap', { EUR: '€' });
     fixture.detectChanges();

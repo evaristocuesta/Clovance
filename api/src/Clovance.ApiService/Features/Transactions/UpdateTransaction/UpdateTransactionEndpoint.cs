@@ -24,7 +24,8 @@ public class UpdateTransactionEndpoint : IApiEndPoint
                     AccountId: request.AccountId,
                     AccountName: string.Empty,
                     Currency: string.Empty,
-                    RelatedTransactionId: null
+                    RelatedTransactionId: null,
+                    Version: request.Version
                 )
             );
 
@@ -34,6 +35,7 @@ public class UpdateTransactionEndpoint : IApiEndPoint
         .Produces<TransactionDto>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status409Conflict)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
         .RequireAuthorization()
         .WithName("UpdateTransaction")

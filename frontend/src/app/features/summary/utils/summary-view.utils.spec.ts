@@ -2,9 +2,9 @@ import { Account } from '@features/accounts/models/account.model';
 import { getSummaryAccounts, toBalanceViewPoints, toCashflowViewPoints } from './summary-view.utils';
 
 const accounts: Account[] = [
-  { id: 'checking', name: 'Checking', type: 'Checking', currency: 'EUR' },
-  { id: 'loan', name: 'Loan', type: 'Loan', currency: 'EUR' },
-  { id: 'deleted-card', name: 'Deleted card', type: 'CreditCard', currency: 'EUR', isDeleted: true },
+  { id: 'checking', name: 'Checking', type: 'Checking', currency: 'EUR', version: 0 },
+  { id: 'loan', name: 'Loan', type: 'Loan', currency: 'EUR', version: 0 },
+  { id: 'deleted-card', name: 'Deleted card', type: 'CreditCard', currency: 'EUR', isDeleted: true, version: 0 },
 ];
 
 describe('summary view utilities', () => {

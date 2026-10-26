@@ -3,6 +3,7 @@
         "unexpected_error": "An unexpected error occurred.", 
         "validation_failed": "Validation failed. Please check the input fields and try again.", 
         "too_many_requests": "Too many attempts. Please wait a minute and try again.",
+        "stale_data": "Someone else changed this record while you were editing. Close this dialog and open it again to load the latest version, then save.",
         "closeDialog": "Close dialog"
     },
     "language": {
