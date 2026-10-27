@@ -2,7 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { Account } from '@features/accounts/models/account.model';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { TransactionFilters } from '../services/transaction.service';
-import { form, FormField, FormRoot, validate } from '@angular/forms/signals';
+import { form, FormField, FormRoot, maxLength, validate } from '@angular/forms/signals';
 import { signal } from '@angular/core';
 import { Icon } from "@shared/ui/icon/icon";
 
@@ -74,6 +74,8 @@ export class TransactionsFilter {
 
         return null;
       });
+
+      maxLength(schemaPath.description, 250, { message: 'transactions.filters.descriptionMaxLength' });
     }, 
     {
       submission: {
@@ -99,6 +101,10 @@ export class TransactionsFilter {
 
     const dateToError = this.filterForm.dateTo().errors()[0]?.message;
     return dateToError ?? null;
+  }
+
+  protected getDescriptionErrorMessage(): string | null {
+    return this.filterForm.description().errors()[0]?.message ?? null;
   }
 
   onReset(): void {

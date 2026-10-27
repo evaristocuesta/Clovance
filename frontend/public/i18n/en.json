@@ -323,6 +323,7 @@
             "allAccounts": "All accounts",
             "description": "Description",
             "descriptionPlaceholder": "Search by description",
+            "descriptionMaxLength": "Search text must be 250 characters or fewer",
             "dateToAndDateFromRequired": "Select both From and To dates",
             "invalidDateRange": "The From date cannot be later than the To date",
             "apply": "Filter",

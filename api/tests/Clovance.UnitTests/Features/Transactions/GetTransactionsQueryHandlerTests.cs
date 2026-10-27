@@ -1,6 +1,8 @@
 ﻿using Clovance.ApiService.Domain.Accounts;
 using Clovance.ApiService.Domain.Transactions;
 using Clovance.ApiService.Features.Transactions.GetTransactions;
+using Clovance.ApiService.Infrastructure.Database;
+using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Transactions;
 
@@ -10,7 +12,7 @@ public class GetTransactionsQueryHandlerTests : TransactionHandlerTestBase
 
     public GetTransactionsQueryHandlerTests()
     {
-        _handler = new GetTransactionsQueryHandler(Context);
+        _handler = new GetTransactionsQueryHandler(Context, Substitute.For<ITransactionDescriptionSearch>());
     }
 
     [Fact]

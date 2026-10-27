@@ -17,6 +17,10 @@ public sealed class GetTransactionsValidator : AbstractValidator<GetTransactions
             .InclusiveBetween(1, 200)
             .WithErrorCode(ErrorCodes.Transactions.PageSizeInvalidRange);
 
+        RuleFor(x => x.Description)
+            .MaximumLength(250)
+            .WithErrorCode(ErrorCodes.Transactions.DescriptionMaxLength);
+
         RuleFor(x => x)
             .Must(x => x.CursorDate.HasValue == x.CursorId.HasValue)
             .WithErrorCode(ErrorCodes.Transactions.CursorMustComeTogether)

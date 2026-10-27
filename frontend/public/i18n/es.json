@@ -323,6 +323,7 @@
             "allAccounts": "Todas las cuentas",
             "description": "Descripción",
             "descriptionPlaceholder": "Buscar por descripción",
+            "descriptionMaxLength": "El texto de búsqueda no puede superar los 250 caracteres",
             "dateToAndDateFromRequired": "Selecciona ambas fechas: desde y hasta",
             "invalidDateRange": "La fecha desde no puede ser mayor que la fecha hasta",
             "apply": "Filtrar",

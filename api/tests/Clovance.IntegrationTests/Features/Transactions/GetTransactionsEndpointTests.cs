@@ -41,6 +41,56 @@ public class GetTransactionsEndpointTests : TransactionIntegrationTestBase
     }
 
     [Fact]
+    public async Task GetTransactionsEndpoint_ReturnsBadRequest_WhenDescriptionExceedsMaxLength()
+    {
+        AuthenticateAsRegularUser();
+
+        var description = new string('a', 251);
+        var response = await Client.GetAsync(
+            $"/api/transactions?description={Uri.EscapeDataString(description)}",
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetTransactionsEndpoint_TreatsLikeWildcardsAsLiteralCharacters()
+    {
+        AuthenticateAsRegularUser();
+        var account = await CreateAssetAccountAsync();
+        var marker = Guid.CreateVersion7().ToString("N");
+        var percentDescription = $"Discount!-{marker}-10%";
+        var percentLookalikeDescription = $"Discount-{marker}-10X";
+        var underscoreDescription = $"Invoice-{marker}_2026";
+        var underscoreLookalikeDescription = $"Invoice-{marker}A2026";
+
+        await CreateTransactionAsync(account.Id, description: percentDescription);
+        await CreateTransactionAsync(account.Id, description: percentLookalikeDescription);
+        await CreateTransactionAsync(account.Id, description: underscoreDescription);
+        await CreateTransactionAsync(account.Id, description: underscoreLookalikeDescription);
+
+        var percentResponse = await Client.GetAsync(
+            $"/api/transactions?description={Uri.EscapeDataString($"Discount!-{marker}-10%")}&pageSize=200",
+            TestContext.Current.CancellationToken);
+        var percentPage = await ReadJsonAsync<GetTransactionsPageResponse>(percentResponse.Content);
+
+        var underscoreResponse = await Client.GetAsync(
+            $"/api/transactions?description={Uri.EscapeDataString($"{marker}_2026")}&pageSize=200",
+            TestContext.Current.CancellationToken);
+        var underscorePage = await ReadJsonAsync<GetTransactionsPageResponse>(underscoreResponse.Content);
+
+        Assert.Equal(System.Net.HttpStatusCode.OK, percentResponse.StatusCode);
+        Assert.NotNull(percentPage);
+        Assert.Single(percentPage!.Items, item => item.Description == percentDescription);
+        Assert.DoesNotContain(percentPage.Items, item => item.Description == percentLookalikeDescription);
+
+        Assert.Equal(System.Net.HttpStatusCode.OK, underscoreResponse.StatusCode);
+        Assert.NotNull(underscorePage);
+        Assert.Single(underscorePage!.Items, item => item.Description == underscoreDescription);
+        Assert.DoesNotContain(underscorePage.Items, item => item.Description == underscoreLookalikeDescription);
+    }
+
+    [Fact]
     public async Task GetTransactionsEndpoint_ReturnsUnauthorized_ForUnauthenticatedUser()
     {
         AuthenticateWithToken(string.Empty);

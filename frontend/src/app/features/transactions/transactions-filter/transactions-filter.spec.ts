@@ -19,4 +19,13 @@ describe('TransactionsFilter', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('shows a validation error when the description search exceeds the maximum length', () => {
+    const descriptionInput: HTMLInputElement = fixture.nativeElement.querySelector('#transaction-description');
+    descriptionInput.value = 'a'.repeat(251);
+    descriptionInput.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('transactions.filters.descriptionMaxLength');
+  });
 });
