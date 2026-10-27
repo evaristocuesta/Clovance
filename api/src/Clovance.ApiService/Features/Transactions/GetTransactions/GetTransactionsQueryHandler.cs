@@ -9,10 +9,14 @@ namespace Clovance.ApiService.Features.Transactions.GetTransactions;
 public class GetTransactionsQueryHandler : IHandler<GetTransactionsQuery, Result<GetTransactionsPageResponse>>
 {
     private readonly ClovanceDbContext _dbContext;
+    private readonly ITransactionDescriptionSearch _transactionDescriptionSearch;
 
-    public GetTransactionsQueryHandler(ClovanceDbContext dbContext)
+    public GetTransactionsQueryHandler(
+        ClovanceDbContext dbContext,
+        ITransactionDescriptionSearch transactionDescriptionSearch)
     {
         _dbContext = dbContext;
+        _transactionDescriptionSearch = transactionDescriptionSearch;
     }
 
     public async Task<Result<GetTransactionsPageResponse>> HandleAsync(GetTransactionsQuery request, CancellationToken cancellationToken)
@@ -33,17 +37,8 @@ public class GetTransactionsQueryHandler : IHandler<GetTransactionsQuery, Result
 
         if (!string.IsNullOrWhiteSpace(request.Description))
         {
-            var term = request.Description.Trim();
-            // Use FromSqlInterpolated to leverage PostgreSQL's ILIKE and GIN index
-            // while avoiding EF Core's value converter translation issues
-            var filteredIds = _dbContext.Transactions
-                .FromSqlInterpolated($@"
-                    SELECT * FROM transactions 
-                    WHERE description ILIKE {$"%{term}%"}")
-                .AsNoTracking()
-                .Select(t => t.Id);
-
-            query = query.Where(t => filteredIds.Contains(t.Id));
+            var matchingIds = _transactionDescriptionSearch.FindMatchingTransactionIds(request.Description.Trim());
+            query = query.Where(transaction => matchingIds.Contains(transaction.Id));
         }
 
         // Stable order: date desc, and as a tiebreaker Id desc (to ensure the cursor is unique)
