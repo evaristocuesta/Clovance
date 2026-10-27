@@ -19,4 +19,11 @@ describe('Setup', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('marks both password fields as new passwords for password managers', () => {
+    const passwordInputs: NodeListOf<HTMLInputElement> = fixture.nativeElement.querySelectorAll('input[type="password"]');
+
+    expect(passwordInputs.length).toBe(2);
+    expect(Array.from(passwordInputs).every((input) => input.autocomplete === 'new-password')).toBe(true);
+  });
 });
