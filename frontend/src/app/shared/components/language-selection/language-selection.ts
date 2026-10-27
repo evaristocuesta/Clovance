@@ -14,6 +14,15 @@ export class LanguageSelection {
   private readonly translocoService = inject(TranslocoService);
 
   changeLanguage(lang: string) {
+    const availableLanguages = this.translocoService.getAvailableLangs();
+    const isAvailableLanguage = availableLanguages.some((availableLanguage) =>
+      (typeof availableLanguage === 'string' ? availableLanguage : availableLanguage.id) === lang
+    );
+
+    if (!isAvailableLanguage) {
+      return;
+    }
+
     // Close the dropdown before changing language to avoid positioning issues
     const dropdown = document.getElementById('language-dropdown');
     
