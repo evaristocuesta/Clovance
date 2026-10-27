@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Translation, TranslocoLoader, provideTransloco } from '@jsverse/transloco';
+import { Translation, TranslocoLoader, TranslocoService, provideTransloco } from '@jsverse/transloco';
 import { Observable, of } from 'rxjs';
 
 import { LanguageSelection } from './language-selection';
@@ -37,5 +37,15 @@ describe('LanguageSelection', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('ignores a language that is not available', () => {
+    const translocoService = TestBed.inject(TranslocoService);
+    localStorage.removeItem('clovance-lang');
+
+    component.changeLanguage('fr');
+
+    expect(translocoService.getActiveLang()).toBe('en');
+    expect(localStorage.getItem('clovance-lang')).toBeNull();
   });
 });
