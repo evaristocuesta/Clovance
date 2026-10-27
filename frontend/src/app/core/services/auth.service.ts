@@ -57,12 +57,14 @@ export class AuthService {
       .post<void>('/api/auth/logout', {}, { withCredentials: true })
       .pipe(
         tap({
-          next: () => {
-            this._accessToken.set(null);
-            this._currentUser.set(null);
-          }
+          next: () => this.clearSession()
         })
       );
+  }
+
+  clearSession(): void {
+    this._accessToken.set(null);
+    this._currentUser.set(null);
   }
 
   setup(setupRequest: SetupRequest): Observable<void> {
