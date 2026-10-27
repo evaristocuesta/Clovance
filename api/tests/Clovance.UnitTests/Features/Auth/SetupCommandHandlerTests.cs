@@ -2,6 +2,7 @@
 using Clovance.ApiService.Infrastructure.Database;
 using Clovance.ApiService.Shared;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute;
 
 namespace Clovance.UnitTests.Features.Auth;
@@ -9,12 +10,21 @@ namespace Clovance.UnitTests.Features.Auth;
 public class SetupCommandHandlerTests : AuthHandlerTestBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ISetupTransactionProvider _setupTransactionProvider;
+    private readonly IDbContextTransaction _transaction;
     private readonly SetupCommandHandler _handler;
 
     public SetupCommandHandlerTests()
     {
         _userManager = CreateUserManager();
-        _handler = new SetupCommandHandler(_userManager);
+        _setupTransactionProvider = Substitute.For<ISetupTransactionProvider>();
+        _transaction = Substitute.For<IDbContextTransaction>();
+        _transaction.DisposeAsync().Returns(ValueTask.CompletedTask);
+        _transaction.CommitAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        _setupTransactionProvider
+            .BeginSetupTransactionAsync(Arg.Any<CancellationToken>())
+            .Returns(_transaction);
+        _handler = new SetupCommandHandler(_userManager, _setupTransactionProvider);
     }
 
     [Fact]
@@ -27,7 +37,7 @@ public class SetupCommandHandlerTests : AuthHandlerTestBase
             "Admin",
             "User");
 
-        _userManager.Users.Returns(new List<ApplicationUser>().AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser>().AsAsyncQueryable());
         _userManager.CreateAsync(Arg.Any<ApplicationUser>(), command.Password)
             .Returns(IdentityResult.Success);
         _userManager.AddToRoleAsync(Arg.Any<ApplicationUser>(), "Admin")
@@ -51,6 +61,7 @@ public class SetupCommandHandlerTests : AuthHandlerTestBase
         await _userManager.Received(1).AddToRoleAsync(
             Arg.Any<ApplicationUser>(),
             "Admin");
+        await _transaction.Received(1).CommitAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -66,7 +77,7 @@ public class SetupCommandHandlerTests : AuthHandlerTestBase
         _userManager.Users.Returns(new List<ApplicationUser>
         {
             new() { Email = "existing@example.com" }
-        }.AsQueryable());
+        }.AsAsyncQueryable());
 
         // Act
         var result = await _handler.HandleAsync(command, TestContext.Current.CancellationToken);
@@ -75,6 +86,7 @@ public class SetupCommandHandlerTests : AuthHandlerTestBase
         Assert.True(result.IsFailure);
         Assert.Equal(ErrorCodes.Auth.SetupAlreadyBeenCompleted, result.Error?.Code);
         await _userManager.DidNotReceive().CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>());
+        await _transaction.DidNotReceive().CommitAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -87,7 +99,7 @@ public class SetupCommandHandlerTests : AuthHandlerTestBase
             "Admin",
             "User");
 
-        _userManager.Users.Returns(new List<ApplicationUser>().AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser>().AsAsyncQueryable());
         _userManager.CreateAsync(Arg.Any<ApplicationUser>(), command.Password)
             .Returns(IdentityResult.Failed(new IdentityError { Description = "Password too weak." }));
 
@@ -111,7 +123,7 @@ public class SetupCommandHandlerTests : AuthHandlerTestBase
             "Admin",
             "User");
 
-        _userManager.Users.Returns(new List<ApplicationUser>().AsQueryable());
+        _userManager.Users.Returns(new List<ApplicationUser>().AsAsyncQueryable());
         _userManager.CreateAsync(Arg.Any<ApplicationUser>(), command.Password)
             .Returns(IdentityResult.Success);
         _userManager.AddToRoleAsync(Arg.Any<ApplicationUser>(), "Admin")
