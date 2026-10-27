@@ -26,6 +26,8 @@ public static class DatabaseServiceCollectionExtensions
             contextLifetime: ServiceLifetime.Scoped,
             optionsLifetime: ServiceLifetime.Singleton);
 
+        services.AddScoped<ISetupTransactionProvider, PostgresSetupTransactionProvider>();
+
         services.AddDbContextFactory<ClovanceDbContext>(configureDbContext);
 
         services.AddHealthChecks()
