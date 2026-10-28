@@ -2,12 +2,17 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Transfer } from '../models/transfer.model';
 import { Account } from '@features/accounts/models/account.model';
 import { Transaction } from '../models/transaction.model';
-import { SaveTransferCommand, TransactionService, UpdateTransferCommand } from '../services/transaction.service';
+import {
+  SaveTransferCommand,
+  TransactionService,
+  UpdateTransferCommand,
+} from '../services/transaction.service';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Icon } from '@shared/ui/icon/icon';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
+import { ToastService } from '@shared/ui/toast/toast.service';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { toDateOnlyString } from '@shared/utils/date-utils';
 import { Dialog } from '@shared/ui/dialog/dialog';
@@ -27,13 +32,23 @@ export interface TransferFormData {
 export class TransferForm implements OnInit {
   errorMessage = signal('');
 
-  fromAccounts = computed(() => this.data?.accounts?.filter(a => 
-    (Account.canBeUsedForTransfer(a) && !a.isDeleted) 
-    || (a.id === this.data?.fromTransaction?.accountId && a.isDeleted)) ?? []);
-  
-  toAccounts = computed(() => this.data?.accounts?.filter(a => 
-    (Account.canBeUsedForTransfer(a) && !a.isDeleted)
-    || (a.id === this.data?.toTransaction?.accountId && a.isDeleted)) ?? []);
+  fromAccounts = computed(
+    () =>
+      this.data?.accounts?.filter(
+        (a) =>
+          (Account.canBeUsedForTransfer(a) && !a.isDeleted) ||
+          (a.id === this.data?.fromTransaction?.accountId && a.isDeleted),
+      ) ?? [],
+  );
+
+  toAccounts = computed(
+    () =>
+      this.data?.accounts?.filter(
+        (a) =>
+          (Account.canBeUsedForTransfer(a) && !a.isDeleted) ||
+          (a.id === this.data?.toTransaction?.accountId && a.isDeleted),
+      ) ?? [],
+  );
 
   transfer = signal<Transfer>({
     date: new Date(),
@@ -47,6 +62,8 @@ export class TransferForm implements OnInit {
   transferLegs = signal<{ toTransaction: Transaction; fromTransaction: Transaction } | null>(null);
 
   private readonly transactionService = inject(TransactionService);
+  private readonly toastService = inject(ToastService);
+  private readonly translocoService = inject(TranslocoService);
 
   dialogRef = inject<DialogRef>(DialogRef);
   data = inject<TransferFormData>(DIALOG_DATA, { optional: true });
@@ -81,13 +98,16 @@ export class TransferForm implements OnInit {
     }
   }
 
-  private applyTransferLegs(legs: { toTransaction: Transaction; fromTransaction: Transaction }): void {
+  private applyTransferLegs(legs: {
+    toTransaction: Transaction;
+    fromTransaction: Transaction;
+  }): void {
     this.transfer.set({
       date: legs.fromTransaction.date,
       description: legs.fromTransaction.description,
       amount: legs.toTransaction.amount,
       fromAccountId: legs.fromTransaction.accountId,
-      toAccountId: legs.toTransaction.accountId
+      toAccountId: legs.toTransaction.accountId,
     });
   }
 
@@ -129,11 +149,11 @@ export class TransferForm implements OnInit {
         return null;
       });
     },
-    { 
+    {
       submission: {
         action: async (field) => {
           this.errorMessage.set('');
-          
+
           try {
             const formValue = field().value();
             const legs = this.transferLegs();
@@ -152,7 +172,9 @@ export class TransferForm implements OnInit {
                 relatedVersion: legs.fromTransaction.version,
               };
 
-              await firstValueFrom(this.transactionService.updateTransfer(legs.toTransaction.id, dto));
+              await firstValueFrom(
+                this.transactionService.updateTransfer(legs.toTransaction.id, dto),
+              );
             } else {
               const dto: SaveTransferCommand = {
                 date: toDateOnlyString(formValue.date),
@@ -164,15 +186,16 @@ export class TransferForm implements OnInit {
 
               await firstValueFrom(this.transactionService.createTransfer(dto));
             }
-            
+
+            this.toastService.success(this.translocoService.translate('transactions.saved'));
             this.dialogRef.close(true);
           } catch (err: HttpErrorResponse | any) {
-              const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
-              const key = errorCode ? errorCode : 'transactions.serverError';
-              this.errorMessage.set(key);
+            const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
+            const key = errorCode ? errorCode : 'transactions.serverError';
+            this.errorMessage.set(key);
           }
-        } 
-      }
-    }
+        },
+      },
+    },
   );
 }

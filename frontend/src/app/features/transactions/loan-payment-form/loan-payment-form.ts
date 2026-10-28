@@ -3,12 +3,17 @@ import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Account } from '@features/accounts/models/account.model';
 import { Transaction } from '../models/transaction.model';
 import { LoanPayment } from '../models/loan-payment.model';
-import { SaveLoanPaymentCommand, TransactionService, UpdateLoanPaymentCommand } from '../services/transaction.service';
+import {
+  SaveLoanPaymentCommand,
+  TransactionService,
+  UpdateLoanPaymentCommand,
+} from '../services/transaction.service';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { toDateOnlyString } from '@shared/utils/date-utils';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Icon } from '@shared/ui/icon/icon';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
+import { ToastService } from '@shared/ui/toast/toast.service';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { Dialog } from '@shared/ui/dialog/dialog';
 
@@ -28,15 +33,27 @@ export class LoanPaymentForm implements OnInit {
   errorMessage = signal('');
 
   /** The pair being edited. Holds the versions the save is checked against. */
-  loanPaymentLegs = signal<{ toTransaction: Transaction; fromTransaction: Transaction } | null>(null);
+  loanPaymentLegs = signal<{ toTransaction: Transaction; fromTransaction: Transaction } | null>(
+    null,
+  );
 
-  fromAccounts = computed(() => this.data?.accounts?.filter(a => 
-    (Account.canBeUsedForFromLoanPayment(a) && !a.isDeleted)
-    || (a.id === this.loanPaymentLegs()?.fromTransaction.accountId && a.isDeleted)) ?? []);
-  
-  toAccounts = computed(() => this.data?.accounts?.filter(a => 
-    (Account.canBeUsedForToLoanPayment(a) && !a.isDeleted)
-    || (a.id === this.loanPaymentLegs()?.toTransaction.accountId && a.isDeleted)) ?? []);
+  fromAccounts = computed(
+    () =>
+      this.data?.accounts?.filter(
+        (a) =>
+          (Account.canBeUsedForFromLoanPayment(a) && !a.isDeleted) ||
+          (a.id === this.loanPaymentLegs()?.fromTransaction.accountId && a.isDeleted),
+      ) ?? [],
+  );
+
+  toAccounts = computed(
+    () =>
+      this.data?.accounts?.filter(
+        (a) =>
+          (Account.canBeUsedForToLoanPayment(a) && !a.isDeleted) ||
+          (a.id === this.loanPaymentLegs()?.toTransaction.accountId && a.isDeleted),
+      ) ?? [],
+  );
 
   loanPayment = signal<LoanPayment>({
     date: new Date(),
@@ -48,6 +65,8 @@ export class LoanPaymentForm implements OnInit {
   });
 
   private readonly transactionService = inject(TransactionService);
+  private readonly toastService = inject(ToastService);
+  private readonly translocoService = inject(TranslocoService);
 
   dialogRef = inject<DialogRef>(DialogRef);
   data = inject<LoanPaymentFormData>(DIALOG_DATA, { optional: true });
@@ -82,7 +101,10 @@ export class LoanPaymentForm implements OnInit {
     }
   }
 
-  private applyLoanPaymentLegs(legs: { toTransaction: Transaction; fromTransaction: Transaction }): void {
+  private applyLoanPaymentLegs(legs: {
+    toTransaction: Transaction;
+    fromTransaction: Transaction;
+  }): void {
     this.loanPayment.set({
       date: legs.fromTransaction.date,
       description: legs.fromTransaction.description,
@@ -91,7 +113,7 @@ export class LoanPaymentForm implements OnInit {
       amount: -legs.fromTransaction.amount,
       principalAmount: -(legs.fromTransaction.principalAmount || 0),
       fromAccountId: legs.fromTransaction.accountId,
-      toAccountId: legs.toTransaction.accountId
+      toAccountId: legs.toTransaction.accountId,
     });
   }
 
@@ -145,12 +167,12 @@ export class LoanPaymentForm implements OnInit {
 
         return null;
       });
-    }, 
+    },
     {
       submission: {
         action: async (field) => {
           this.errorMessage.set('');
-          
+
           try {
             const formValue = field().value();
             const legs = this.loanPaymentLegs();
@@ -170,7 +192,9 @@ export class LoanPaymentForm implements OnInit {
                 relatedVersion: legs.fromTransaction.version,
               };
 
-              await firstValueFrom(this.transactionService.updateLoanPayment(legs.toTransaction.id, command));
+              await firstValueFrom(
+                this.transactionService.updateLoanPayment(legs.toTransaction.id, command),
+              );
             } else {
               const command: SaveLoanPaymentCommand = {
                 date: toDateOnlyString(formValue.date),
@@ -184,15 +208,15 @@ export class LoanPaymentForm implements OnInit {
               await firstValueFrom(this.transactionService.createLoanPayment(command));
             }
 
+            this.toastService.success(this.translocoService.translate('transactions.saved'));
             this.dialogRef.close(true);
-
           } catch (err: HttpErrorResponse | any) {
             const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
             const key = errorCode ? errorCode : 'transactions.serverError';
             this.errorMessage.set(key);
           }
-        }
-      }
-    }
+        },
+      },
+    },
   );
 }

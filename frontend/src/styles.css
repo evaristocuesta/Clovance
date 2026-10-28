@@ -29,3 +29,8 @@
 
 /* Enable dark mode with .dark class */
 @variant dark (&:where(.dark, .dark *));
+
+/* Toast notifications must always render above any CDK dialog or backdrop. */
+.toast-overlay-pane {
+  z-index: 9999 !important;
+}
