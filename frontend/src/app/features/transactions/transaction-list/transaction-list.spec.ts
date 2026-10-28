@@ -1,15 +1,34 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 
 import { TransactionList } from './transaction-list';
 import { AccountService } from '@features/accounts/services/account.service';
 import { TransactionService } from '../services/transaction.service';
+import { DialogService } from '@shared/ui/dialog/dialog.service';
+import { ToastService } from '@shared/ui/toast/toast.service';
 
 describe('TransactionList', () => {
   let component: TransactionList;
   let fixture: ComponentFixture<TransactionList>;
+  let deleteTransaction: ReturnType<typeof vi.fn>;
+  let dialogClosed$: Subject<boolean>;
+
+  const sampleTransaction = {
+    id: 'tx-1',
+    accountId: 'acc-1',
+    accountName: 'Main account',
+    currency: 'EUR',
+    amount: -20,
+    date: new Date(),
+    description: 'Groceries',
+    type: 'Expense',
+    version: 0,
+  };
 
   beforeEach(async () => {
+    dialogClosed$ = new Subject<boolean>();
+    deleteTransaction = vi.fn(() => of(void 0));
+
     await TestBed.configureTestingModule({
       imports: [TransactionList],
       providers: [
@@ -23,19 +42,21 @@ describe('TransactionList', () => {
         {
           provide: TransactionService,
           useValue: {
-            getTransactionsPage: () => of({ items: [], hasMore: false, nextCursorDate: null, nextCursorId: null }),
-            getTransactionById: () => of({
-              id: 'tx-2',
-              accountId: 'acc-1',
-              accountName: 'Main account',
-              currency: 'EUR',
-              amount: 10,
-              date: new Date(),
-              description: 'Related',
-              type: 'Income',
-              version: 0,
-            }),
-            deleteTransaction: () => of(void 0),
+            getTransactionsPage: () =>
+              of({
+                items: [sampleTransaction],
+                hasMore: false,
+                nextCursorDate: null,
+                nextCursorId: null,
+              }),
+            getTransactionById: () => of(sampleTransaction),
+            deleteTransaction,
+          },
+        },
+        {
+          provide: DialogService,
+          useValue: {
+            open: () => ({ closed: dialogClosed$.asObservable() }),
           },
         },
       ],
@@ -48,5 +69,35 @@ describe('TransactionList', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('does not delete the transaction when the confirmation dialog is dismissed', () => {
+    component.onDelete('tx-1');
+
+    dialogClosed$.next(false);
+
+    expect(deleteTransaction).not.toHaveBeenCalled();
+  });
+
+  it('shows a success toast after confirming the delete', () => {
+    const toastService = TestBed.inject(ToastService);
+
+    component.onDelete('tx-1');
+    dialogClosed$.next(true);
+
+    expect(deleteTransaction).toHaveBeenCalledWith('tx-1');
+    expect(toastService.toasts()).toEqual([
+      { id: 0, variant: 'success', message: 'transactions.deleted' },
+    ]);
+  });
+
+  it('does not show a toast when the delete fails (the global HTTP interceptor already shows one)', () => {
+    deleteTransaction.mockReturnValue(throwError(() => new Error('boom')));
+    const toastService = TestBed.inject(ToastService);
+
+    component.onDelete('tx-1');
+    dialogClosed$.next(true);
+
+    expect(toastService.toasts()).toEqual([]);
   });
 });
