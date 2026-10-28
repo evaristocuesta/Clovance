@@ -13,13 +13,17 @@ import { languageInterceptor } from '@core/interceptors/language.interceptor';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { authInterceptor } from '@core/interceptors/auth.interceptor';
+import { errorNotificationInterceptor } from '@core/interceptors/error-notification.interceptor';
 import { AuthService } from '@core/services/auth.service';
 import { catchError, of } from 'rxjs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withXhr(), withInterceptors([authInterceptor, languageInterceptor])),
+    provideHttpClient(
+      withXhr(),
+      withInterceptors([errorNotificationInterceptor, authInterceptor, languageInterceptor]),
+    ),
     provideRouter(routes),
     provideTransloco({
       config: {
