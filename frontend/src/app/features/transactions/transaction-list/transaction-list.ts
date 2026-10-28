@@ -1,11 +1,22 @@
 import { afterNextRender, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import type { LoanPaymentFormData } from '../loan-payment-form/loan-payment-form';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Icon } from "@shared/ui/icon/icon";
-import { TransactionCard } from "../transaction-card/transaction-card";
+import { Icon } from '@shared/ui/icon/icon';
+import { TransactionCard } from '../transaction-card/transaction-card';
 import { DialogRef } from '@angular/cdk/dialog';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Observable, auditTime, distinctUntilChanged, filter, finalize, fromEvent, map, of, take, tap } from 'rxjs';
+import {
+  Observable,
+  auditTime,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  fromEvent,
+  map,
+  of,
+  take,
+  tap,
+} from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 import { TransactionFilters, TransactionService } from '../services/transaction.service';
 import { AccountService } from '@features/accounts/services/account.service';
@@ -15,6 +26,7 @@ import { TransferForm, TransferFormData } from '../transfer-form/transfer-form';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog/confirm-dialog';
 import { LoanPaymentForm } from '../loan-payment-form/loan-payment-form';
 import { DialogService } from '@shared/ui/dialog/dialog.service';
+import { ToastService } from '@shared/ui/toast/toast.service';
 
 @Component({
   selector: 'app-transaction-list',
@@ -31,6 +43,7 @@ export class TransactionList {
   private readonly destroyRef = inject(DestroyRef);
   readonly translocoService = inject(TranslocoService);
   private readonly dialogService = inject(DialogService);
+  private readonly toastService = inject(ToastService);
   private readonly cursorDate = signal<string | null>(null);
   private readonly cursorId = signal<string | null>(null);
   protected readonly hasMoreTransactions = signal(true);
@@ -43,9 +56,9 @@ export class TransactionList {
   });
   readonly accounts = toSignal(this.accountService.getAccounts(), { initialValue: [] });
   protected readonly transactions = signal<Transaction[] | null>(null);
-  
+
   readonly currencySymbolMap = computed(() =>
-    Object.fromEntries(this.currencies().map((c) => [c.code.toUpperCase(), c.symbol]))
+    Object.fromEntries(this.currencies().map((c) => [c.code.toUpperCase(), c.symbol])),
   );
 
   constructor() {
@@ -62,13 +75,15 @@ export class TransactionList {
   }
 
   private setupScrollPagination(): void {
-    fromEvent(window, 'scroll').pipe(
-      auditTime(120),
-      map(() => this.isNearBottom()),
-      distinctUntilChanged(),
-      filter((isNearBottom) => isNearBottom),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(() => this.loadNextPage());
+    fromEvent(window, 'scroll')
+      .pipe(
+        auditTime(120),
+        map(() => this.isNearBottom()),
+        distinctUntilChanged(),
+        filter((isNearBottom) => isNearBottom),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.loadNextPage());
   }
 
   private isNearBottom(): boolean {
@@ -85,36 +100,41 @@ export class TransactionList {
 
     this.isLoadingTransactions.set(true);
 
-    this.transactionService.getTransactionsPage({
-      ...this.activeFilters(),
-      cursorDate: this.cursorDate(),
-      cursorId: this.cursorId(),
-      pageSize: TransactionList.PAGE_SIZE,
-    }).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.isLoadingTransactions.set(false)),
-    ).subscribe({
-      next: (page) => {
-        const sortedPage = [...page.items].sort((a, b) => {
-          const dateComparison = b.date.getTime() - a.date.getTime();
-          if (dateComparison !== 0) {
-            return dateComparison;
+    this.transactionService
+      .getTransactionsPage({
+        ...this.activeFilters(),
+        cursorDate: this.cursorDate(),
+        cursorId: this.cursorId(),
+        pageSize: TransactionList.PAGE_SIZE,
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isLoadingTransactions.set(false)),
+      )
+      .subscribe({
+        next: (page) => {
+          const sortedPage = [...page.items].sort((a, b) => {
+            const dateComparison = b.date.getTime() - a.date.getTime();
+            if (dateComparison !== 0) {
+              return dateComparison;
+            }
+
+            return b.id.localeCompare(a.id);
+          });
+
+          this.transactions.update((current) =>
+            current ? [...current, ...sortedPage] : sortedPage,
+          );
+          this.hasMoreTransactions.set(page.hasMore);
+          this.cursorDate.set(page.nextCursorDate);
+          this.cursorId.set(page.nextCursorId);
+        },
+        error: () => {
+          if (this.transactions() === null) {
+            this.transactions.set([]);
           }
-
-          return b.id.localeCompare(a.id);
-        });
-
-        this.transactions.update((current) => current ? [...current, ...sortedPage] : sortedPage);
-        this.hasMoreTransactions.set(page.hasMore);
-        this.cursorDate.set(page.nextCursorDate);
-        this.cursorId.set(page.nextCursorId);
-      },
-      error: () => {
-        if (this.transactions() === null) {
-          this.transactions.set([]);
-        }
-      },
-    });
+        },
+      });
   }
 
   onApplyFilters(filters: TransactionFilters): void {
@@ -128,22 +148,22 @@ export class TransactionList {
     };
 
     const dialogRef = this.dialogService.open<boolean>(LoanPaymentForm, {
-          data: dialogData,
-        });
-    
+      data: dialogData,
+    });
+
     this.refreshOnDialogSuccess(dialogRef);
   }
-  
+
   onAddTransfer(): void {
     const dialogData: TransferFormData = {
       accounts: this.accounts(),
     };
 
     const dialogRef = this.dialogService.open<boolean>(TransferForm, {
-          height: 'auto', 
-          data: dialogData,
-        });
-    
+      height: 'auto',
+      data: dialogData,
+    });
+
     this.refreshOnDialogSuccess(dialogRef);
   }
 
@@ -154,10 +174,10 @@ export class TransactionList {
     };
 
     const dialogRef = this.dialogService.open<boolean>(TransactionForm, {
-          height: 'auto', 
-          data: dialogData,
-        });
-    
+      height: 'auto',
+      data: dialogData,
+    });
+
     this.refreshOnDialogSuccess(dialogRef);
   }
 
@@ -168,17 +188,17 @@ export class TransactionList {
     };
 
     const dialogRef = this.dialogService.open<boolean>(TransactionForm, {
-          height: 'auto', 
-          data: dialogData,
-        });
-    
+      height: 'auto',
+      data: dialogData,
+    });
+
     this.refreshOnDialogSuccess(dialogRef);
   }
 
   private refreshOnDialogSuccess(dialogRef: DialogRef<boolean>): void {
     dialogRef.closed
       .pipe(
-        take(1),  
+        take(1),
         filter((result): result is true => result === true),
         tap(() => this.refreshTransactions()),
       )
@@ -196,20 +216,24 @@ export class TransactionList {
   }
 
   onDelete(transactionId: string): void {
-    const description = this.transactions()?.find((transaction) => transaction.id === transactionId)?.description || '';
-    
+    const description =
+      this.transactions()?.find((transaction) => transaction.id === transactionId)?.description ||
+      '';
+
     const dialogRef = this.dialogService.open(ConfirmDialog, {
       height: 'auto',
       data: {
         title: this.translocoService.translate('transactions.confirmDeleteTitle'),
-        message: this.translocoService.translate('transactions.confirmDeleteMessage', { description }),
+        message: this.translocoService.translate('transactions.confirmDeleteMessage', {
+          description,
+        }),
         confirmText: this.translocoService.translate('transactions.delete'),
         confirmIcon: 'trash-bin',
         cancelText: this.translocoService.translate('transactions.cancel'),
-        danger: true
-      } 
+        danger: true,
+      },
     });
-    
+
     dialogRef.closed.subscribe((confirmed) => {
       if (!confirmed) {
         return;
@@ -218,31 +242,43 @@ export class TransactionList {
       this.transactionService.deleteTransaction(transactionId).subscribe({
         next: () => {
           this.refreshTransactions();
+          this.toastService.success(this.translocoService.translate('transactions.deleted'));
         },
         error: (error) => {
+          // A toast is already shown by the global HTTP error interceptor; this is just for debugging.
           console.error('Error deleting transaction:', error);
-        }
+        },
       });
     });
   }
 
-  private buildTransferDialogData(transaction: Transaction, relatedTransaction?: Transaction): TransferFormData {
+  private buildTransferDialogData(
+    transaction: Transaction,
+    relatedTransaction?: Transaction,
+  ): TransferFormData {
     return {
       accounts: this.accounts(),
-      ...(relatedTransaction ? {
-        toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
-        fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
-      } : {}),
+      ...(relatedTransaction
+        ? {
+            toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
+            fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
+          }
+        : {}),
     };
-  } 
+  }
 
-  private buildLoanPaymentDialogData(transaction: Transaction, relatedTransaction?: Transaction): LoanPaymentFormData {
+  private buildLoanPaymentDialogData(
+    transaction: Transaction,
+    relatedTransaction?: Transaction,
+  ): LoanPaymentFormData {
     return {
       accounts: this.accounts(),
-      ...(relatedTransaction ? {
-        toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
-        fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
-      } : {}),
+      ...(relatedTransaction
+        ? {
+            toTransaction: transaction.amount < 0 ? relatedTransaction : transaction,
+            fromTransaction: transaction.amount < 0 ? transaction : relatedTransaction,
+          }
+        : {}),
     };
   }
 
