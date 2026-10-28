@@ -31,4 +31,6 @@ export type IconName =
   | 'investment'
   | 'chevron-left'
   | 'chevron-right'
-;
+  | 'check-circle'
+  | 'exclamation-circle'
+  | 'info-circle';

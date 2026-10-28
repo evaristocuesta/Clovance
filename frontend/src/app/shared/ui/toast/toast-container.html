@@ -1,0 +1,10 @@
+<div class="flex w-full max-w-sm flex-col gap-2">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <app-toast
+      [toast]="toast"
+      (dismissed)="toastService.dismiss($event)"
+      (paused)="toastService.pause($event)"
+      (resumed)="toastService.resume($event)"
+    />
+  }
+</div>

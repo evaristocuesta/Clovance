@@ -1,0 +1,38 @@
+<div
+  [attr.role]="role"
+  aria-live="polite"
+  (mouseenter)="pause()"
+  (mouseleave)="resume()"
+  class="fade-in pointer-events-auto flex w-full items-start gap-3 rounded-lg border p-4 shadow-lg"
+  [class.bg-green-50]="toast().variant === 'success'"
+  [class.border-green-300]="toast().variant === 'success'"
+  [class.dark:bg-green-900]="toast().variant === 'success'"
+  [class.dark:border-green-700]="toast().variant === 'success'"
+  [class.bg-red-50]="toast().variant === 'error'"
+  [class.border-red-300]="toast().variant === 'error'"
+  [class.dark:bg-red-900]="toast().variant === 'error'"
+  [class.dark:border-red-700]="toast().variant === 'error'"
+  [class.bg-blue-50]="toast().variant === 'info'"
+  [class.border-blue-300]="toast().variant === 'info'"
+  [class.dark:bg-blue-900]="toast().variant === 'info'"
+  [class.dark:border-blue-700]="toast().variant === 'info'"
+>
+  <app-icon
+    [name]="icon"
+    class="h-5 w-5 shrink-0"
+    [class.text-green-500]="toast().variant === 'success'"
+    [class.text-red-500]="toast().variant === 'error'"
+    [class.text-blue-500]="toast().variant === 'info'"
+  />
+
+  <p class="flex-1 text-sm font-medium text-gray-900 dark:text-white">{{ toast().message }}</p>
+
+  <button
+    type="button"
+    (click)="dismiss()"
+    [attr.aria-label]="closeLabel()"
+    class="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+  >
+    <app-icon name="close" class="h-4 w-4" />
+  </button>
+</div>

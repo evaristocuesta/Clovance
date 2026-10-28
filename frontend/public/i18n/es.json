@@ -4,7 +4,8 @@
         "validation_failed": "La validación falló. Por favor, verifica los campos de entrada e inténtalo de nuevo.",
         "too_many_requests": "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
         "stale_data": "Alguien más cambió este registro mientras lo editabas. Cierra este diálogo y ábrelo de nuevo para cargar la versión más reciente y guardar.",
-        "closeDialog": "Cerrar dialogo"
+        "closeDialog": "Cerrar dialogo",
+        "closeNotification": "Cerrar notificación"
     },
     "language": {
         "english": "English",
