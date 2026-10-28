@@ -316,6 +316,7 @@
     "confirmRestoreTitle": "Restaurar cuenta",
     "confirmRestoreMessage": "¿Estás seguro de que deseas restaurar la cuenta {{name}}?",
     "deleted": "Eliminada",
+    "saved": "Cuenta guardada",
     "types": {
       "Checking": "Cuenta corriente",
       "Savings": "Cuenta de ahorros",
@@ -395,6 +396,7 @@
     "confirmDeleteTitle": "Eliminar transacción",
     "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar la transacción {{description}}?",
     "deleted": "Transacción eliminada",
+    "saved": "Transacción guardada",
     "cancel": "Cancelar",
     "fromAccountLabel": "Cuenta origen",
     "fromAccountRequired": "La cuenta origen es obligatoria",

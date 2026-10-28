@@ -316,6 +316,7 @@
     "confirmRestoreTitle": "Restore Account",
     "confirmRestoreMessage": "Are you sure you want to restore the account {{name}}?",
     "deleted": "Deleted",
+    "saved": "Account saved",
     "types": {
       "Checking": "Checking",
       "Savings": "Savings",
@@ -395,6 +396,7 @@
     "confirmDeleteTitle": "Delete Transaction",
     "confirmDeleteMessage": "Are you sure you want to delete the transaction {{description}}?",
     "deleted": "Transaction deleted",
+    "saved": "Transaction saved",
     "cancel": "Cancel",
     "fromAccountLabel": "From Account",
     "fromAccountRequired": "From account is required",

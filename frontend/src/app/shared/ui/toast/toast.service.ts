@@ -11,7 +11,7 @@ const DEFAULT_DURATIONS: Record<ToastVariant, number> = {
 };
 
 /** Keeps toasts rendered above any currently open CDK dialog, regardless of which overlay was created first. */
-const TOAST_OVERLAY_Z_INDEX = '1100';
+const TOAST_OVERLAY_Z_INDEX = '9999';
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
@@ -70,6 +70,15 @@ export class ToastService {
   private show(variant: ToastVariant, message: string, duration: number): void {
     this.ensureAttached();
 
+    // Bring the toast overlay to the front of the overlay container so it always
+    // renders above any currently open CDK dialog, regardless of creation order.
+    if (this.overlayRef) {
+      const container = this.overlayRef.hostElement.parentElement;
+      if (container && this.overlayRef.hostElement !== container.lastElementChild) {
+        container.appendChild(this.overlayRef.hostElement);
+      }
+    }
+
     const id = this.nextId++;
     this.toasts.update((toasts) => [...toasts, { id, variant, message }]);
 
@@ -106,8 +115,10 @@ export class ToastService {
     this.overlayRef = this.overlay.create({
       positionStrategy: this.overlay.position().global().top('1rem').right('1rem'),
       scrollStrategy: this.overlay.scrollStrategies.noop(),
+      panelClass: 'toast-overlay-pane',
     });
 
+    this.overlayRef.overlayElement.style.zIndex = TOAST_OVERLAY_Z_INDEX;
     this.overlayRef.hostElement.style.zIndex = TOAST_OVERLAY_Z_INDEX;
     this.overlayRef.attach(new ComponentPortal(ToastContainer));
   }
