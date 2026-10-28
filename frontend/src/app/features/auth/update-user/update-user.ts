@@ -3,8 +3,9 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { form, maxLength, required, email, FormRoot, FormField } from '@angular/forms/signals';
 import { UpdateUserRequest } from '@core/models/auth.models';
 import { AuthService } from '@core/services/auth.service';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { ToastService } from '@shared/ui/toast/toast.service';
 
 @Component({
   selector: 'app-update-user',
@@ -19,25 +20,26 @@ export class UpdateUser implements OnInit {
   updateUserRequest = signal<UpdateUserRequest>({
     firstName: '',
     lastName: '',
-    email: ''
+    email: '',
   });
 
   private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
+  private readonly translocoService = inject(TranslocoService);
 
   ngOnInit() {
-    
     this.authService.loadCurrentUser().subscribe({
       next: (user) => {
         const currentUser = this.authService.getCurrentUser();
-    
+
         if (currentUser) {
           this.updateUserRequest.set({
             firstName: currentUser.firstName,
             lastName: currentUser.lastName,
-            email: currentUser.email
+            email: currentUser.email,
           });
-        }  
-      }
+        }
+      },
     });
   }
 
@@ -50,14 +52,15 @@ export class UpdateUser implements OnInit {
       required(schemaPath.lastName, { message: 'updateUser.lastNameRequired' });
       required(schemaPath.email, { message: 'updateUser.emailRequired' });
       email(schemaPath.email, { message: 'updateUser.emailInvalid' });
-    }, 
+    },
     {
       submission: {
-        action: async (field) => {  
+        action: async (field) => {
           this.errorMessage.set('');
 
           try {
             await firstValueFrom(this.authService.updateUser(field().value()));
+            this.toastService.success(this.translocoService.translate('updateUser.updated'));
           } catch (err: HttpErrorResponse | any) {
             const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
             const key = errorCode ? errorCode : 'updateUser.serverError';
