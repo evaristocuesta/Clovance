@@ -148,6 +148,7 @@
     "serverError": "An error occurred while trying to update your account. Please try again later.",
     "auth.updateUser.is_not_completed": "Update is not completed. Please complete the update to continue.",
     "auth.updateUser.already_been_completed": "Update has already been completed. Please log in to continue.",
+    "updated": "Account updated successfully.",
     "updateAccount": "Update account"
   },
   "changePassword": {
@@ -168,6 +169,7 @@
     "confirmNewPasswordRequired": "Confirm new password is required",
     "passwordMismatch": "Passwords do not match",
     "serverError": "An error occurred while trying to change your password. Please try again later.",
+    "updated": "Password changed successfully.",
     "changePassword": "Change Password"
   },
   "mainLayout": {

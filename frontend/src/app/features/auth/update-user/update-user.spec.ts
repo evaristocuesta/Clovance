@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 
 import { UpdateUser } from './update-user';
 import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@shared/ui/toast/toast.service';
 
 describe('UpdateUser', () => {
   let component: UpdateUser;
@@ -15,13 +16,14 @@ describe('UpdateUser', () => {
         {
           provide: AuthService,
           useValue: {
-            loadCurrentUser: () => of({
-              id: 'user-1',
-              firstName: 'Test',
-              lastName: 'User',
-              email: 'test@example.com',
-              roles: ['User'],
-            }),
+            loadCurrentUser: () =>
+              of({
+                id: 'user-1',
+                firstName: 'Test',
+                lastName: 'User',
+                email: 'test@example.com',
+                roles: ['User'],
+              }),
             getCurrentUser: () => ({
               id: 'user-1',
               firstName: 'Test',
@@ -42,5 +44,9 @@ describe('UpdateUser', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('has a ToastService available', () => {
+    expect(TestBed.inject(ToastService)).toBeTruthy();
   });
 });

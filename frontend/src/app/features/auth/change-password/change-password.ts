@@ -2,8 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { form, FormField, FormRoot, minLength, required, validate } from '@angular/forms/signals';
 import { AuthService } from '@core/services/auth.service';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { ToastService } from '@shared/ui/toast/toast.service';
 
 @Component({
   selector: 'app-change-password',
@@ -18,10 +19,12 @@ export class ChangePassword {
   changePasswordRequest = signal({
     currentPassword: '',
     newPassword: '',
-    confirmNewPassword: ''
+    confirmNewPassword: '',
   });
 
   private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
+  private readonly translocoService = inject(TranslocoService);
 
   changePasswordForm = form(
     this.changePasswordRequest,
@@ -32,7 +35,7 @@ export class ChangePassword {
       required(schemaPath.newPassword, {
         message: 'changePassword.newPasswordRequired',
       });
-      minLength(schemaPath.newPassword, 12, {message: 'changePassword.newPasswordMinLength'});
+      minLength(schemaPath.newPassword, 12, { message: 'changePassword.newPasswordMinLength' });
       validate(schemaPath.newPassword, ({ value }) => {
         const password = value();
 
@@ -84,7 +87,7 @@ export class ChangePassword {
       required(schemaPath.confirmNewPassword, {
         message: 'changePassword.confirmNewPasswordRequired',
       });
-      validate(schemaPath.confirmNewPassword, ({value, valueOf}) => {
+      validate(schemaPath.confirmNewPassword, ({ value, valueOf }) => {
         const confirmPassword = value();
         const password = valueOf(schemaPath.newPassword);
 
@@ -97,14 +100,15 @@ export class ChangePassword {
 
         return null;
       });
-    }, 
+    },
     {
       submission: {
-        action: async (field) => {  
+        action: async (field) => {
           this.errorMessage.set('');
 
           try {
             await firstValueFrom(this.authService.changePassword(field().value()));
+            this.toastService.success(this.translocoService.translate('changePassword.updated'));
           } catch (err: HttpErrorResponse | any) {
             const errorCode = (err as { error: { errorCode?: string } })?.error?.errorCode;
             const key = errorCode ? errorCode : 'changePassword.serverError';
@@ -112,6 +116,6 @@ export class ChangePassword {
           }
         },
       },
-    }
+    },
   );
-} 
+}
