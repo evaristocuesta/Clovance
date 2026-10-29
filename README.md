@@ -15,6 +15,24 @@ Personal finance management application built with .NET Aspire, Angular, and Pos
 
 ## 🚀 Quick Start
 
+### Easy install (recommended)
+
+Install Clovance on Windows, Linux, or macOS with a single command. The installer checks Docker, asks a few questions, generates the configuration, pulls the images, and starts the app.
+
+**Linux / macOS:**
+
+```bash
+curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://evaristocuesta.github.io/clovance/install/install.ps1 | iex
+```
+
+The scripts also support `uninstall` and `update` subcommands.
+
 ### Docker Compose
 
 You can use Docker Compose instead of local tooling to run Clovance app. For complete setup options and commands, see [Docker Usage Guide](docs/DOCKER_USAGE.md).
@@ -47,6 +65,7 @@ This will create a Git tag and automatically trigger the GitHub Actions workflow
 
 ## 📚 Documentation
 
+- [Docker Usage Guide](docs/DOCKER_USAGE.md) - Setup, ports, reverse proxy, and operations
 - [Docker Image Publishing](docs/DOCKER_PUBLISH.md) - Complete guide for publishing and deployment
 
 ## 🏗️ Project Structure

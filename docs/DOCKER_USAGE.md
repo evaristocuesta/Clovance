@@ -8,13 +8,13 @@ Create a `.env` file by filling in the api service image, api service port, fron
 
 ```
 # Container image name for clovance-apiservice
-CLOVANCE_APISERVICE_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-rc1
+CLOVANCE_APISERVICE_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0
 
 # Default container port for clovance-apiservice
 CLOVANCE_APISERVICE_PORT=8080
 
 # Container image name for clovance-frontend
-CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0-rc1
+CLOVANCE_FRONTEND_IMAGE=ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0
 
 # Parameter frontend-base-url
 FRONTEND_BASE_URL=http://localhost:7000
