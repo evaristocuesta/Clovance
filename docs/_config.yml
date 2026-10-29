@@ -1,0 +1,14 @@
+title: Clovance
+description: Personal finance management application built with .NET Aspire, Angular, and PostgreSQL.
+baseurl: "/clovance"
+url: "https://evaristocuesta.github.io"
+theme: jekyll-theme-cayman
+
+# Navigation shown in the Cayman theme
+github:
+  is_project_page: true
+  repository_url: https://github.com/evaristocuesta/Clovance
+
+# Exclude non-content files from the published site
+exclude:
+  - "*.tmp"
