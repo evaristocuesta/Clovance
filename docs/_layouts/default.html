@@ -7,18 +7,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#394313">
+    <meta name="theme-color" content="#455117">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     <style>
-      .page-header { background: #394313; position: relative; }
-      .page-header .view-on-github { position: absolute; top: 1rem; right: 1rem; }
-      .page-header .logo { max-width: 220px; margin-bottom: 1rem; }
-      .page-header .install-tabs { margin-top: 1rem; }
-      .page-header .install-tabs .tab { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 0.25rem 0.75rem; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.85rem; }
-      .page-header .install-tabs .tab.active { background: rgba(255,255,255,0.35); font-weight: bold; }
-      .page-header .install-tabs pre { background: rgba(0,0,0,0.25); padding: 0.4rem 0.8rem; border-radius: 0 6px 6px 6px; margin: 0; display: inline-block; }
-      .page-header .install-tabs code { color: #fff; font-size: 0.85rem; }
+      .page-header { background: #455117; position: relative; text-align: center; }
+      .page-header .view-on-github { position: absolute; top: 1rem; right: 1rem; width: auto; display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.8rem; border-radius: 4px; }
+      .page-header .logo { max-width: 320px; margin-top: 1.5rem; margin-bottom: 1rem; }
+      @media (max-width: 672px) {
+        .page-header .logo { margin-top: 3rem; }
+      }
+      .page-header .install-block { display: block; text-align: left; max-width: fit-content; margin: 0 auto; }
+      .page-header .install-tabs { display: flex; gap: 0; margin: 0; justify-content: flex-start; }
+      .page-header .install-tabs .tab { margin: 0; background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-bottom: none; padding: 0.25rem 0.75rem; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.85rem; }
+      .page-header .install-tabs .tab.active { background: rgba(255,255,255,0.35); font-weight: bold; border-color: rgba(255,255,255,0.3); }
+      .page-header .install-command { margin: 0; background: rgba(0,0,0,0.25); padding: 0.4rem 0.8rem; border-radius: 0 6px 6px 6px; border-top: none; display: block; width: 72ch; max-width: 100%; overflow-x: auto; }
+      .page-header .install-command code { color: #fff; font-size: 0.85rem; white-space: pre; }
     </style>
     {% include head-custom.html %}
   </head>
@@ -31,10 +35,12 @@
       {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn view-on-github">View on GitHub</a>
       {% endif %}
-      <div class="install-tabs">
-        <button class="tab active" data-cmd="linux">Linux / macOS</button>
-        <button class="tab" data-cmd="win">Windows</button>
-        <pre><code id="install-cmd">curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh</code></pre>
+      <div class="install-block">
+        <div class="install-tabs">
+          <button class="tab active" data-cmd="linux">Linux / macOS</button>
+          <button class="tab" data-cmd="win">Windows</button>
+        </div>
+        <pre class="install-command"><code id="install-cmd">curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh</code></pre>
       </div>
       <script>
         (function() {
