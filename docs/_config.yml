@@ -1,5 +1,5 @@
 title: Clovance
-description: Personal finance management application built with .NET Aspire, Angular, and PostgreSQL.
+description: A personal finance management application that helps you keep track of your daily finances, loans, and maintain a clear history of your financial transactions.
 baseurl: "/clovance"
 url: "https://evaristocuesta.github.io"
 theme: jekyll-theme-cayman

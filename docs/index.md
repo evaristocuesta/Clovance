@@ -1,8 +1,6 @@
-![Clovance](./images/logo-full-dark.svg)
-
 # Clovance
 
-Personal finance management application built with .NET Aspire, Angular, and PostgreSQL. Clovance helps you manage your daily accounting by tracking multiple accounts, recording expenses and income, and keeping a clear history of your financial movements. You can also register transfers between accounts, organize your personal finances in one place, and review statistics to better understand spending patterns and cash flow over time.
+Clovance is a personal finance management application built with .NET Aspire, Angular, and PostgreSQL. It helps you keep track of your daily finances and maintain a clear history of your financial transactions. Track multiple accounts, record expenses and income, register transfers between accounts, manage loans, and review statistics to better understand your spending patterns and cash flow over time. The interface is available in English and Spanish.
 
 ![Clovance](./images/clovance-screenshot-01.jpg)
 
