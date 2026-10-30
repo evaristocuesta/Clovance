@@ -47,7 +47,9 @@ function PromptSecret {
 
 function GenPassword {
   $bytes = New-Object byte[] 18
-  [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+  $rng = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
+  $rng.GetBytes($bytes)
+  $rng.Dispose()
   return [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+','_').Replace('/','-')
 }
 
@@ -175,7 +177,7 @@ networks:
 function Do-Install {
   Check-Docker
   $installDir = Prompt "Install directory" $DefaultInstallDir
-  $version    = Prompt "Image version tag (e.g. latest, v1.0.0)" $DefaultVersion
+  $version    = Prompt "Image version tag (e.g. latest, 1.0.0)" $DefaultVersion
   $fePort     = Prompt "Frontend host port" $DefaultFrontendPort
   $apiPort    = Prompt "API container port" $DefaultApiPort
   $bind       = Prompt "Bind address for frontend" $DefaultBind

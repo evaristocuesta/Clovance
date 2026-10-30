@@ -169,7 +169,7 @@ YAML
 do_install() {
   check_docker
   prompt INSTALL_DIR "$DEFAULT_INSTALL_DIR" "Install directory"
-  prompt VERSION "$DEFAULT_VERSION" "Image version tag (e.g. latest, v1.0.0)"
+  prompt VERSION "$DEFAULT_VERSION" "Image version tag (e.g. latest, 1.0.0)"
   prompt FRONTEND_PORT "$DEFAULT_FRONTEND_PORT" "Frontend host port"
   prompt API_PORT "$DEFAULT_API_PORT" "API container port"
   prompt BIND "$DEFAULT_BIND" "Bind address for frontend"
@@ -247,8 +247,14 @@ do_uninstall() {
     rmvol="N"
   fi
   if [[ "$rmvol" =~ ^[Yy]$ ]]; then
-    rm -rf "$INSTALL_DIR/data"
-    log "Data removed."
+    if rm -rf "$INSTALL_DIR/data" 2>/dev/null; then
+      log "Data removed."
+    elif command -v sudo >/dev/null 2>&1 && sudo rm -rf "$INSTALL_DIR/data" 2>/dev/null; then
+      log "Data removed (with sudo)."
+    else
+      warn "Could not remove $INSTALL_DIR/data (permission denied)."
+      warn "Run manually: sudo rm -rf $INSTALL_DIR/data"
+    fi
   fi
   read -r -p "Remove generated config files (.env, docker-compose.yml)? [y/N]: " rmcfg 2>/dev/null || rmcfg="N"
   rmcfg="${rmcfg:-N}"
