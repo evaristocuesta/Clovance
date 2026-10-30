@@ -1,7 +1,4 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./images/logo-full-light.svg">
-  <img alt="Clovance" src="./images/logo-full-dark.svg">
-</picture>
+![Clovance](./images/logo-full-dark.svg)
 
 # Clovance
 
