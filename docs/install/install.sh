@@ -7,7 +7,7 @@
 #   ./install.sh update
 set -euo pipefail
 
-REPO_RAW="https://raw.githubusercontent.com/evaristocuesta/Clovance/main"
+REPO_RAW="https://raw.githubusercontent.com/evaristocuesta/clovance/main"
 PAGES_BASE="https://evaristocuesta.github.io/clovance"
 
 DEFAULT_INSTALL_DIR="$HOME/clovance"

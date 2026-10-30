@@ -228,7 +228,7 @@ Verify that the repository has **Read and write permissions** enabled for GitHub
 
 It may take a few minutes for the images to appear. Check:
 
-1. The workflow completed successfully: https://github.com/evaristocuesta/Clovance/actions
+1. The workflow completed successfully: https://github.com/evaristocuesta/clovance/actions
 2. The packages are available at: https://github.com/evaristocuesta?tab=packages
 
 ### I Want to Change the Registry
