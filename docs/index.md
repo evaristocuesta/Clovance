@@ -40,7 +40,7 @@ curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh
 irm https://evaristocuesta.github.io/clovance/install/install.ps1 | iex
 ```
 
-The scripts also support `uninstall` and `update` subcommands. See the [installation guide](./DOCKER_USAGE.md#-docker-compose) for details.
+The scripts also support `uninstall` and `update` subcommands. See the [Installation Guide](./INSTALL.md) for all parameters and options. For manual setup, see the [Docker Usage Guide](./DOCKER_USAGE.md).
 
 ### Docker Compose (manual)
 

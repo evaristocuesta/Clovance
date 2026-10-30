@@ -31,7 +31,7 @@ curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh
 irm https://evaristocuesta.github.io/clovance/install/install.ps1 | iex
 ```
 
-The scripts also support `uninstall` and `update` subcommands.
+The scripts also support `uninstall` and `update` subcommands. See the [Installation Guide](docs/INSTALL.md) for all parameters and options. For manual setup, see the [Docker Usage Guide](docs/DOCKER_USAGE.md).
 
 ### Docker Compose
 
@@ -65,6 +65,7 @@ This will create a Git tag and automatically trigger the GitHub Actions workflow
 
 ## 📚 Documentation
 
+- [Installation Guide](docs/INSTALL.md) - One-command installers for Windows, Linux, and macOS
 - [Docker Usage Guide](docs/DOCKER_USAGE.md) - Setup, ports, reverse proxy, and operations
 - [Docker Image Publishing](docs/DOCKER_PUBLISH.md) - Complete guide for publishing and deployment
 
