@@ -11,11 +11,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     <style>
-      .page-header { background: #394313 }
+      .page-header { background: #394313; position: relative; }
+      .page-header .view-on-github { position: absolute; top: 1rem; right: 1rem; }
       .page-header .logo { max-width: 220px; margin-bottom: 1rem; }
-      .page-header .install-commands { margin-top: 1rem; }
-      .page-header .install-commands pre { background: rgba(0,0,0,0.25); padding: 0.5rem 1rem; border-radius: 6px; display: inline-block; margin: 0.25rem 0 0.75rem; }
-      .page-header .install-commands code { color: #fff; font-size: 0.9rem; }
+      .page-header .install-tabs { margin-top: 1rem; }
+      .page-header .install-tabs .tab { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 0.25rem 0.75rem; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.85rem; }
+      .page-header .install-tabs .tab.active { background: rgba(255,255,255,0.35); font-weight: bold; }
+      .page-header .install-tabs pre { background: rgba(0,0,0,0.25); padding: 0.4rem 0.8rem; border-radius: 0 6px 6px 6px; margin: 0; display: inline-block; }
+      .page-header .install-tabs code { color: #fff; font-size: 0.85rem; }
     </style>
     {% include head-custom.html %}
   </head>
@@ -24,17 +27,30 @@
 
     <header class="page-header" role="banner">
       <img class="logo" src="{{ '/images/logo-full-light.svg' | relative_url }}" alt="Clovance">
-      <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
       <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
       {% if site.github.is_project_page %}
-        <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+        <a href="{{ site.github.repository_url }}" class="btn view-on-github">View on GitHub</a>
       {% endif %}
-      <div class="install-commands">
-        <p><strong>Linux / macOS:</strong></p>
-        <pre><code>curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh</code></pre>
-        <p><strong>Windows (PowerShell):</strong></p>
-        <pre><code>irm https://evaristocuesta.github.io/clovance/install/install.ps1 | iex</code></pre>
+      <div class="install-tabs">
+        <button class="tab active" data-cmd="linux">Linux / macOS</button>
+        <button class="tab" data-cmd="win">Windows</button>
+        <pre><code id="install-cmd">curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh</code></pre>
       </div>
+      <script>
+        (function() {
+          var cmds = {
+            linux: 'curl -fsSL https://evaristocuesta.github.io/clovance/install/install.sh | sh',
+            win: 'irm https://evaristocuesta.github.io/clovance/install/install.ps1 | iex'
+          };
+          document.querySelectorAll('.install-tabs .tab').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              document.querySelectorAll('.install-tabs .tab').forEach(function(b){ b.classList.remove('active'); });
+              btn.classList.add('active');
+              document.getElementById('install-cmd').textContent = cmds[btn.dataset.cmd];
+            });
+          });
+        })();
+      </script>
     </header>
 
     <main id="content" class="main-content" role="main">
