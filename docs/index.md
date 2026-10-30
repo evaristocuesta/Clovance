@@ -129,8 +129,8 @@ Docker images are automatically published to:
 
 ## 🤝 Contributing
 
-For contributions, see the [Contributing Guide](https://github.com/evaristocuesta/Clovance/blob/main/CONTRIBUTING.md).
+For contributions, see the [Contributing Guide](https://github.com/evaristocuesta/clovance/blob/main/CONTRIBUTING.md).
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0. See the [LICENSE](https://github.com/evaristocuesta/Clovance/blob/main/LICENSE.md) file for details.
+This project is licensed under the Apache License 2.0. See the [LICENSE](https://github.com/evaristocuesta/clovance/blob/main/LICENSE.md) file for details.

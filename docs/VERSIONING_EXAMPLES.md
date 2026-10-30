@@ -244,7 +244,7 @@ git push origin :refs/tags/v1.0.0
 ### View the GitHub Actions Workflow
 
 ```text
-https://github.com/evaristocuesta/Clovance/actions
+https://github.com/evaristocuesta/clovance/actions
 ```
 
 ### Verify Published Images

@@ -118,7 +118,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "`n[SUCCESS] Version $tag created and published successfully!" -ForegroundColor Green
 Write-Host "[INFO] The GitHub Actions workflow will start automatically" -ForegroundColor Cyan
-Write-Host "[INFO] Monitor the progress at: https://github.com/evaristocuesta/Clovance/actions" -ForegroundColor Blue
+Write-Host "[INFO] Monitor the progress at: https://github.com/evaristocuesta/clovance/actions" -ForegroundColor Blue
 
 Write-Host "`n[INFO] The images will be published at:" -ForegroundColor Cyan
 Write-Host "  - ghcr.io/evaristocuesta/clovance/clovance-api:$Version" -ForegroundColor Gray
