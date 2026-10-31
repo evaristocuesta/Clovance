@@ -22,27 +22,37 @@ $DefaultApiPort     = "8080"
 $DefaultBind        = "0.0.0.0"
 $DefaultDashBind    = "127.0.0.1"
 
+# True when the script runs as a file (.\install.ps1). False when it was piped
+# into Invoke-Expression (irm ... | iex), where "exit" would close the console.
+$RunningAsFile = [bool]$PSScriptRoot
+
 function Log   { param($m) Write-Host "==> $m" -ForegroundColor Cyan }
 function Warn  { param($m) Write-Host "!!  $m" -ForegroundColor Yellow }
 function Err   { param($m) Write-Host "xx  $m" -ForegroundColor Red }
 
-function Prompt {
+function Read-Value {
   param([string]$Message, [string]$Default)
   if ([Environment]::UserInteractive) {
     $val = Read-Host "$Message [$Default]"
     if ([string]::IsNullOrWhiteSpace($val)) { $val = $Default }
   } else { $val = $Default }
-  return $val
+  return ([string]$val).Trim()
 }
 
-function PromptSecret {
-  param([string]$Message)
-  if ([Environment]::UserInteractive) {
-    $sec = Read-Host $Message -AsSecureString
-    $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec)
-    try { return [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr) } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
-  }
-  return ""
+function Test-Yes {
+  param([string]$Value)
+  return ($Value -match '^(?i)y(es)?$')
+}
+
+function Read-Secret {
+  param([string]$Message, [string]$Existing)
+  $label = if ($Existing) { "$Message (empty = keep current)" } else { $Message }
+  if (-not [Environment]::UserInteractive) { return $Existing }
+  $sec = Read-Host $label -AsSecureString
+  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec)
+  try { $val = [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr) } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+  if ([string]::IsNullOrWhiteSpace($val)) { return $Existing }
+  return $val
 }
 
 function GenPassword {
@@ -53,15 +63,64 @@ function GenPassword {
   return [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+','_').Replace('/','-')
 }
 
+# Returns $Fallback when $Value is empty. Keeps the prompt defaults readable.
+function Get-OrDefault {
+  param($Value, $Fallback)
+  if ([string]::IsNullOrWhiteSpace([string]$Value)) { return $Fallback }
+  return $Value
+}
+
 function Require($cmd) {
-  if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) { Err "Missing required command: $cmd"; exit 1 }
+  if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) { throw "Missing required command: $cmd" }
+}
+
+# Runs docker and fails loudly on a non-zero exit code. Native commands do NOT
+# raise exceptions, so without this check a broken daemon looks like success.
+function Invoke-Docker {
+  # No param() block on purpose: "docker compose up -d" would otherwise bind
+  # "-d" to a parameter of this function instead of forwarding it.
+  & docker @args
+  if ($LASTEXITCODE -ne 0) {
+    throw "docker $($args -join ' ') failed (exit code $LASTEXITCODE)."
+  }
+}
+
+function Test-DockerDaemon {
+  if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { return $false }
+  & docker info *> $null
+  return ($LASTEXITCODE -eq 0)
 }
 
 function Check-Docker {
   Require docker
-  try { docker info 2>$null | Out-Null } catch { Err "Docker daemon is not running. Start Docker and retry."; exit 1 }
-  $v = docker compose version 2>$null
-  if (-not $v) { Err "Docker Compose plugin (v2) is required."; exit 1 }
+  if (-not (Test-DockerDaemon)) {
+    throw "Docker daemon is not running. Start Docker Desktop and retry."
+  }
+  & docker compose version *> $null
+  if ($LASTEXITCODE -ne 0) { throw "Docker Compose plugin (v2) is required." }
+}
+
+function Get-EnvValue {
+  param([string]$Path, [string]$Key)
+  if (-not (Test-Path $Path)) { return $null }
+  foreach ($line in Get-Content $Path) {
+    if ($line -match "^\s*$([regex]::Escape($Key))=(.*)$") { return $matches[1] }
+  }
+  return $null
+}
+
+function Test-HasExistingData {
+  param([string]$Path)
+  if (-not (Test-Path $Path)) { return $false }
+  return [bool](Get-ChildItem $Path -Force -ErrorAction SilentlyContinue | Select-Object -First 1)
+}
+
+function Assert-ComposeRunning {
+  param([string]$InstallDir, [int]$Minimum = 2)
+  $running = @(& docker compose ps --status running -q)
+  if ($LASTEXITCODE -ne 0 -or $running.Count -lt $Minimum) {
+    throw "Clovance did not start correctly ($($running.Count) container(s) running). Check 'docker compose ps' and 'docker compose logs' in $InstallDir."
+  }
 }
 
 function ToPosixPath($p) {
@@ -176,25 +235,50 @@ networks:
 
 function Do-Install {
   Check-Docker
-  $installDir = Prompt "Install directory" $DefaultInstallDir
-  $version    = Prompt "Image version tag (e.g. latest, 1.0.0)" $DefaultVersion
-  $fePort     = Prompt "Frontend host port" $DefaultFrontendPort
-  $apiPort    = Prompt "API container port" $DefaultApiPort
-  $bind       = Prompt "Bind address for frontend" $DefaultBind
-  $dashBind   = Prompt "Bind address for Aspire dashboard" $DefaultDashBind
-  $pgUser     = Prompt "PostgreSQL username" "clovance"
-  $pgPass     = PromptSecret "PostgreSQL password (empty = auto-generate)"
+  $installDir = Read-Value "Install directory" $DefaultInstallDir
+
+  # Reuse the current configuration as prompt defaults so re-running the
+  # installer does not silently change the database password or lose settings.
+  $envPath = Join-Path $installDir ".env"
+  $existingVersion = Get-EnvValue $envPath "CLOVANCE_APISERVICE_IMAGE"
+  if ($existingVersion -match ':([^:]+)$') { $existingVersion = $matches[1] } else { $existingVersion = $null }
+  $existingApiPort = Get-EnvValue $envPath "CLOVANCE_APISERVICE_PORT"
+  $existingBind    = Get-EnvValue $envPath "CLOVANCE_BIND_ADDRESS"
+  $existingDash    = Get-EnvValue $envPath "CLOVANCE_DASHBOARD_BIND_ADDRESS"
+  $existingPgUser  = Get-EnvValue $envPath "POSTGRES_USERNAME"
+  $existingPgPass  = Get-EnvValue $envPath "POSTGRES_PASSWORD"
+  $existingSmtpHost = Get-EnvValue $envPath "SMTP_HOST"
+  $existingSmtpPort = Get-EnvValue $envPath "SMTP_PORT"
+  $existingSmtpUser = Get-EnvValue $envPath "SMTP_USERNAME"
+  $existingSmtpPass = Get-EnvValue $envPath "SMTP_PASSWORD"
+  $existingSmtpFrom = Get-EnvValue $envPath "SMTP_FROM_ADDRESS"
+  $existingSmtpName = Get-EnvValue $envPath "SMTP_FROM_NAME"
+  $existingFeUrl   = Get-EnvValue $envPath "FRONTEND_BASE_URL"
+
+  $volumePath = Join-Path $installDir "data"
+  if (Test-HasExistingData (Join-Path $volumePath "postgres")) {
+    Warn "Existing database found in $(Join-Path $volumePath 'postgres')."
+    Warn "Keeping the current PostgreSQL password so the API can still connect."
+    Warn "To change it, change it inside PostgreSQL first (POSTGRES_PASSWORD is only used when the database is created)."
+  }
+
+  $version    = Read-Value "Image version tag (e.g. latest, 1.0.0)" (Get-OrDefault $existingVersion $DefaultVersion)
+  $fePort     = Read-Value "Frontend host port" $DefaultFrontendPort
+  $apiPort    = Read-Value "API container port" (Get-OrDefault $existingApiPort $DefaultApiPort)
+  $bind       = Read-Value "Bind address for frontend" (Get-OrDefault $existingBind $DefaultBind)
+  $dashBind   = Read-Value "Bind address for Aspire dashboard" (Get-OrDefault $existingDash $DefaultDashBind)
+  $pgUser     = Read-Value "PostgreSQL username" (Get-OrDefault $existingPgUser "clovance")
+  $pgPass     = Read-Secret "PostgreSQL password" $existingPgPass
   if ([string]::IsNullOrWhiteSpace($pgPass)) { $pgPass = GenPassword; Log "Generated PostgreSQL password." }
-  $smtpHost   = Prompt "SMTP host" "smtp.example.com"
-  $smtpPort   = Prompt "SMTP port" "587"
-  $smtpUser   = Prompt "SMTP username" "your_smtp_username"
-  $smtpPass   = PromptSecret "SMTP password"
-  $smtpFrom   = Prompt "SMTP from address" "your_smtp_from_address@example.com"
-  $smtpName   = Prompt "SMTP from name" "Clovance"
-  $feUrl      = Prompt "Frontend base URL" "http://localhost:$fePort"
+  $smtpHost   = Read-Value "SMTP host" (Get-OrDefault $existingSmtpHost "smtp.example.com")
+  $smtpPort   = Read-Value "SMTP port" (Get-OrDefault $existingSmtpPort "587")
+  $smtpUser   = Read-Value "SMTP username" (Get-OrDefault $existingSmtpUser "your_smtp_username")
+  $smtpPass   = Read-Secret "SMTP password" $existingSmtpPass
+  $smtpFrom   = Read-Value "SMTP from address" (Get-OrDefault $existingSmtpFrom "your_smtp_from_address@example.com")
+  $smtpName   = Read-Value "SMTP from name" (Get-OrDefault $existingSmtpName "Clovance")
+  $feUrl      = Read-Value "Frontend base URL" (Get-OrDefault $existingFeUrl "http://localhost:$fePort")
 
   New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-  $volumePath = Join-Path $installDir "data"
   New-Item -ItemType Directory -Force -Path (Join-Path $volumePath "postgres") | Out-Null
   New-Item -ItemType Directory -Force -Path (Join-Path $volumePath "jwt") | Out-Null
 
@@ -219,7 +303,7 @@ VOLUME_SOURCE_PATH=$volumePosix
 CLOVANCE_BIND_ADDRESS=$bind
 CLOVANCE_DASHBOARD_BIND_ADDRESS=$dashBind
 "@
-  Set-Content -Path (Join-Path $installDir ".env") -Value $envContent -NoNewline
+  Set-Content -Path $envPath -Value $envContent -NoNewline
   Set-Content -Path (Join-Path $installDir "docker-compose.yml") -Value $ComposeContent -NoNewline
 
   Log "Configuration written to $installDir"
@@ -227,9 +311,11 @@ CLOVANCE_DASHBOARD_BIND_ADDRESS=$dashBind
   Push-Location $installDir
   try {
     Log "Pulling images..."
-    docker compose pull
+    Invoke-Docker compose pull
     Log "Starting Clovance..."
-    docker compose up -d
+    Invoke-Docker compose up -d
+    Log "Verifying containers..."
+    Assert-ComposeRunning -InstallDir $installDir
   } finally {
     Pop-Location
   }
@@ -248,34 +334,40 @@ CLOVANCE_DASHBOARD_BIND_ADDRESS=$dashBind
 
 function Do-Uninstall {
   Check-Docker
-  $installDir = Prompt "Install directory" $DefaultInstallDir
+  $installDir = Read-Value "Install directory" $DefaultInstallDir
   $compose = Join-Path $installDir "docker-compose.yml"
-  if (-not (Test-Path $compose)) { Err "No docker-compose.yml found in $installDir"; exit 1 }
+  if (-not (Test-Path $compose)) {
+    throw "No docker-compose.yml found in $installDir. Nothing to stop there; delete the folder manually if you already removed the config."
+  }
   Push-Location $installDir
   try {
     Log "Stopping containers..."
-    docker compose down
+    Invoke-Docker compose down
   } finally { Pop-Location }
-  $rmvol = Prompt "Remove data volumes (postgres + jwt)? (y/N)" "N"
-  if ($rmvol -match '^[Yy]$') {
-    Remove-Item -Recurse -Force (Join-Path $installDir "data") -ErrorAction SilentlyContinue
-    Log "Data removed."
+  $dataDir = Join-Path $installDir "data"
+  $rmvol = Read-Value "Remove data volumes (postgres + jwt)? (y/N)" "N"
+  if (Test-Yes $rmvol) {
+    Remove-Item -Recurse -Force $dataDir -ErrorAction SilentlyContinue
+    if (Test-Path $dataDir) { Warn "Could not remove $dataDir. Close anything using it and delete it manually." }
+    else { Log "Data removed." }
   }
-  $rmcfg = Prompt "Remove generated config files (.env, docker-compose.yml)? (y/N)" "N"
-  if ($rmcfg -match '^[Yy]$') {
+  $rmcfg = Read-Value "Remove generated config files (.env, docker-compose.yml)? (y/N)" "N"
+  if (Test-Yes $rmcfg) {
     Remove-Item -Force (Join-Path $installDir ".env") -ErrorAction SilentlyContinue
     Remove-Item -Force $compose -ErrorAction SilentlyContinue
     Log "Config removed."
   }
   Log "Uninstall complete."
+  Write-Host "   Docker images are kept. To delete them:"
+  Write-Host "     docker image rm ghcr.io/evaristocuesta/clovance/clovance-api:latest ghcr.io/evaristocuesta/clovance/clovance-frontend:latest"
 }
 
 function Do-Update {
   Check-Docker
-  $installDir = Prompt "Install directory" $DefaultInstallDir
+  $installDir = Read-Value "Install directory" $DefaultInstallDir
   $envPath = Join-Path $installDir ".env"
-  if (-not (Test-Path $envPath)) { Err "No .env found in $installDir"; exit 1 }
-  $version = Prompt "New image version tag" $DefaultVersion
+  if (-not (Test-Path $envPath)) { throw "No .env found in $installDir." }
+  $version = Read-Value "New image version tag" $DefaultVersion
   Copy-Item $envPath "$envPath.bak" -Force
   $lines = Get-Content $envPath
   $lines = $lines | ForEach-Object {
@@ -287,15 +379,26 @@ function Do-Update {
   Push-Location $installDir
   try {
     Log "Pulling new images..."
-    docker compose pull
+    Invoke-Docker compose pull
     Log "Recreating containers..."
-    docker compose up -d
-  } finally { Pop-Location }
+    Invoke-Docker compose up -d
+    Log "Verifying containers..."
+    Assert-ComposeRunning -InstallDir $installDir
+  } catch {
+    throw "$($_.Exception.Message) The previous configuration was saved to $envPath.bak."
+  } finally {
+    Pop-Location
+  }
   Log "Update complete."
 }
 
-switch ($Command) {
-  "install"   { Do-Install }
-  "uninstall" { Do-Uninstall }
-  "update"    { Do-Update }
+try {
+  switch ($Command) {
+    "install"   { Do-Install }
+    "uninstall" { Do-Uninstall }
+    "update"    { Do-Update }
+  }
+} catch {
+  Err $_.Exception.Message
+  if ($RunningAsFile) { exit 1 }
 }

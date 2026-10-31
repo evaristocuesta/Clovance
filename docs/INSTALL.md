@@ -58,28 +58,72 @@ During installation you will be prompted for the following values (defaults show
 
 Data is stored under `<install-dir>/data` (Postgres data and the JWT key).
 
+Re-running the installer over an existing installation is safe: the values in `.env` are used as prompt defaults and the current PostgreSQL password is kept (the `POSTGRES_PASSWORD` value is only used when the database is created).
+
 ## 🔄 Update
 
 To upgrade to a new version:
 
-```bash
-# Linux / macOS
-./install.sh update
+**Linux / macOS:**
 
-# Windows
-.\install.ps1 update
+```bash
+curl -fsSL https://evaristocuesta.github.io/clovance/install/update.sh | sh
 ```
 
-You will be asked for the install directory and the new image version tag. The script backs up `.env` to `.env.bak`, updates the image tags, pulls the new images, and recreates the containers.
+**Windows (PowerShell):**
+
+```powershell
+irm https://evaristocuesta.github.io/clovance/install/update.ps1 | iex
+```
+
+Or, from a local checkout:
+
+```bash
+# Linux / macOS
+./docs/install/update.sh
+
+# Windows
+.\docs\install\update.ps1
+```
+
+Both wrappers call `install.sh update` / `install.ps1 update`, so these are equivalent:
+
+```bash
+./install.sh update      # Linux / macOS
+.\install.ps1 update     # Windows
+```
+
+You will be asked for the install directory and the new image version tag. The script backs up `.env` to `.env.bak`, updates the image tags, pulls the new images, and recreates the containers. It fails with an error (and keeps `.env.bak`) if the images cannot be pulled or the containers do not come back up.
 
 ## 🗑️ Uninstall
 
+**Linux / macOS:**
+
+```bash
+curl -fsSL https://evaristocuesta.github.io/clovance/install/uninstall.sh | sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://evaristocuesta.github.io/clovance/install/uninstall.ps1 | iex
+```
+
+Or, from a local checkout:
+
 ```bash
 # Linux / macOS
-./install.sh uninstall
+./docs/install/uninstall.sh
 
 # Windows
-.\install.ps1 uninstall
+.\docs\install\uninstall.ps1
+```
+
+Both wrappers call `install.sh uninstall` / `install.ps1 uninstall`, so these are equivalent:
+
+```bash
+./install.sh uninstall      # Linux / macOS
+.\install.ps1 uninstall     # Windows
 ```
 
 The script stops and removes the containers, then asks:
@@ -87,11 +131,19 @@ The script stops and removes the containers, then asks:
 1. **Remove data volumes (postgres + jwt)?** — answer `y` to delete the database and JWT key.
 2. **Remove generated config files (.env, docker-compose.yml)?** — answer `y` to clean up the configuration.
 
+Nothing is deleted if the containers cannot be stopped first, and if Docker is not running the script aborts with an error instead of pretending to succeed.
+
+Docker images are **not** removed. To delete them too:
+
+```bash
+docker image rm ghcr.io/evaristocuesta/clovance/clovance-api:latest ghcr.io/evaristocuesta/clovance/clovance-frontend:latest
+```
+
 On Linux/macOS, if the data directory was created by the container (root-owned), the script will try `sudo` automatically; if that fails, run `sudo rm -rf <install-dir>/data` manually.
 
 ## 🛠️ Troubleshooting
 
-- **Docker not running**: start Docker Desktop / the Docker daemon and retry.
+- **Docker not running**: start Docker Desktop / the Docker daemon and retry. The installers verify the daemon before writing any configuration and exit with an error if it is down.
 - **Compose v2 missing**: upgrade Docker or install the Compose plugin.
 - **Permission denied on data removal (Linux)**: use `sudo rm -rf <install-dir>/data`.
 - **Port already in use**: choose a different frontend port during install, or stop the conflicting service.
