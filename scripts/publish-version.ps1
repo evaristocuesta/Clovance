@@ -3,7 +3,7 @@
 # Usage:
 #   .\scripts\publish-version.ps1 -Version "1.0.0"
 #   .\scripts\publish-version.ps1 -Version "1.0.0-beta1"
-#   .\scripts\publish-version.ps1 -Version "2.0.0-rc.2"
+#   .\scripts\publish-version.ps1 -Version "2.0.0-rc2"
 
 param(
     [Parameter(Mandatory=$true)]
@@ -18,7 +18,7 @@ if ($Version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$') {
     Write-Error @"
 The version must follow Semantic Versioning:
   - Production: X.Y.Z (e.g., 1.0.0)
-  - Pre-release: X.Y.Z-prerelease (e.g., 1.0.0-beta1, 2.0.0-rc.2, 1.0.0-alpha)
+  - Pre-release: X.Y.Z-prerelease (e.g., 1.0.0-beta1, 2.0.0-rc2, 1.0.0-alpha1)
 "@
     exit 1
 }
@@ -127,7 +127,7 @@ Write-Host "  - ghcr.io/evaristocuesta/clovance/clovance-frontend:$Version" -For
 if ($isPreRelease) {
     Write-Host "`n[INFO] This is a pre-release. Tags that will be created:" -ForegroundColor Yellow
     Write-Host "  - $Version (full version)" -ForegroundColor Gray
-    Write-Host "  - $currentBranch-<sha> (commit SHA)" -ForegroundColor Gray
+    Write-Host "  - sha-<sha> (commit SHA)" -ForegroundColor Gray
     Write-Host "`n[NOTE] Pre-releases do not update production tags (major, minor, latest)" -ForegroundColor DarkYellow
 } else {
     Write-Host "`n[INFO] The following tags will also be created:" -ForegroundColor Yellow
@@ -135,7 +135,7 @@ if ($isPreRelease) {
     Write-Host "  - $Version (full version)" -ForegroundColor Gray
     Write-Host "  - $($parts[0]).$($parts[1]) (major.minor)" -ForegroundColor Gray
     Write-Host "  - $($parts[0]) (major)" -ForegroundColor Gray
-    Write-Host "  - $currentBranch-<sha> (commit SHA)" -ForegroundColor Gray
+    Write-Host "  - sha-<sha> (commit SHA)" -ForegroundColor Gray
     if ($currentBranch -eq "main") {
         Write-Host "  - latest (latest version)" -ForegroundColor Gray
     }

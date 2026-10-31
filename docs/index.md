@@ -70,6 +70,7 @@ This creates a Git tag and triggers the GitHub Actions workflow, which publishes
 
 ## 📚 Documentation
 
+- [Installation Guide](./INSTALL.md) - One-command installers for Windows, Linux, and macOS
 - [Docker Usage Guide](./DOCKER_USAGE.md) - Setup, ports, reverse proxy, and operations
 - [Docker Image Publishing](./DOCKER_PUBLISH.md) - Publishing and deployment guide
 - [Versioning Examples](./VERSIONING_EXAMPLES.md) - Semver tagging reference

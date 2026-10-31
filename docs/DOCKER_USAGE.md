@@ -211,18 +211,18 @@ Check what is published with `docker ps` or `docker compose config`.
 
 ```bash
 # Stable releases
-docker pull ghcr.io/evaristocuesta/clovance/clovance-api:v1.0.0
-docker pull ghcr.io/evaristocuesta/clovance/clovance-api:v1.0
-docker pull ghcr.io/evaristocuesta/clovance/clovance-api:v1
+docker pull ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0
+docker pull ghcr.io/evaristocuesta/clovance/clovance-api:1.0
+docker pull ghcr.io/evaristocuesta/clovance/clovance-api:1
 docker pull ghcr.io/evaristocuesta/clovance/clovance-api:latest
 
 # Pre-releases
-docker pull ghcr.io/evaristocuesta/clovance/clovance-api:v1.0.0-beta1
-docker pull ghcr.io/evaristocuesta/clovance/clovance-api:v2.0.0-rc.2
-docker pull ghcr.io/evaristocuesta/clovance/clovance-api:v1.0.0-alpha
+docker pull ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-beta2
+docker pull ghcr.io/evaristocuesta/clovance/clovance-api:2.0.0-rc2
+docker pull ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0-alpha3
 ```
 
-> **Note:** Pre-release versions **do not** update the `latest`, `v1`, or `v1.0` tags.
+> **Note:** Pre-release versions **do not** update the `latest`, `1`, or `1.0` tags.
 
 ---
 
@@ -256,13 +256,13 @@ docker run -d \
 Display image information:
 
 ```bash
-docker inspect ghcr.io/evaristocuesta/clovance/clovance-api:v1.0.0
+docker inspect ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0
 ```
 
 Display image layers and size:
 
 ```bash
-docker history ghcr.io/evaristocuesta/clovance/clovance-api:v1.0.0
+docker history ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0
 ```
 
 ---

@@ -16,8 +16,8 @@ Use the included PowerShell script to safely create and publish new versions:
 
 # Pre-release (beta, rc, alpha)
 .\scripts\publish-version.ps1 -Version "1.0.0-beta1"
-.\scripts\publish-version.ps1 -Version "2.0.0-rc.2"
-.\scripts\publish-version.ps1 -Version "1.0.0-alpha"
+.\scripts\publish-version.ps1 -Version "2.0.0-rc2"
+.\scripts\publish-version.ps1 -Version "1.0.0-alpha1"
 
 # Preview what would happen without executing it (dry run)
 .\scripts\publish-version.ps1 -Version "1.0.0" -DryRun
@@ -52,19 +52,21 @@ git push origin v1.0.0-beta1
 This triggers the GitHub Actions workflow, which will:
 
 1. Build the Docker images for the API and Frontend.
-2. Tag them with multiple tags:
-   - `v1.0.0` (full version)
-   - `v1.0` (major.minor)
-   - `v1` (major)
-   - `latest` (if published from the default branch)
-   - `main-<sha>` (commit SHA)
+2. Tag them with multiple Docker image tags (note: image tags never use the `v` prefix):
+   - `1.0.0` (full version)
+   - `1.0` (major.minor)
+   - `1` (major)
+   - `latest` (stable releases only)
+   - `sha-<sha>` (short commit SHA)
 3. Publish them to `ghcr.io/evaristocuesta/clovance/`.
 4. Generate a provenance attestation.
 
+The Git tag (`v1.0.0`) is the only Git tag created; the tags above belong to the Docker images.
+
 ### Published Images
 
-- **API**: `ghcr.io/evaristocuesta/clovance/clovance-api:v1.0.0`
-- **Frontend**: `ghcr.io/evaristocuesta/clovance/clovance-frontend:v1.0.0`
+- **API**: `ghcr.io/evaristocuesta/clovance/clovance-api:1.0.0`
+- **Frontend**: `ghcr.io/evaristocuesta/clovance/clovance-frontend:1.0.0`
 
 ## 📦 Tag Structure
 
@@ -73,24 +75,24 @@ The workflow automatically generates multiple tags for each version.
 ### Production Releases
 
 ```
-v1.2.3 → Generates the following tags:
-  - v1.2.3    (full version)
-  - v1.2      (major.minor)
-  - v1        (major)
-  - latest    (default branch only)
-  - main-abc123def (short commit SHA)
+Git tag v1.2.3 → Docker image tags generated:
+  - 1.2.3           (full version)
+  - 1.2             (major.minor)
+  - 1               (major)
+  - latest          (stable releases only)
+  - sha-abc1234     (short commit SHA)
 ```
 
 ### Pre-releases (beta, rc, alpha)
 
 ```
-v1.2.3-beta1 → Generates only:
-  - v1.2.3-beta1  (full version)
-  - main-abc123def (short commit SHA)
+Git tag v1.2.3-beta1 → Docker image tags generated:
+  - 1.2.3-beta1     (full version)
+  - sha-abc1234     (short commit SHA)
 
 ⚠️ Pre-releases DO NOT update:
-  - major.minor (v1.2)
-  - major (v1)
+  - major.minor (1.2)
+  - major (1)
   - latest
 ```
 
@@ -174,9 +176,9 @@ It is recommended to follow [Semantic Versioning](https://semver.org/):
 ```bash
 # Development and testing
 git tag v1.0.0-alpha && git push origin v1.0.0-alpha    # Very early version
-git tag v1.0.0-beta.1 && git push origin v1.0.0-beta.1  # First beta
-git tag v1.0.0-beta.2 && git push origin v1.0.0-beta.2  # Second beta
-git tag v1.0.0-rc.1 && git push origin v1.0.0-rc.1      # Release candidate
+git tag v1.0.0-beta1 && git push origin v1.0.0-beta1  # First beta
+git tag v1.0.0-beta2 && git push origin v1.0.0-beta2  # Second beta
+git tag v1.0.0-rc1 && git push origin v1.0.0-rc1      # Release candidate
 
 # Production
 git tag v1.0.0 && git push origin v1.0.0  # Initial release

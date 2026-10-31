@@ -67,7 +67,8 @@ This will create a Git tag and automatically trigger the GitHub Actions workflow
 
 - [Installation Guide](docs/INSTALL.md) - One-command installers for Windows, Linux, and macOS
 - [Docker Usage Guide](docs/DOCKER_USAGE.md) - Setup, ports, reverse proxy, and operations
-- [Docker Image Publishing](docs/DOCKER_PUBLISH.md) - Complete guide for publishing and deployment
+- [Docker Image Publishing](docs/DOCKER_PUBLISH.md) - Publishing and deployment guide
+- [Versioning Examples](docs/VERSIONING_EXAMPLES.md) - Semver tagging reference
 
 ## 🏗️ Project Structure
 
